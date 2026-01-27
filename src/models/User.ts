@@ -1,3 +1,8 @@
+// ============================================
+// src/models/User.ts
+// User Model - User database schema
+// ============================================
+
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';
 import { User, UserRole } from '@/types';

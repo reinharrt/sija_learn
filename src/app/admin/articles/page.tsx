@@ -1,3 +1,8 @@
+// ============================================
+// src/app/admin/articles/page.tsx
+// Admin Articles - Manage articles
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

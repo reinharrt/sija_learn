@@ -1,3 +1,8 @@
+// ============================================
+// src/components/layout/Header.tsx
+// Header Component - Navigation header
+// ============================================
+
 'use client';
 
 import Link from 'next/link';

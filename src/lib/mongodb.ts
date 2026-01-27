@@ -1,3 +1,8 @@
+// ============================================
+// src/lib/mongodb.ts
+// MongoDB Connection - Database connection utility
+// ============================================
+
 import { MongoClient, Db } from 'mongodb';
 
 if (!process.env.MONGODB_URI) {

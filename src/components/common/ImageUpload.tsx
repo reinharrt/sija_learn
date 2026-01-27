@@ -1,3 +1,8 @@
+// ============================================
+// src/components/common/ImageUpload.tsx
+// Image Upload Component - Image upload handler
+// ============================================
+
 'use client';
 
 import { useState, useRef } from 'react';

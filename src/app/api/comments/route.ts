@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/comments/route.ts
+// Comments API - List and create comments
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import { createComment, getCommentsByArticle } from '@/models/Comment';

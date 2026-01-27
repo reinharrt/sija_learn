@@ -1,3 +1,8 @@
+// ============================================
+// src/middleware.ts
+// Middleware - Request middleware and authentication
+// ============================================
+ 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 

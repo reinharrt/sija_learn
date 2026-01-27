@@ -1,3 +1,8 @@
+// ============================================
+// src/app/courses/[slug]/edit/page.tsx
+// Course Edit Page - Edit existing course
+// ============================================
+
 'use client';
 
 import { useState, useEffect } from 'react';

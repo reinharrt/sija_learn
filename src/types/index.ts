@@ -1,3 +1,8 @@
+// ============================================
+// src/types/index.ts
+// Type Definitions - TypeScript type definitions
+// ============================================
+
 import { ObjectId } from 'mongodb';
 
 export enum UserRole {

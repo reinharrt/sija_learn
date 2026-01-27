@@ -1,3 +1,8 @@
+// ============================================
+// src/app/courses/create/page.tsx
+// Course Create Page - Create new course
+// ============================================
+
 'use client';
 
 import { useState, useEffect } from 'react';

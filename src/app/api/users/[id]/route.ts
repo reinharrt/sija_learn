@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/users/[id]/route.ts
+// User Detail API - Get, update, delete specific user
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { findUserById, updateUser, deleteUser } from '@/models/User';

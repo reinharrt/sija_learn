@@ -1,3 +1,8 @@
+// ============================================
+// src/components/course/CourseDetail.tsx
+// Course Detail Component - Full course display
+// ============================================
+
 'use client';
 
 import { useState, useEffect } from 'react';

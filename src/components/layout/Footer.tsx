@@ -1,3 +1,8 @@
+// ============================================
+// src/components/layout/Footer.tsx
+// Footer Component - Page footer
+// ============================================
+
 'use client';
 
 export default function Footer() {

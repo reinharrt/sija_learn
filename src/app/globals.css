@@ -1,3 +1,13 @@
+/* ============================================
+ * src/app/globals.css
+ * Global Styles - Global CSS styling
+ * ============================================ */
+
+/* ============================================ 
+ * src/app/globals.css 
+ * Global Styles - Global CSS styling 
+ * ============================================ */ 
+ 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

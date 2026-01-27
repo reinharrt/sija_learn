@@ -1,3 +1,8 @@
+// ============================================
+// src/app/courses/page.tsx
+// Courses List Page - Display all courses
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

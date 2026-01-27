@@ -1,3 +1,8 @@
+// ============================================
+// src/app/admin/users/page.tsx
+// Admin Users - Manage users
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

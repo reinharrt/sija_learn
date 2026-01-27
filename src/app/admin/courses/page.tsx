@@ -1,3 +1,8 @@
+// ============================================
+// src/app/admin/courses/page.tsx
+// Admin Courses - Manage courses
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

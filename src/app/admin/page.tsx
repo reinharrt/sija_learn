@@ -1,3 +1,8 @@
+// ============================================
+// src/app/admin/page.tsx
+// Admin Dashboard - Main admin interface
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

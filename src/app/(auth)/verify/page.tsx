@@ -1,3 +1,8 @@
+// ============================================
+// src/app/(auth)/verify/page.tsx
+// Verify Page - Email verification interface
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

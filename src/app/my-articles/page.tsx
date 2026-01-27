@@ -1,3 +1,8 @@
+// ============================================
+// src/app/my-articles/page.tsx
+// My Articles Page - User's articles dashboard
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

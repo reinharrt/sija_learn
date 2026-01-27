@@ -1,3 +1,8 @@
+// ============================================
+// src/app/articles/page.tsx
+// Articles List Page - Display all articles
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

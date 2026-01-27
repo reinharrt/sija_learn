@@ -1,3 +1,8 @@
+// ============================================
+// src/components/article/BlockEditor.tsx
+// Block Editor Component - Rich text editor for articles
+// ============================================
+
 'use client';
 
 import { useState } from 'react';

@@ -1,3 +1,8 @@
+// ============================================
+// src/contexts/AuthContext.tsx
+// Auth Context - Authentication state management
+// ============================================
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';

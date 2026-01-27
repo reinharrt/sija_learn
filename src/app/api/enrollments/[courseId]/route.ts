@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/enrollments/[courseId]/route.ts
+// Enrollment Detail API - Enroll/unenroll from course
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import { unenrollUser, getEnrollmentProgress } from '@/models/Enrollment';

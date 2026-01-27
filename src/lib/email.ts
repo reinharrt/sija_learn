@@ -1,3 +1,8 @@
+// ============================================
+// src/lib/email.ts
+// Email Service - Email sending utilities
+// ============================================
+
 import nodemailer from 'nodemailer';
 
 // Updated configuration untuk Nodemailer 7.0.12

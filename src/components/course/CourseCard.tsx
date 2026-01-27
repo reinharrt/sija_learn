@@ -1,3 +1,8 @@
+// ============================================
+// src/components/course/CourseCard.tsx
+// Course Card Component - Course preview card
+// ============================================
+
 'use client';
 
 import Link from 'next/link';

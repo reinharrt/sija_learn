@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/articles/route.ts
+// Articles API - List and create articles
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';

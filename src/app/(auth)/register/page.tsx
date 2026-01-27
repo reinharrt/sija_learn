@@ -1,3 +1,8 @@
+// ============================================
+// src/app/(auth)/register/page.tsx
+// Register Page - User registration interface
+// ============================================
+
 'use client';
 
 import { useState } from 'react';

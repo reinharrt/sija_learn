@@ -1,3 +1,8 @@
+// ============================================
+// src/components/article/ArticleCard.tsx
+// Article Card Component - Article preview card
+// ============================================
+
 'use client';
 
 import Link from 'next/link';

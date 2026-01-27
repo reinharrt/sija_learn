@@ -1,3 +1,8 @@
+// ============================================
+// src/app/articles/create/page.tsx
+// Article Create Page - Create new article
+// ============================================
+
 'use client';
 
 import { useState, useEffect } from 'react';

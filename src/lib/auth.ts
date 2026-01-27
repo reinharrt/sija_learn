@@ -1,3 +1,8 @@
+// ============================================
+// src/lib/auth.ts
+// Auth Utilities - Authentication helper functions
+// ============================================
+
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { AuthUser, UserRole } from '@/types';

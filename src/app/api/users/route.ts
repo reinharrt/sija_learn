@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/users/route.ts
+// Users API - List and manage users
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { getAllUsers } from '@/models/User';

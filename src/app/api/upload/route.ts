@@ -1,8 +1,14 @@
+// ============================================
+// src/app/api/upload/route.ts
+// Upload API - Handle file uploads organized by entity
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
+import { createHash } from 'crypto';
 import { getUserFromRequest } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
@@ -18,6 +24,8 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const type = formData.get('type') as string; // 'banner' or 'content'
+    const entityType = formData.get('entityType') as string; // 'post' or 'course'
+    const entityId = formData.get('entityId') as string; // post ID or course ID
 
     if (!file) {
       return NextResponse.json(
@@ -46,18 +54,41 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
-    const ext = file.name.split('.').pop();
-    const filename = `${timestamp}-${randomString}.${ext}`;
+    // Generate MD5 hash for unique filename
+    const hash = createHash('md5')
+      .update(buffer)
+      .update(Date.now().toString())
+      .digest('hex');
 
-    // Create uploads directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    // Create organized folder structure based on entity
+    // Structure: uploads/{entityType}/{entityId}/{type}/
+    // Example: uploads/posts/post-123/banner/
+    //          uploads/courses/course-456/content/
+    
+    let relativePath: string;
+    
+    if (entityType && entityId) {
+      // Organized by entity
+      const entityFolder = entityType === 'post' ? 'posts' : 
+                          entityType === 'course' ? 'courses' : 'general';
+      relativePath = path.join(entityFolder, entityId, type || 'images');
+    } else {
+      // Fallback to date-based organization if no entity info
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      relativePath = path.join('general', year.toString(), month, type || 'images');
+    }
+    
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', relativePath);
+
+    // Create directory if it doesn't exist
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
 
+    // Filename: {md5hash}.jpg (always jpg after compression)
+    const filename = `${hash}.jpg`;
     const filepath = path.join(uploadDir, filename);
 
     // Compress image based on type
@@ -86,8 +117,8 @@ export async function POST(request: NextRequest) {
     // Save compressed image
     await writeFile(filepath, processedBuffer);
 
-    // Return URL
-    const url = `/uploads/${filename}`;
+    // Return URL with organized path
+    const url = `/uploads/${relativePath}/${filename}`.replace(/\\/g, '/');
 
     return NextResponse.json(
       { 

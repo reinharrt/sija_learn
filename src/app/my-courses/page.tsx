@@ -1,3 +1,8 @@
+// ============================================
+// src/app/my-courses/page.tsx
+// My Courses Page - User's enrolled courses dashboard
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

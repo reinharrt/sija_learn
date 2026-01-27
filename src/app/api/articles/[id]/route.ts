@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/articles/[id]/route.ts
+// Article Detail API - Get, update, delete specific article
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';

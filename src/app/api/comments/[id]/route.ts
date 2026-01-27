@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/comments/[id]/route.ts
+// Comment Detail API - Get, update, delete specific comment
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { findCommentById, updateComment, deleteComment } from '@/models/Comment';

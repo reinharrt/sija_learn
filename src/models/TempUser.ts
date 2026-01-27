@@ -1,3 +1,8 @@
+// ============================================
+// src/models/TempUser.ts
+// Temp User Model - Temporary user for email verification
+// ============================================
+
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';
 import { TempUser } from '@/types';

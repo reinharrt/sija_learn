@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/enrollments/route.ts
+// Enrollments API - List user enrollments
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import { createEnrollment, getUserEnrollments, isUserEnrolled } from '@/models/Enrollment';

@@ -1,3 +1,8 @@
+// ============================================
+// src/app/articles/[slug]/edit/page.tsx
+// Article Edit Page - Edit existing article
+// ============================================
+
 'use client';
 
 import { useState, useEffect } from 'react';

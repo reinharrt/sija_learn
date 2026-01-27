@@ -1,3 +1,8 @@
+// ============================================
+// src/lib/utils.ts
+// General Utilities - Common helper functions
+// ============================================
+
 export function generateSlug(title: string): string {
   return title
     .toLowerCase()

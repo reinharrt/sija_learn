@@ -1,3 +1,8 @@
+// ============================================
+// src/components/common/Button.tsx
+// Button Component - Reusable button
+// ============================================
+
 'use client';
 
 interface ButtonProps {

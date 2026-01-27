@@ -1,3 +1,8 @@
+// ============================================
+// src/app/(auth)/login/page.tsx
+// Login Page - User login interface
+// ============================================
+
 'use client';
 
 import { useState } from 'react';

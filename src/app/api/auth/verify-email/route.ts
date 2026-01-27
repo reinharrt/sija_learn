@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/auth/verify-email/route.ts
+// Email Verification API - Verify user email
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { findTempUserByToken, deleteTempUser } from '@/models/TempUser';
 import { createUser, findUserByEmail } from '@/models/User';

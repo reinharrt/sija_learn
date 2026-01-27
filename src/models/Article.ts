@@ -1,3 +1,8 @@
+// ============================================
+// src/models/Article.ts
+// Article Model - Article database schema
+// ============================================
+
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';
 import { Article, ArticleCategory, ArticleType } from '@/types';

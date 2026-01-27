@@ -1,3 +1,13 @@
+// ============================================
+// src/app/page.tsx
+// Home Page - Landing page
+// ============================================
+
+// ============================================ 
+// src/app/page.tsx 
+// Home Page - Landing page 
+// ============================================ 
+ 
 'use client';
 
 import { useEffect, useState } from 'react';

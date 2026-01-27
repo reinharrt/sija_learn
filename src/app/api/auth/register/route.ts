@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/auth/register/route.ts
+// Register API - Handle user registration
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { hashPassword, generateVerificationToken } from '@/lib/auth';
 import { validateEmail, validatePassword } from '@/lib/utils';

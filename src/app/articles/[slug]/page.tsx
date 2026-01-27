@@ -1,3 +1,8 @@
+// ============================================
+// src/app/articles/[slug]/page.tsx
+// Article Detail Page - Display single article
+// ============================================
+
 'use client';
 
 import { useEffect, useState } from 'react';

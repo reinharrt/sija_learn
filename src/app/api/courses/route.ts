@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/courses/route.ts
+// Courses API - List and create courses
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';

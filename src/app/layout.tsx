@@ -1,3 +1,13 @@
+// ============================================
+// src/app/layout.tsx
+// Root Layout - Main application layout
+// ============================================
+
+// ============================================ 
+// src/app/layout.tsx 
+// Root Layout - Main application layout 
+// ============================================ 
+ 
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';

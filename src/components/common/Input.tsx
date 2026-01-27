@@ -1,3 +1,8 @@
+// ============================================
+// src/components/common/Input.tsx
+// Input Component - Reusable input field
+// ============================================
+
 'use client';
 
 interface InputProps {

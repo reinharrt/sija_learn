@@ -1,3 +1,8 @@
+// ============================================
+// src/components/article/ArticleDetail.tsx
+// Article Detail Component - Full article display
+// ============================================
+
 'use client';
 
 import Link from 'next/link';
@@ -29,20 +34,22 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
           </p>
         );
 
-      case BlockType.HEADING:
+      case BlockType.HEADING: {
         const level = block.metadata?.level || 2;
-        const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
-        const headingClasses = {
-          1: 'text-3xl font-bold mb-4',
-          2: 'text-2xl font-bold mb-3',
-          3: 'text-xl font-semibold mb-2',
-        }[level] || 'text-lg font-semibold mb-2';
+        const content = block.content;
         
-        return (
-          <HeadingTag className={headingClasses}>
-            {block.content}
-          </HeadingTag>
-        );
+        // Render heading based on level with proper typing
+        switch (level) {
+          case 1:
+            return <h1 className="text-3xl font-bold mb-4">{content}</h1>;
+          case 2:
+            return <h2 className="text-2xl font-bold mb-3">{content}</h2>;
+          case 3:
+            return <h3 className="text-xl font-semibold mb-2">{content}</h3>;
+          default:
+            return <h4 className="text-lg font-semibold mb-2">{content}</h4>;
+        }
+      }
 
       case BlockType.IMAGE:
         return (

@@ -1,3 +1,8 @@
+// ============================================
+// src/app/api/courses/[id]/route.ts
+// Course Detail API - Get, update, delete specific course
+// ============================================
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';

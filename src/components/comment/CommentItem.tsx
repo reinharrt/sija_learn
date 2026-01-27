@@ -1,3 +1,8 @@
+// ============================================
+// src/components/comment/CommentItem.tsx
+// Comment Item Component - Single comment display
+// ============================================
+
 'use client';
 
 import { useState } from 'react';
