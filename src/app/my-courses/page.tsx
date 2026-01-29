@@ -8,9 +8,24 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { Course } from '@/types';
 import { formatDate } from '@/lib/utils';
+import { 
+  BookOpen, 
+  Calendar, 
+  TrendingUp, 
+  Trophy, 
+  ExternalLink,
+  LogOut,
+  Search,
+  GraduationCap,
+  Clock,
+  CheckCircle2,
+  PlayCircle,
+  Library
+} from 'lucide-react';
 
 interface EnrollmentWithCourse {
   _id: string;
@@ -105,50 +120,100 @@ export default function MyCoursesPage() {
   };
 
   if (authLoading || loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-12 text-center">Loading...</div>;
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-sija-primary border-t-transparent"></div>
+        <p className="mt-4 font-bold text-sija-text uppercase tracking-wider">Loading...</p>
+      </div>
+    );
   }
 
   if (!user) {
     return null;
   }
 
+  const inProgressCount = enrollments.filter(e => calculateProgress(e) > 0 && calculateProgress(e) < 100).length;
+  const completedCount = enrollments.filter(e => calculateProgress(e) === 100).length;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold">Course Saya</h1>
-        <p className="text-gray-600 mt-2">Kelola course yang Anda ikuti</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="text-gray-600 text-sm font-medium">Total Course</div>
-          <div className="text-3xl font-bold text-gray-900 mt-2">{enrollments.length}</div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="text-gray-600 text-sm font-medium">Sedang Belajar</div>
-          <div className="text-3xl font-bold text-blue-600 mt-2">
-            {enrollments.filter(e => calculateProgress(e) > 0 && calculateProgress(e) < 100).length}
+      {/* Header - Neobrutalist */}
+      <div className="mb-8 bg-sija-surface border-2 border-sija-primary p-8 shadow-hard">
+        <div className="flex items-center gap-4 mb-3">
+          <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center">
+            <GraduationCap className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h1 className="font-display text-4xl md:text-5xl font-black text-sija-primary uppercase">
+              My Courses
+            </h1>
+            <p className="text-sija-text/70 font-bold mt-1">
+              Kelola dan lanjutkan pembelajaran Anda
+            </p>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="text-gray-600 text-sm font-medium">Selesai</div>
-          <div className="text-3xl font-bold text-green-600 mt-2">
-            {enrollments.filter(e => calculateProgress(e) === 100).length}
+      </div>
+
+      {/* Stats Grid - Neobrutalist */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Total Courses */}
+        <div className="bg-sija-light border-2 border-sija-primary p-6 shadow-hard-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center">
+              <Library className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-4xl font-black text-sija-primary">{enrollments.length}</div>
+          </div>
+          <div className="text-sm font-bold text-sija-text/70 uppercase tracking-wider">
+            Total Courses
+          </div>
+        </div>
+
+        {/* In Progress */}
+        <div className="bg-blue-100 border-2 border-blue-500 p-6 shadow-hard-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-blue-500 border-2 border-blue-700 flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-4xl font-black text-blue-700">{inProgressCount}</div>
+          </div>
+          <div className="text-sm font-bold text-blue-700 uppercase tracking-wider">
+            In Progress
+          </div>
+        </div>
+
+        {/* Completed */}
+        <div className="bg-green-100 border-2 border-green-500 p-6 shadow-hard-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-green-500 border-2 border-green-700 flex items-center justify-center">
+              <Trophy className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-4xl font-black text-green-700">{completedCount}</div>
+          </div>
+          <div className="text-sm font-bold text-green-700 uppercase tracking-wider">
+            Completed
           </div>
         </div>
       </div>
 
       {/* Courses List */}
       {enrollments.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="text-gray-400 text-5xl mb-4">📚</div>
-          <p className="text-gray-500 mb-4">Anda belum mendaftar course apapun</p>
+        <div className="bg-sija-surface border-2 border-sija-primary p-12 text-center shadow-hard">
+          <div className="w-24 h-24 bg-sija-light border-2 border-sija-primary mx-auto mb-6 flex items-center justify-center">
+            <BookOpen className="w-12 h-12 text-sija-primary" />
+          </div>
+          <p className="text-sija-text font-bold text-xl mb-6 uppercase tracking-wide">
+            Belum Ada Course
+          </p>
+          <p className="text-sija-text/60 font-medium mb-8 max-w-md mx-auto">
+            Anda belum mendaftar course apapun. Mulai perjalanan belajar Anda sekarang!
+          </p>
           <Link
             href="/courses"
-            className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase tracking-wider"
           >
-            Jelajahi Course
+            <Search className="w-5 h-5" />
+            Explore Courses
           </Link>
         </div>
       ) : (
@@ -158,62 +223,117 @@ export default function MyCoursesPage() {
             if (!course) return null;
 
             const progress = calculateProgress(enrollment);
+            const isCompleted = progress === 100;
+            const isInProgress = progress > 0 && progress < 100;
 
             return (
-              <div key={enrollment._id} className="bg-white rounded-lg shadow overflow-hidden">
+              <div 
+                key={enrollment._id} 
+                className={`bg-sija-surface border-2 shadow-hard overflow-hidden transition-all hover:shadow-hard-lg ${
+                  isCompleted 
+                    ? 'border-green-500' 
+                    : isInProgress 
+                    ? 'border-blue-500' 
+                    : 'border-sija-primary'
+                }`}
+              >
+                {/* Thumbnail */}
                 {course.thumbnail && (
-                  <img 
-                    src={course.thumbnail} 
-                    alt={course.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div className="relative w-full h-48 border-b-2 border-sija-primary bg-sija-light overflow-hidden">
+                    <Image 
+                      src={course.thumbnail} 
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                    />
+                    {/* Status Badge */}
+                    {isCompleted && (
+                      <div className="absolute top-3 right-3 bg-green-500 border-2 border-green-700 px-3 py-1 shadow-hard-sm">
+                        <div className="flex items-center gap-1">
+                          <Trophy className="w-4 h-4 text-white" />
+                          <span className="text-xs font-black text-white uppercase">Completed</span>
+                        </div>
+                      </div>
+                    )}
+                    {isInProgress && (
+                      <div className="absolute top-3 right-3 bg-blue-500 border-2 border-blue-700 px-3 py-1 shadow-hard-sm">
+                        <div className="flex items-center gap-1">
+                          <PlayCircle className="w-4 h-4 text-white" />
+                          <span className="text-xs font-black text-white uppercase">In Progress</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
                 
-                <div className="p-4">
+                <div className="p-6">
                   <Link
                     href={`/courses/${course.slug}`}
-                    className="text-lg font-semibold text-gray-900 hover:text-blue-600 block mb-2"
+                    className="font-display text-xl font-bold text-sija-primary hover:text-sija-dark block mb-2 transition-colors line-clamp-2"
                   >
                     {course.title}
                   </Link>
                   
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                  <p className="text-sija-text/70 text-sm font-medium mb-4 line-clamp-2">
                     {course.description}
                   </p>
 
-                  {/* Progress Bar */}
-                  <div className="mb-3">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs text-gray-600">Progress</span>
-                      <span className="text-xs font-medium text-gray-900">{progress}%</span>
+                  {/* Progress Bar - Neobrutalist */}
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs font-bold text-sija-text/60 uppercase tracking-wider">
+                        Progress
+                      </span>
+                      <span className="text-lg font-black text-sija-primary">
+                        {progress}%
+                      </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-sija-light border-2 border-sija-primary h-4 overflow-hidden">
                       <div
-                        className={`h-2 rounded-full ${
-                          progress === 100 ? 'bg-green-500' : 'bg-blue-600'
+                        className={`h-full transition-all duration-500 ${
+                          progress === 100 ? 'bg-green-500' : 'bg-blue-500'
                         }`}
                         style={{ width: `${progress}%` }}
                       ></div>
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center text-xs text-gray-500 mb-3">
-                    <span>📚 {course.articles?.length || 0} artikel</span>
-                    <span>📅 {formatDate(enrollment.enrolledAt)}</span>
+                  {/* Meta Info */}
+                  <div className="flex justify-between items-center text-xs font-bold text-sija-text/60 uppercase tracking-wider mb-4">
+                    <span className="flex items-center gap-1">
+                      <BookOpen className="w-3 h-3" />
+                      {course.articles?.length || 0} Modules
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {formatDate(enrollment.enrolledAt)}
+                    </span>
                   </div>
 
+                  {/* Action Buttons - Neobrutalist */}
                   <div className="flex gap-2">
                     <Link
                       href={`/courses/${course.slug}`}
-                      className="flex-1 bg-blue-600 text-white text-center px-3 py-2 rounded text-sm hover:bg-blue-700"
+                      className="flex-1 bg-sija-primary text-white text-center px-4 py-3 text-sm font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider flex items-center justify-center gap-2"
                     >
-                      Lanjutkan
+                      {isCompleted ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          Review
+                        </>
+                      ) : (
+                        <>
+                          <PlayCircle className="w-4 h-4" />
+                          Continue
+                        </>
+                      )}
                     </Link>
                     <button
                       onClick={() => handleUnenroll(course._id!.toString(), course.title)}
-                      className="bg-red-100 text-red-600 px-3 py-2 rounded text-sm hover:bg-red-200"
+                      className="bg-red-100 text-red-600 px-4 py-3 text-sm font-bold border-2 border-red-500 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center"
+                      title="Leave Course"
                     >
-                      Keluar
+                      <LogOut className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

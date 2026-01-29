@@ -1,22 +1,26 @@
 // ============================================
 // src/app/layout.tsx
-// Root Layout - Main application layout
+// Root Layout - Neobrutalist Theme
 // ============================================
 
-// ============================================ 
-// src/app/layout.tsx 
-// Root Layout - Main application layout 
-// ============================================ 
- 
 import type { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
+// Configure Poppins font
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'SIJA Learn - Platform Pembelajaran SIJA',
-  description: 'Platform repositori materi digital dan pusat informasi untuk siswa jurusan SIJA',
+  title: 'SIJA Learn - Digital Learning Hub',
+  description: 'Platform repositori materi digital dan pusat informasi untuk siswa jurusan Sistem Informatika, Jaringan dan Aplikasi - SMKN 1 Cimahi',
 };
 
 export default function RootLayout({
@@ -25,11 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
-      <body className="flex flex-col min-h-screen bg-gray-50">
+    <html lang="id" className={`${poppins.variable} scroll-smooth`}>
+      <body className="min-h-screen bg-grid-pattern font-poppins antialiased selection:bg-sija-primary selection:text-white">
         <AuthProvider>
           <Header />
-          <main className="flex-grow">
+          <main className="min-h-screen pt-24">
             {children}
           </main>
           <Footer />

@@ -1,12 +1,14 @@
 // ============================================
 // src/app/api/enrollments/route.ts
-// Enrollments API - List user enrollments
+// Enrollments API - List enrollments and enroll to course
+// FIXED: Correct type handling for courseMap
 // ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getDatabase } from '@/lib/mongodb';
 import { getUserFromRequest } from '@/lib/auth';
-import { createEnrollment, getUserEnrollments, isUserEnrolled } from '@/models/Enrollment';
-import { incrementEnrolled } from '@/models/Course';
+import { Course, User, Enrollment } from '@/types';
+import { ObjectId } from 'mongodb';
 
 // GET /api/enrollments - Get user's enrollments
 export async function GET(request: NextRequest) {
@@ -19,20 +21,82 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const db = await getDatabase();
     const { searchParams } = new URL(request.url);
-    const courseId = searchParams.get('courseId');
+    
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
 
-    // Check if enrolled in specific course
-    if (courseId) {
-      const enrolled = await isUserEnrolled(user.id, courseId);
-      return NextResponse.json({ enrolled }, { status: 200 });
-    }
+    const enrollmentCollection = db.collection<Enrollment>('enrollments');
+    const coursesCollection = db.collection<Course>('courses');
+    const usersCollection = db.collection<User>('users');
+    
+    const enrollments = await enrollmentCollection
+      .find({ userId: new ObjectId(user.id) })
+      .sort({ enrolledAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
 
-    // Get all user enrollments
-    const enrollments = await getUserEnrollments(user.id);
+    const total = await enrollmentCollection.countDocuments({ 
+      userId: new ObjectId(user.id) 
+    });
+
+    // Get course IDs from enrollments
+    const courseIds = enrollments.map((e: Enrollment) => e.courseId);
+    
+    const courses = await coursesCollection
+      .find({ _id: { $in: courseIds } })
+      .toArray();
+
+    // Populate creator information
+    const creatorIds = courses.map((c: Course) => c.creator).filter(Boolean);
+    const creators = await usersCollection
+      .find(
+        { _id: { $in: creatorIds } },
+        { projection: { password: 0 } }
+      )
+      .toArray();
+
+    const creatorMap = new Map<string, User>(
+      creators.map((creator: User) => [creator._id!.toString(), creator])
+    );
+
+    // Create course map with populated creators
+    const courseMap = new Map<string, any>(
+      courses.map((course: Course) => {
+        const creator = creatorMap.get(course.creator.toString());
+        return [
+          course._id!.toString(),
+          {
+            ...course,
+            creator: creator || null
+          }
+        ];
+      })
+    );
+
+    // Return enrollments with populated course data
+    const enrollmentsWithCourse = enrollments.map((enrollment: Enrollment) => ({
+      _id: enrollment._id,
+      userId: enrollment.userId,
+      courseId: enrollment.courseId,
+      enrolledAt: enrollment.enrolledAt,
+      progress: enrollment.progress,
+      course: courseMap.get(enrollment.courseId.toString()) || null
+    }));
 
     return NextResponse.json(
-      { enrollments },
+      {
+        enrollments: enrollmentsWithCourse,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
       { status: 200 }
     );
   } catch (error) {
@@ -44,49 +108,78 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/enrollments - Enroll in a course
+// POST /api/enrollments - Enroll to a course
 export async function POST(request: NextRequest) {
   try {
     const user = getUserFromRequest(request);
     if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized - Silakan login terlebih dahulu' },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const { courseId } = await request.json();
+    const db = await getDatabase();
+    const body = await request.json();
+    const { courseId } = body;
 
     if (!courseId) {
       return NextResponse.json(
-        { error: 'courseId harus diisi' },
+        { error: 'Course ID wajib diisi' },
+        { status: 400 }
+      );
+    }
+
+    const coursesCollection = db.collection<Course>('courses');
+    const enrollmentCollection = db.collection<Enrollment>('enrollments');
+
+    // Check if course exists
+    const course = await coursesCollection.findOne({ _id: new ObjectId(courseId) });
+    if (!course) {
+      return NextResponse.json(
+        { error: 'Course tidak ditemukan' },
+        { status: 404 }
+      );
+    }
+
+    // Check if already enrolled
+    const existingEnrollment = await enrollmentCollection.findOne({
+      userId: new ObjectId(user.id),
+      courseId: new ObjectId(courseId)
+    });
+
+    if (existingEnrollment) {
+      return NextResponse.json(
+        { error: 'Anda sudah terdaftar di course ini' },
         { status: 400 }
       );
     }
 
     // Create enrollment
-    const enrollmentId = await createEnrollment(user.id, courseId);
+    const enrollmentData: Omit<Enrollment, '_id'> = {
+      userId: new ObjectId(user.id),
+      courseId: new ObjectId(courseId),
+      enrolledAt: new Date(),
+      progress: {
+        completedArticles: [],
+        lastAccessedAt: new Date()
+      }
+    };
+
+    await enrollmentCollection.insertOne(enrollmentData as Enrollment);
 
     // Increment enrolled count
-    await incrementEnrolled(courseId);
+    await coursesCollection.updateOne(
+      { _id: new ObjectId(courseId) },
+      { $inc: { enrolledCount: 1 } }
+    );
 
     return NextResponse.json(
-      { 
-        message: 'Berhasil mendaftar course',
-        enrollmentId: enrollmentId.toString()
-      },
+      { message: 'Berhasil mendaftar ke course' },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error('Enroll error:', error);
-    
-    if (error.message === 'Anda sudah terdaftar di course ini') {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
-
+  } catch (error) {
+    console.error('Create enrollment error:', error);
     return NextResponse.json(
       { error: 'Terjadi kesalahan server' },
       { status: 500 }

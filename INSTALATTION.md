@@ -28,7 +28,7 @@ cd sija-learn
 tar -xzf sija-learn.tar.gz
 cd sija-learn
 ```
-
+e
 ## 🔧 Step 2: Install Dependencies
 
 ```bash

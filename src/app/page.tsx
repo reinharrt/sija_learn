@@ -1,13 +1,8 @@
 // ============================================
 // src/app/page.tsx
-// Home Page - Landing page
+// Home Page - Neobrutalist Landing Page
 // ============================================
 
-// ============================================ 
-// src/app/page.tsx 
-// Home Page - Landing page 
-// ============================================ 
- 
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -15,6 +10,7 @@ import Link from 'next/link';
 import ArticleCard from '@/components/article/ArticleCard';
 import CourseCard from '@/components/course/CourseCard';
 import { Article, Course } from '@/types';
+import { ArrowRight, MousePointer2, Box, Loader2 } from 'lucide-react';
 
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -35,110 +31,149 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <section className="text-center mb-16 py-12">
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">
-          SIJA Learn
-        </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Platform repositori materi digital dan pusat informasi untuk siswa jurusan 
-          Sistem Informatika, Jaringan dan Aplikasi
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Link 
-            href="/articles"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Jelajahi Artikel
-          </Link>
-          <Link 
-            href="/courses"
-            className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Lihat Course
-          </Link>
+    <div className="min-h-screen">
+      {/* Hero Section - Adjusted spacing */}
+      <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 px-6 overflow-hidden border-b-2 border-sija-primary bg-sija-surface transition-colors duration-300">
+        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 flex flex-col items-start">
+            <div className="inline-block bg-sija-light border-2 border-sija-primary px-4 py-2 mb-6 shadow-hard-sm">
+              <span className="font-display font-bold text-sija-primary uppercase tracking-wider text-sm">
+                Open Registration • Gen. 14
+              </span>
+            </div>
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-sija-primary leading-[0.9] mb-6">
+              CREATE <br/>
+              <span className="text-outline-blue">CONNECT</span> <br/>
+              COMPILE
+            </h1>
+            <p className="max-w-xl text-base md:text-lg text-sija-text font-medium mb-8 leading-relaxed border-l-4 border-sija-primary pl-6">
+              The digital HQ for <span className="font-bold text-sija-primary">SIJA SMKN 1 Cimahi</span>. 
+              Where code meets creativity and students become engineers.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <Link href="/courses" className="flex items-center justify-center gap-2 px-8 py-4 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase tracking-wider text-sm">
+                Start Learning
+                <ArrowRight size={20} strokeWidth={3} />
+              </Link>
+              <Link href="/articles" className="flex items-center justify-center gap-2 px-8 py-4 bg-sija-surface text-sija-primary font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm">
+                Explore Articles
+              </Link>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 relative hidden lg:block h-full min-h-[400px]">
+            <div className="absolute inset-0 bg-sija-light border-2 border-sija-primary shadow-hard flex items-center justify-center overflow-hidden transition-colors duration-300">
+              <div className="absolute top-4 left-4 w-12 h-12 border-t-4 border-l-4 border-sija-primary"></div>
+              <div className="absolute bottom-4 right-4 w-12 h-12 border-b-4 border-r-4 border-sija-primary"></div>
+              <div className="text-center p-8">
+                <div className="text-9xl font-black text-sija-primary/10 dark:text-sija-primary/20 select-none transition-colors duration-300">SIJA</div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-sija-surface border-2 border-sija-primary p-6 shadow-hard rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <MousePointer2 size={48} className="text-sija-primary mx-auto mb-2" />
+                    <div className="font-display font-bold text-xl text-sija-text">Interactive<br/>Learning</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="mb-12">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Artikel Terbaru
+      {/* Courses Section - Adjusted spacing */}
+      <section className="py-16 md:py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b-2 border-sija-text/10 pb-6">
+            <div className="relative">
+              <div className="absolute -left-6 top-1 w-2 h-full bg-sija-primary"></div>
+              <h2 className="font-display text-3xl md:text-4xl font-black text-sija-text mb-2 uppercase">
+                Curriculum
+              </h2>
+              <p className="text-base md:text-lg text-sija-text/60 font-medium max-w-lg">
+                Industry-standard modules designed to build real-world engineering skills.
+              </p>
+            </div>
+            <Link href="/courses" className="group flex items-center gap-2 px-6 py-3 border-2 border-sija-text font-bold text-sija-text hover:bg-sija-text hover:text-sija-surface transition-all uppercase tracking-wider text-sm">
+              View All <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin text-sija-primary mx-auto mb-3" />
+              <p className="text-sija-text font-bold uppercase tracking-wider">Loading courses...</p>
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="text-center py-12 bg-sija-surface border-2 border-sija-primary">
+              <p className="text-sija-text font-bold uppercase tracking-wider">Belum ada course</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {courses.map((course) => (
+                <CourseCard key={course._id?.toString()} course={course} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Articles Section - Adjusted spacing */}
+      <section className="py-16 md:py-20 px-6 bg-sija-surface border-y-2 border-sija-primary transition-colors duration-300">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between mb-10 gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 mb-3 text-sija-primary">
+                <Box size={20} strokeWidth={2.5} />
+                <span className="font-mono font-bold uppercase tracking-wider text-sm">Knowledge Base</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-black text-sija-text uppercase">
+                Latest Insights
+              </h2>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin text-sija-primary mx-auto mb-3" />
+              <p className="text-sija-text font-bold uppercase tracking-wider">Loading articles...</p>
+            </div>
+          ) : articles.length === 0 ? (
+            <div className="text-center py-12 bg-sija-light border-2 border-sija-primary">
+              <p className="text-sija-text font-bold uppercase tracking-wider">Belum ada artikel</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              {articles.slice(0, 3).map((article) => (
+                <ArticleCard key={article._id?.toString()} article={article} />
+              ))}
+            </div>
+          )}
+          
+          <div className="mt-10 text-center">
+            <Link href="/articles" className="inline-flex items-center gap-2 font-display text-lg font-bold text-sija-text border-b-4 border-sija-primary hover:text-sija-primary transition-colors pb-1 uppercase tracking-wider">
+              View Archive <ArrowRight size={20} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Adjusted spacing */}
+      <section className="py-16 md:py-20 px-6 bg-sija-primary text-white">
+        <div className="max-w-5xl mx-auto text-center border-2 border-white/20 p-8 md:p-12 bg-sija-primary relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          <h2 className="relative font-display text-3xl md:text-5xl font-black mb-6 leading-tight uppercase">
+            Ready to Debug <br/> Your Future?
           </h2>
-          <Link 
-            href="/articles"
-            className="text-blue-600 hover:text-blue-800"
-          >
-            Lihat Semua →
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading...</div>
-        ) : articles.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            Belum ada artikel
+          <p className="relative text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto font-medium">
+            Join the SIJA SMKN 1 Cimahi ecosystem. Access resources, connect with alumni, and ship code.
+          </p>
+          <div className="relative flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register" className="px-8 py-4 bg-white text-sija-primary font-bold text-base border-2 border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider">
+              Apply for Access
+            </Link>
+            <Link href="/login" className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold text-base hover:bg-white/10 transition-colors uppercase tracking-wider">
+              Student Portal
+            </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <ArticleCard key={article._id?.toString()} article={article} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Course Populer
-          </h2>
-          <Link 
-            href="/courses"
-            className="text-blue-600 hover:text-blue-800"
-          >
-            Lihat Semua →
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading...</div>
-        ) : courses.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            Belum ada course
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {courses.map((course) => (
-              <CourseCard key={course._id?.toString()} course={course} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="mt-16 bg-blue-50 rounded-lg p-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Kategori Artikel
-        </h2>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link 
-            href="/articles?category=pelajaran"
-            className="bg-white px-6 py-3 rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            Pelajaran
-          </Link>
-          <Link 
-            href="/articles?category=tech"
-            className="bg-white px-6 py-3 rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            Tech
-          </Link>
-          <Link 
-            href="/articles?category=tutorial"
-            className="bg-white px-6 py-3 rounded-lg shadow hover:shadow-md transition-shadow"
-          >
-            Tutorial
-          </Link>
         </div>
       </section>
     </div>

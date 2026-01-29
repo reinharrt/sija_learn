@@ -1,125 +1,270 @@
 // ============================================
-// src/app/articles/[slug]/page.tsx
-// Article Detail Page - Display single article
+// src/app/articles/[slug]/page.tsx  
+// Article Detail Page - WITH NEOBRUTALIST STYLE
 // ============================================
 
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ArticleDetail from '@/components/article/ArticleDetail';
+import CourseArticleReader from '@/components/course/CourseArticleReader';
 import CommentItem from '@/components/comment/CommentItem';
 import { Article, Comment, ArticleType } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { Lock, BookOpen, GraduationCap, Home, Search } from 'lucide-react';
+
+interface PageState {
+  article: Article | null;
+  loading: boolean;
+  accessDenied: boolean;
+}
+
+interface CourseContext {
+  courseId: string;
+  courseSlug: string;
+  allArticles: Article[];
+  completedArticleIds: string[];
+}
 
 export default function ArticleDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const slug = params.slug as string;
-  const { user } = useAuth();
+  const courseSlugParam = searchParams.get('course'); // ?course=slug
+  const { user, loading: authLoading } = useAuth();
   
-  const [article, setArticle] = useState<Article | null>(null);
+  const [pageState, setPageState] = useState<PageState>({
+    article: null,
+    loading: true,
+    accessDenied: false,
+  });
+  
+  const [courseContext, setCourseContext] = useState<CourseContext | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [accessDenied, setAccessDenied] = useState(false);
-  const [checkingAccess, setCheckingAccess] = useState(true);
+
+  // Check if opened from course
+  const isInCourseMode = !!courseSlugParam;
 
   useEffect(() => {
-    loadArticleAndCheckAccess();
-  }, [slug, user]);
+    if (authLoading) {
+      console.log('⏳ Waiting for auth...');
+      return;
+    }
+    
+    console.log('✅ Auth ready, loading article...');
+    loadArticle();
+  }, [slug, user, authLoading]);
 
-  const loadArticleAndCheckAccess = async () => {
-    setLoading(true);
-    setCheckingAccess(true);
+  // Load course context if in course mode
+  useEffect(() => {
+    if (isInCourseMode && courseSlugParam && user && pageState.article) {
+      loadCourseContext(courseSlugParam);
+    }
+  }, [isInCourseMode, courseSlugParam, user, pageState.article]);
+
+  const loadArticle = async () => {
+    setPageState({ article: null, loading: true, accessDenied: false });
     
     try {
-      const res = await fetch(`/api/articles/${slug}?view=true`);
-      const data = await res.json();
+      const viewedKey = `viewed-article-${slug}`;
+      const hasViewed = checkRecentView(viewedKey);
+      
+      const viewParam = hasViewed ? '' : '?view=true';
+      const res = await fetch(`/api/articles/${slug}${viewParam}`);
       
       if (!res.ok) {
-        setLoading(false);
-        setCheckingAccess(false);
+        setPageState({ article: null, loading: false, accessDenied: false });
         return;
       }
 
-      setArticle(data);
-
-      // 🆕 Check if article is COURSE_ONLY
-      if (data.type === ArticleType.COURSE_ONLY) {
-        // Check if user has access
-        const canAccess = await checkArticleAccess(data);
-        
-        if (!canAccess) {
-          setAccessDenied(true);
-          setCheckingAccess(false);
-          setLoading(false);
-          return;
-        }
+      const data = await res.json();
+      
+      if (!hasViewed) {
+        markAsViewed(viewedKey);
       }
 
-      // Load comments if user has access
-      if (data._id) {
+      // Check access for COURSE_ONLY
+      if (data.type === ArticleType.COURSE_ONLY) {
+        console.log('📌 COURSE_ONLY - checking access...');
+        
+        const hasAccess = await checkArticleAccess(data);
+        
+        if (!hasAccess) {
+          console.log('❌ DENIED');
+          setPageState({
+            article: data,
+            loading: false,
+            accessDenied: true,
+          });
+          return;
+        }
+        
+        console.log('✅ GRANTED');
+      }
+
+      setPageState({
+        article: data,
+        loading: false,
+        accessDenied: false,
+      });
+
+      // Load comments (only if not in course mode)
+      if (data._id && !isInCourseMode) {
         const commentsRes = await fetch(`/api/comments?articleId=${data._id}`);
         const commentsData = await commentsRes.json();
-        if (commentsData?.comments) setComments(commentsData.comments);
+        if (commentsData?.comments) {
+          setComments(commentsData.comments);
+        }
       }
     } catch (error) {
       console.error('Load error:', error);
-    } finally {
-      setLoading(false);
-      setCheckingAccess(false);
+      setPageState({ article: null, loading: false, accessDenied: false });
+    }
+  };
+
+  const loadCourseContext = async (courseSlug: string) => {
+    try {
+      // Load course details
+      const courseRes = await fetch(`/api/courses/${courseSlug}`);
+      if (!courseRes.ok) return;
+      
+      const course = await courseRes.json();
+      
+      // Load all articles in course
+      const articlePromises = (course.articles || []).map((articleId: any) =>
+        fetch(`/api/articles/${articleId}`).then((r) => r.json())
+      );
+      const articles = await Promise.all(articlePromises);
+      
+      // Load enrollment progress
+      const progressRes = await fetch(`/api/enrollments/${course._id}/progress`, {
+        headers: getAuthHeaders(),
+      });
+      
+      let completedIds: string[] = [];
+      if (progressRes.ok) {
+        const progressData = await progressRes.json();
+        completedIds = progressData.progress?.completedArticles || [];
+      }
+
+      setCourseContext({
+        courseId: course._id,
+        courseSlug: course.slug,
+        allArticles: articles.filter((a) => a && !a.error),
+        completedArticleIds: completedIds,
+      });
+    } catch (error) {
+      console.error('Load course context error:', error);
+    }
+  };
+
+  const checkRecentView = (key: string): boolean => {
+    if (typeof window === 'undefined') return false;
+    
+    try {
+      const viewData = localStorage.getItem(key);
+      if (!viewData) return false;
+
+      const { timestamp } = JSON.parse(viewData);
+      const oneHour = 60 * 60 * 1000;
+      return (Date.now() - timestamp) < oneHour;
+    } catch {
+      return false;
+    }
+  };
+
+  const markAsViewed = (key: string): void => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        timestamp: Date.now(),
+        slug: slug,
+      }));
+    } catch (error) {
+      console.error('Mark viewed error:', error);
     }
   };
 
   const checkArticleAccess = async (article: Article): Promise<boolean> => {
-    // ✅ FIX: Not logged in = no access to COURSE_ONLY
     if (!user) {
+      console.log('❌ No user');
       return false;
     }
 
-    // ✅ FIX: Author can ALWAYS access their own articles (even COURSE_ONLY)
-    if (article.author.toString() === user.id) {
+    const normalizeId = (id: any): string => {
+      if (!id) return '';
+      if (typeof id === 'string') return id;
+      if (id._id) return id._id.toString();
+      if (id.toString) return id.toString();
+      return String(id);
+    };
+
+    const authorId = normalizeId(article.author);
+    const userId = normalizeId(user.id);
+
+    if (authorId === userId) {
+      console.log('✅ AUTHOR');
       return true;
     }
 
-    // ✅ FIX: Admin can access everything
     if (user.role === 'admin') {
+      console.log('✅ ADMIN');
       return true;
     }
 
-    // ✅ Check if user is enrolled in any course that contains this article
+    console.log('🔍 Checking enrollments...');
     try {
-      const enrollmentsRes = await fetch('/api/enrollments', {
+      const enrollRes = await fetch('/api/enrollments', {
         headers: getAuthHeaders(),
       });
-      const enrollmentsData = await enrollmentsRes.json();
-      const enrollments = enrollmentsData.enrollments || [];
+      
+      if (!enrollRes.ok) {
+        console.log('❌ Enroll fetch failed');
+        return false;
+      }
 
-      // Check each enrolled course to see if it contains this article
+      const enrollData = await enrollRes.json();
+      const enrollments = enrollData.enrollments || [];
+
+      console.log(`Found ${enrollments.length} enrollments`);
+
       for (const enrollment of enrollments) {
         const courseRes = await fetch(`/api/courses/${enrollment.courseId}`);
+        if (!courseRes.ok) continue;
+        
         const course = await courseRes.json();
         
-        if (course.articles && course.articles.some((id: any) => id.toString() === article._id?.toString())) {
-          return true; // User is enrolled in a course that has this article
+        if (course.articles && Array.isArray(course.articles)) {
+          const hasArticle = course.articles.some((aid: any) => 
+            normalizeId(aid) === normalizeId(article._id)
+          );
+
+          if (hasArticle) {
+            console.log(`✅ In course: ${course.title}`);
+            return true;
+          }
         }
       }
 
-      return false; // Not enrolled in any course with this article
+      console.log('❌ Not in any course');
+      return false;
     } catch (error) {
-      console.error('Check access error:', error);
+      console.error('❌ Enroll error:', error);
       return false;
     }
   };
 
   const loadComments = async () => {
-    if (!article) return;
+    if (!pageState.article) return;
     
     try {
-      const response = await fetch(`/api/comments?articleId=${article._id}`);
-      const data = await response.json();
+      const res = await fetch(`/api/comments?articleId=${pageState.article._id}`);
+      const data = await res.json();
       if (data?.comments) setComments(data.comments);
     } catch (error) {
       console.error('Load comments error:', error);
@@ -128,24 +273,24 @@ export default function ArticleDetailPage() {
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !article) return;
+    if (!newComment.trim() || !pageState.article) return;
 
     setSubmitting(true);
     try {
-      const response = await fetch('/api/comments', {
+      const res = await fetch('/api/comments', {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({
-          articleId: article._id,
+          articleId: pageState.article._id,
           content: newComment,
         }),
       });
 
-      if (response.ok) {
+      if (res.ok) {
         setNewComment('');
         await loadComments();
       } else {
-        const data = await response.json();
+        const data = await res.json();
         alert(data.error || 'Gagal mengirim komentar');
       }
     } catch (error) {
@@ -156,69 +301,113 @@ export default function ArticleDetailPage() {
     }
   };
 
-  if (loading || checkingAccess) {
+  const handleArticleComplete = () => {
+    // Reload course context to update completion status
+    if (courseSlugParam) {
+      loadCourseContext(courseSlugParam);
+    }
+  };
+
+  const { article, loading, accessDenied } = pageState;
+
+  if (authLoading || loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-sija-primary mx-auto mb-4"></div>
+        <p className="text-sija-text font-bold uppercase tracking-wider">Loading...</p>
       </div>
     );
   }
 
-  // 🆕 Access Denied Screen
-  if (accessDenied && article) {
+  if (!article) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center bg-sija-surface border-4 border-sija-primary shadow-hard p-12">
+          <div className="text-8xl mb-6">❌</div>
+          <h1 className="font-display text-3xl font-black text-sija-text mb-6 uppercase">
+            Artikel Tidak Ditemukan
+          </h1>
+          <button
+            onClick={() => router.push('/articles')}
+            className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+          >
+            <Home className="w-5 h-5" />
+            Kembali
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (accessDenied) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-8 text-center">
-          <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Artikel Terkunci
-          </h1>
-          <p className="text-gray-700 mb-2">
-            <strong>{article.title}</strong>
-          </p>
-          <p className="text-gray-600 mb-6">
-            Artikel ini hanya bisa diakses melalui course yang sudah Anda daftar.
-          </p>
+        <div className="bg-sija-light border-4 border-sija-primary shadow-hard p-8">
+          <div className="text-center mb-8">
+            <div className="inline-block bg-sija-primary p-6 border-4 border-sija-primary shadow-hard mb-6">
+              <Lock className="w-16 h-16 text-white" />
+            </div>
+            <h1 className="font-display text-3xl font-black text-sija-primary mb-4 uppercase">
+              Artikel Terkunci
+            </h1>
+            <p className="text-sija-text font-bold text-xl mb-2">
+              {article.title}
+            </p>
+            <p className="text-sija-text font-medium">
+              Artikel ini hanya bisa diakses melalui course yang sudah Anda daftar.
+            </p>
+          </div>
           
-          <div className="bg-white rounded-lg p-6 mb-6 text-left">
-            <h3 className="font-semibold text-gray-900 mb-2">Cara Mengakses:</h3>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700">
-              <li>Cari course yang berisi artikel ini</li>
-              <li>Daftar course tersebut</li>
-              <li>Akses artikel melalui materi course</li>
+          <div className="bg-white border-4 border-sija-text shadow-hard p-6 mb-8">
+            <h3 className="font-display font-black text-sija-text mb-4 uppercase text-lg">Cara Mengakses:</h3>
+            <ol className="space-y-3">
+              <li className="flex items-start gap-3">
+                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm">1</span>
+                <span className="text-sija-text font-medium flex-1 pt-1">Cari course yang berisi artikel ini</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm">2</span>
+                <span className="text-sija-text font-medium flex-1 pt-1">Daftar course tersebut</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm">3</span>
+                <span className="text-sija-text font-medium flex-1 pt-1">Akses artikel melalui materi course</span>
+              </li>
             </ol>
           </div>
 
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
             {user ? (
               <>
                 <button
                   onClick={() => router.push('/courses')}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
-                  🔍 Jelajahi Course
+                  <Search className="w-5 h-5" />
+                  Jelajahi Course
                 </button>
                 <button
                   onClick={() => router.push('/my-courses')}
-                  className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300"
+                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-2 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
-                  📚 Course Saya
+                  <BookOpen className="w-5 h-5" />
+                  Course Saya
                 </button>
               </>
             ) : (
               <>
                 <button
                   onClick={() => router.push('/login')}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
-                  🔐 Login untuk Lanjut
+                  🔐 Login
                 </button>
                 <button
                   onClick={() => router.push('/courses')}
-                  className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300"
+                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-2 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
-                  🔍 Lihat Course
+                  <Search className="w-5 h-5" />
+                  Lihat Course
                 </button>
               </>
             )}
@@ -228,27 +417,29 @@ export default function ArticleDetailPage() {
     );
   }
 
-  if (!article) {
+  // COURSE MODE: Show CourseArticleReader
+  if (isInCourseMode && courseContext) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="text-6xl mb-4">❌</div>
-        <h1 className="text-2xl font-bold mb-4">Artikel tidak ditemukan</h1>
-        <button
-          onClick={() => router.push('/articles')}
-          className="text-blue-600 hover:text-blue-800"
-        >
-          ← Kembali ke Artikel
-        </button>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <CourseArticleReader
+          article={article}
+          courseId={courseContext.courseId}
+          courseSlug={courseContext.courseSlug}
+          allArticles={courseContext.allArticles}
+          completedArticleIds={courseContext.completedArticleIds}
+          onArticleComplete={handleArticleComplete}
+        />
       </div>
     );
   }
 
+  // STANDALONE MODE: Show normal article with comments
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <ArticleDetail article={article} />
 
-      <div className="max-w-4xl mx-auto mt-12 border-t pt-8">
-        <h2 className="text-2xl font-bold mb-6">
+      <div className="max-w-4xl mx-auto mt-12 border-t-4 border-sija-primary pt-8">
+        <h2 className="font-display text-3xl font-black text-sija-text mb-6 uppercase">
           Komentar ({comments.length})
         </h2>
 
@@ -257,8 +448,8 @@ export default function ArticleDetailPage() {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
+              className="w-full p-4 border-4 border-sija-primary shadow-hard focus:outline-none focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] transition-all font-medium"
+              rows={4}
               placeholder="Tulis komentar..."
               required
               disabled={submitting}
@@ -266,25 +457,32 @@ export default function ArticleDetailPage() {
             <button
               type="submit"
               disabled={submitting || !newComment.trim()}
-              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-4 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
             >
               {submitting ? 'Mengirim...' : 'Kirim Komentar'}
             </button>
           </form>
         ) : (
-          <div className="mb-8 p-4 bg-gray-50 rounded text-center">
-            <a href="/login" className="text-blue-600 hover:text-blue-800 font-medium">
+          <div className="mb-8 p-6 bg-sija-light border-4 border-sija-primary shadow-hard text-center">
+            <p className="text-sija-text font-bold mb-4 uppercase tracking-wider">
+              Login untuk memberikan komentar
+            </p>
+            <a 
+              href="/login" 
+              className="inline-block bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+            >
               Login
-            </a>{' '}
-            untuk memberikan komentar
+            </a>
           </div>
         )}
 
         <div className="space-y-4">
           {comments.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
-              Belum ada komentar. Jadilah yang pertama berkomentar!
-            </p>
+            <div className="text-center py-12 bg-sija-light border-4 border-sija-primary shadow-hard">
+              <p className="text-sija-text font-bold uppercase tracking-wider">
+                Belum ada komentar. Jadilah yang pertama!
+              </p>
+            </div>
           ) : (
             comments.map((comment) => (
               <CommentItem

@@ -1,45 +1,86 @@
 // ============================================
 // src/app/courses/[slug]/page.tsx
-// Course Detail Page - Display single course
+// Course Detail Page - WITH PROPER ENROLLMENT STATE
 // ============================================
 
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import CourseDetail from '@/components/course/CourseDetail';
-import { Course, Article } from '@/types';
+import { Course } from '@/types';
+import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 
 export default function CourseDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params.slug as string;
+  const { user } = useAuth();
   
   const [course, setCourse] = useState<Course | null>(null);
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [isEnrolled, setIsEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [checkingEnrollment, setCheckingEnrollment] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/courses/${slug}`)
-      .then(res => res.json())
-      .then(async (courseData) => {
-        setCourse(courseData);
-        
-        if (courseData.articles && courseData.articles.length > 0) {
-          const articlesPromises = courseData.articles.map((articleId: any) =>
-            fetch(`/api/articles/${articleId}`).then(r => r.json())
-          );
-          const articlesData = await Promise.all(articlesPromises);
-          setArticles(articlesData.filter(a => a._id));
-        }
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    loadCourse();
   }, [slug]);
+
+  useEffect(() => {
+    if (user && course?._id) {
+      checkEnrollment();
+    } else if (!user) {
+      setIsEnrolled(false);
+      setCheckingEnrollment(false);
+    }
+  }, [user, course?._id]);
+
+  const loadCourse = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/courses/${slug}`);
+      const data = await res.json();
+      
+      if (res.ok) {
+        setCourse(data);
+      } else {
+        console.error('Course not found');
+      }
+    } catch (error) {
+      console.error('Load course error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkEnrollment = async () => {
+    if (!course?._id || !user) return;
+
+    setCheckingEnrollment(true);
+    try {
+      const res = await fetch('/api/enrollments', {
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const enrolled = data.enrollments?.some(
+          (e: any) => e.courseId.toString() === course._id?.toString()
+        );
+        setIsEnrolled(enrolled);
+      }
+    } catch (error) {
+      console.error('Check enrollment error:', error);
+    } finally {
+      setCheckingEnrollment(false);
+    }
+  };
 
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        Loading...
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading course...</p>
       </div>
     );
   }
@@ -47,14 +88,24 @@ export default function CourseDetailPage() {
   if (!course) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        Course tidak ditemukan
+        <div className="text-6xl mb-4">❌</div>
+        <h1 className="text-2xl font-bold mb-4">Course tidak ditemukan</h1>
+        <button
+          onClick={() => router.push('/courses')}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          ← Kembali ke Course
+        </button>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <CourseDetail course={course} articles={articles} />
+      <CourseDetail 
+        course={course} 
+        initialIsEnrolled={isEnrolled}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 // ============================================
 // src/components/comment/CommentItem.tsx
-// Comment Item Component - Single comment display
+// Comment Item Component - FULL LUCIDE ICONS + Neobrutalist
 // ============================================
 
 'use client';
@@ -9,6 +9,16 @@ import { useState } from 'react';
 import { Comment } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
+import { 
+  Edit2, 
+  Trash2, 
+  Save, 
+  X, 
+  Loader2, 
+  AlertCircle,
+  Calendar,
+  Clock
+} from 'lucide-react';
 
 interface CommentItemProps {
   comment: Comment;
@@ -92,35 +102,52 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
   };
 
   return (
-    <div className="border rounded-lg p-4 bg-white">
+    <div className="border-2 border-gray-900 p-4 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
       {isEditing ? (
         // Edit Mode
         <div>
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-medium"
             rows={3}
             disabled={submitting}
+            placeholder="Tulis komentar..."
           />
           
           {error && (
-            <p className="text-red-500 text-sm mt-2">{error}</p>
+            <div className="bg-red-50 border-2 border-red-600 px-3 py-2 mt-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-red-700 text-sm font-bold">{error}</p>
+              </div>
+            </div>
           )}
 
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleEdit}
               disabled={submitting}
-              className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 border-2 border-blue-600 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {submitting ? 'Menyimpan...' : 'Simpan'}
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Simpan
+                </>
+              )}
             </button>
             <button
               onClick={handleCancelEdit}
               disabled={submitting}
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded text-sm hover:bg-gray-300 disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-white text-gray-900 px-4 py-2 border-2 border-gray-900 font-bold text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
+              <X className="w-4 h-4" />
               Batal
             </button>
           </div>
@@ -128,39 +155,55 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
       ) : (
         // View Mode
         <div>
-          <p className="text-gray-700 mb-3">{comment.content}</p>
+          <p className="text-gray-900 mb-3 font-medium leading-relaxed">{comment.content}</p>
           
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              {new Date(comment.createdAt).toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
+          <div className="flex items-center justify-between pt-3 border-t-2 border-gray-200">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Calendar className="w-4 h-4" />
+              <span className="font-medium">
+                {new Date(comment.createdAt).toLocaleDateString('id-ID', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </span>
+              <Clock className="w-3 h-3 ml-1" />
+              <span>
+                {new Date(comment.createdAt).toLocaleTimeString('id-ID', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
               {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
-                <span className="ml-2 text-gray-400 italic">(diedit)</span>
+                <span className="ml-2 px-2 py-0.5 bg-gray-100 border border-gray-300 text-gray-600 text-xs font-bold italic">
+                  EDITED
+                </span>
               )}
-            </p>
+            </div>
 
             {(canEdit || canDelete) && (
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 {canEdit && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border-2 border-blue-600 font-bold text-xs hover:bg-blue-100 transition-colors uppercase tracking-wider"
                   >
-                    ✏️ Edit
+                    <Edit2 className="w-3.5 h-3.5" />
+                    Edit
                   </button>
                 )}
                 {canDelete && (
                   <button
                     onClick={handleDelete}
                     disabled={submitting}
-                    className="text-red-600 hover:text-red-800 text-sm disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 border-2 border-red-600 font-bold text-xs hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wider"
                   >
-                    🗑️ Hapus
+                    {submitting ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
+                    Hapus
                   </button>
                 )}
               </div>

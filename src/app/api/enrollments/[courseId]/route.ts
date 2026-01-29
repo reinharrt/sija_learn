@@ -1,12 +1,13 @@
 // ============================================
 // src/app/api/enrollments/[courseId]/route.ts
-// Enrollment Detail API - Enroll/unenroll from course
+// Enrollment Detail API - Get progress and unenroll
 // ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getDatabase } from '@/lib/mongodb';
 import { getUserFromRequest } from '@/lib/auth';
-import { unenrollUser, getEnrollmentProgress } from '@/models/Enrollment';
-import { findCourseById } from '@/models/Course';
+import { Course, Enrollment } from '@/types';
+import { ObjectId } from 'mongodb';
 
 // GET /api/enrollments/[courseId] - Get enrollment progress
 export async function GET(
@@ -23,16 +24,45 @@ export async function GET(
     }
 
     const { courseId } = await params;
-    const progress = await getEnrollmentProgress(user.id, courseId);
+    const db = await getDatabase();
+    
+    const enrollmentCollection = db.collection<Enrollment>('enrollments');
+    const coursesCollection = db.collection<Course>('courses');
 
-    if (!progress) {
+    // Get enrollment
+    const enrollment = await enrollmentCollection.findOne({
+      userId: new ObjectId(user.id),
+      courseId: new ObjectId(courseId)
+    });
+
+    if (!enrollment) {
       return NextResponse.json(
         { error: 'Anda belum terdaftar di course ini' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ progress }, { status: 200 });
+    // Get course to calculate progress
+    const course = await coursesCollection.findOne({
+      _id: new ObjectId(courseId)
+    });
+
+    const totalArticles = course?.articles?.length || 0;
+    const completedCount = enrollment.progress?.completedArticles?.length || 0;
+    const progressPercentage = totalArticles > 0 
+      ? Math.round((completedCount / totalArticles) * 100) 
+      : 0;
+
+    return NextResponse.json({ 
+      progress: {
+        completed: completedCount,
+        total: totalArticles,
+        percentage: progressPercentage,
+        completedArticles: enrollment.progress?.completedArticles || [],
+        lastAccessedAt: enrollment.progress?.lastAccessedAt,
+        enrolledAt: enrollment.enrolledAt
+      }
+    }, { status: 200 });
   } catch (error) {
     console.error('Get progress error:', error);
     return NextResponse.json(
@@ -57,9 +87,13 @@ export async function DELETE(
     }
 
     const { courseId } = await params;
+    const db = await getDatabase();
+    
+    const enrollmentCollection = db.collection<Enrollment>('enrollments');
+    const coursesCollection = db.collection<Course>('courses');
 
     // Check if course exists
-    const course = await findCourseById(courseId);
+    const course = await coursesCollection.findOne({ _id: new ObjectId(courseId) });
     if (!course) {
       return NextResponse.json(
         { error: 'Course tidak ditemukan' },
@@ -67,14 +101,24 @@ export async function DELETE(
       );
     }
 
-    const success = await unenrollUser(user.id, courseId);
+    // Delete enrollment
+    const result = await enrollmentCollection.deleteOne({
+      userId: new ObjectId(user.id),
+      courseId: new ObjectId(courseId)
+    });
 
-    if (!success) {
+    if (result.deletedCount === 0) {
       return NextResponse.json(
         { error: 'Gagal keluar dari course atau Anda belum terdaftar' },
         { status: 400 }
       );
     }
+
+    // Decrement enrolled count
+    await coursesCollection.updateOne(
+      { _id: new ObjectId(courseId) },
+      { $inc: { enrolledCount: -1 } }
+    );
 
     return NextResponse.json(
       { message: 'Berhasil keluar dari course' },

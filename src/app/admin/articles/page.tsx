@@ -1,6 +1,6 @@
 // ============================================
 // src/app/admin/articles/page.tsx
-// Admin Articles - Manage articles
+// Admin Articles - Manage articles with Reusable Components
 // ============================================
 
 'use client';
@@ -11,12 +11,43 @@ import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { UserRole, Article } from '@/types';
 import { formatDate } from '@/lib/utils';
+import ConfirmModal from '@/components/common/ConfirmModal';
+import PageHeader from '@/components/common/PageHeader';
+import DataTable, { Column } from '@/components/common/DataTable';
+import Button from '@/components/common/Button';
+import Breadcrumb from '@/components/common/Breadcrumb';
+import { 
+  FileText, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  Tag,
+  Calendar,
+  CheckCircle,
+  Circle,
+  Shield
+} from 'lucide-react';
 
 export default function AdminArticlesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalArticles, setTotalArticles] = useState(0);
+  const itemsPerPage = 10;
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    articleId: string | null;
+    articleTitle: string;
+  }>({
+    isOpen: false,
+    articleId: null,
+    articleTitle: '',
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== UserRole.ADMIN)) {
@@ -30,32 +61,62 @@ export default function AdminArticlesPage() {
     }
   }, [user]);
 
-  const loadArticles = () => {
+  const loadArticles = (page: number = 1) => {
     setLoading(true);
-    fetch('/api/articles?limit=100')
+    setCurrentPage(page);
+    fetch(`/api/articles?page=${page}&limit=${itemsPerPage}`)
       .then(res => res.json())
-      .then(data => setArticles(data.articles || []))
+      .then(data => {
+        setArticles(data.articles || []);
+        setTotalPages(data.pagination?.pages || 1);
+        setTotalArticles(data.pagination?.total || 0);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   };
 
-  const handleDelete = async (articleId: string) => {
-    if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+  const openDeleteModal = (articleId: string, articleTitle: string) => {
+    setDeleteModal({
+      isOpen: true,
+      articleId,
+      articleTitle,
+    });
+  };
 
+  const closeDeleteModal = () => {
+    if (!isDeleting) {
+      setDeleteModal({
+        isOpen: false,
+        articleId: null,
+        articleTitle: '',
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteModal.articleId) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/articles/${articleId}`, {
+      const response = await fetch(`/api/articles/${deleteModal.articleId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
 
       if (response.ok) {
-        loadArticles();
+        setTimeout(() => {
+          closeDeleteModal();
+          loadArticles(currentPage);
+          setIsDeleting(false);
+        }, 500);
       } else {
         alert('Gagal menghapus artikel');
+        setIsDeleting(false);
       }
     } catch (error) {
       console.error('Delete error:', error);
       alert('Terjadi kesalahan');
+      setIsDeleting(false);
     }
   };
 
@@ -68,7 +129,7 @@ export default function AdminArticlesPage() {
       });
 
       if (response.ok) {
-        loadArticles();
+        loadArticles(currentPage);
       } else {
         alert('Gagal mengubah status publikasi');
       }
@@ -78,93 +139,251 @@ export default function AdminArticlesPage() {
     }
   };
 
-  if (authLoading || loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-12 text-center">Loading...</div>;
+  if (authLoading || !user || user.role !== UserRole.ADMIN) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-sija-primary border-t-transparent"></div>
+      </div>
+    );
   }
 
-  if (!user || user.role !== UserRole.ADMIN) {
-    return null;
-  }
+  // Define table columns
+  const columns: Column<Article>[] = [
+    {
+      key: 'thumbnail',
+      label: 'Thumbnail',
+      width: 'w-32',
+      render: (article) => (
+        article.banner ? (
+          <img
+            src={article.banner}
+            alt={article.title}
+            className="h-16 w-24 object-cover border-2 border-sija-primary shadow-hard-sm"
+          />
+        ) : (
+          <div className="h-16 w-24 bg-sija-text/10 border-2 border-sija-primary flex items-center justify-center">
+            <FileText size={24} className="text-sija-text/30" strokeWidth={2.5} />
+          </div>
+        )
+      ),
+    },
+    {
+      key: 'title',
+      label: 'Title',
+      render: (article) => (
+        <div>
+          <Link
+            href={`/articles/${article.slug}`}
+            className="font-display font-bold text-sm text-sija-primary hover:text-green-600 transition-colors uppercase block"
+          >
+            {article.title}
+          </Link>
+          {article.description && (
+            <p className="text-xs text-sija-text/60 font-bold mt-1 line-clamp-2">{article.description}</p>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'category',
+      label: 'Category',
+      render: (article) => (
+        <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 border-2 border-blue-800 font-bold uppercase">
+          <Tag size={12} strokeWidth={2.5} />
+          {article.category}
+        </span>
+      ),
+    },
+    {
+      key: 'published',
+      label: 'Status',
+      render: (article) => (
+        <button
+          onClick={() => togglePublish(article._id!.toString(), article.published)}
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${
+            article.published
+              ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
+              : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
+          }`}
+        >
+          {article.published ? (
+            <>
+              <CheckCircle size={12} strokeWidth={2.5} />
+              Published
+            </>
+          ) : (
+            <>
+              <Circle size={12} strokeWidth={2.5} />
+              Draft
+            </>
+          )}
+        </button>
+      ),
+    },
+    {
+      key: 'views',
+      label: 'Views',
+      render: (article) => (
+        <span className="inline-flex items-center gap-1 text-sm text-sija-text/70 font-bold">
+          <Eye size={14} strokeWidth={2.5} />
+          {article.views || 0}
+        </span>
+      ),
+    },
+    {
+      key: 'createdAt',
+      label: 'Date',
+      render: (article) => (
+        <span className="inline-flex items-center gap-1 text-sm text-sija-text/70 font-bold">
+          <Calendar size={14} strokeWidth={2.5} />
+          {formatDate(article.createdAt)}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (article) => (
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/articles/${article.slug}/edit`}
+            className="inline-flex items-center gap-1 px-3 py-1.5 font-display font-bold text-xs bg-blue-500 text-white border-2 border-blue-500 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-blue-600 hover:border-blue-600 transition-all uppercase"
+          >
+            <Edit size={12} strokeWidth={2.5} />
+            Edit
+          </Link>
+          <button
+            onClick={() => openDeleteModal(article._id!.toString(), article.title)}
+            className="inline-flex items-center gap-1 px-3 py-1.5 font-display font-bold text-xs bg-red-500 text-white border-2 border-red-500 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-red-600 hover:border-red-600 transition-all uppercase"
+          >
+            <Trash2 size={12} strokeWidth={2.5} />
+            Delete
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  // Mobile card render function
+  const renderMobileCard = (article: Article, index: number) => (
+    <div className="p-4 space-y-3">
+      <Link
+        href={`/articles/${article.slug}`}
+        className="font-display text-lg font-black text-sija-primary hover:text-green-600 transition-colors uppercase leading-tight block"
+      >
+        {article.title}
+      </Link>
+
+      <div className="flex flex-wrap gap-2">
+        <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 border-2 border-blue-800 font-bold uppercase">
+          <Tag size={12} strokeWidth={2.5} />
+          {article.category}
+        </span>
+        <button
+          onClick={() => togglePublish(article._id!.toString(), article.published)}
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${
+            article.published
+              ? 'bg-green-100 text-green-800 border-green-800'
+              : 'bg-gray-100 text-gray-800 border-gray-800'
+          }`}
+        >
+          {article.published ? (
+            <>
+              <CheckCircle size={12} strokeWidth={2.5} />
+              Published
+            </>
+          ) : (
+            <>
+              <Circle size={12} strokeWidth={2.5} />
+              Draft
+            </>
+          )}
+        </button>
+      </div>
+
+      <div className="flex items-center gap-4 text-xs text-sija-text/70 font-bold">
+        <span className="flex items-center gap-1">
+          <Eye size={12} strokeWidth={2.5} />
+          {article.views || 0}
+        </span>
+        <span className="flex items-center gap-1">
+          <Calendar size={12} strokeWidth={2.5} />
+          {formatDate(article.createdAt)}
+        </span>
+      </div>
+
+      <div className="flex gap-2 pt-2">
+        <Link
+          href={`/articles/${article.slug}/edit`}
+          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 font-display font-bold text-xs bg-blue-500 text-white border-2 border-blue-500 shadow-hard-sm hover:bg-blue-600 transition-colors uppercase"
+        >
+          <Edit size={14} strokeWidth={2.5} />
+          Edit
+        </Link>
+        <button
+          onClick={() => openDeleteModal(article._id!.toString(), article.title)}
+          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 font-display font-bold text-xs bg-red-500 text-white border-2 border-red-500 shadow-hard-sm hover:bg-red-600 transition-colors uppercase"
+        >
+          <Trash2 size={14} strokeWidth={2.5} />
+          Delete
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">Manage Articles</h1>
-        <Link
-          href="/articles/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          + Buat Artikel Baru
-        </Link>
-      </div>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Admin', href: '/admin', icon: <Shield size={16} strokeWidth={2.5} /> },
+          { label: 'Articles' },
+        ]}
+      />
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {articles.map((article) => (
-              <tr key={article._id?.toString()}>
-                <td className="px-6 py-4">
-                  <Link 
-                    href={`/articles/${article.slug}`}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    {article.title}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {article.category}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onClick={() => togglePublish(article._id!.toString(), article.published)}
-                    className={`text-xs px-2 py-1 rounded ${article.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
-                  >
-                    {article.published ? 'Published' : 'Draft'}
-                  </button>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {article.views || 0}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(article.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                  <Link
-                    href={`/articles/${article.slug}/edit`}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(article._id!.toString())}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Page Header */}
+      <PageHeader
+        title="Manage Articles"
+        subtitle={`${totalArticles} artikel tersedia`}
+        icon={FileText}
+        iconBgColor="bg-green-500 border-green-500"
+        actions={
+          <Link href="/articles/create">
+            <Button variant="success" size="md" icon={<Plus size={20} strokeWidth={2.5} />}>
+              Buat Artikel
+            </Button>
+          </Link>
+        }
+      />
 
-        {articles.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            Tidak ada artikel
-          </div>
-        )}
-      </div>
+      {/* Data Table */}
+      <DataTable
+        data={articles}
+        columns={columns}
+        loading={loading}
+        emptyMessage="Tidak ada artikel"
+        emptyIcon={<FileText className="w-16 h-16 text-sija-text/30 mx-auto" />}
+        pagination={{
+          currentPage,
+          totalPages,
+          totalItems: totalArticles,
+          onPageChange: loadArticles,
+        }}
+        mobileCardRender={renderMobileCard}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
+        title="Hapus Artikel?"
+        message={`Apakah Anda yakin ingin menghapus artikel "${deleteModal.articleTitle}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmText="Ya, Hapus"
+        cancelText="Batal"
+        type="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -1,12 +1,13 @@
 // ============================================
-// src/app/api/articles/route.ts
-// Articles API - List and create articles
+// UPDATED: src/app/api/articles/route.ts
+// Articles API WITH TAG SYSTEM INTEGRATION
 // ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';
 import { createArticle, getArticles } from '@/models/Article';
+import { updateEntityTags } from '@/models/Tag';
 import { UserRole, ArticleCategory } from '@/types';
 import { ObjectId } from 'mongodb';
 
@@ -68,7 +69,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { title, description, category, blocks, tags, published } = await request.json();
+    // ✅ FIX: Include 'type' and 'banner' from request
+    const { title, description, banner, category, type, blocks, tags, published } = await request.json();
 
     if (!title || !description || !category || !blocks) {
       return NextResponse.json(
@@ -79,16 +81,24 @@ export async function POST(request: NextRequest) {
 
     const slug = generateSlug(title);
 
+    // ✅ FIX: Create article with all required fields including 'type' and 'banner'
     const articleId = await createArticle({
       title,
       slug,
       description,
+      banner,
       category,
+      type,
       blocks,
       author: new ObjectId(user.id),
-      tags: tags || [],
+      tags: [], // Empty for now
       published: published || false,
     });
+
+    // ✨ NEW: Use tag system to add tags
+    if (tags && Array.isArray(tags) && tags.length > 0) {
+      await updateEntityTags('article', articleId.toString(), tags, user.id);
+    }
 
     return NextResponse.json(
       { 

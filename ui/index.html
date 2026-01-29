@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIJA Learning Hub | SMKN 1 Cimahi</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Import Map for React & Lucide -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.300.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/"
+  }
+}
+</script>
+    
+    <!-- Babel for JSX/TSX compilation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Poppins', 'sans-serif'],
+              display: ['Poppins', 'sans-serif'],
+            },
+            colors: {
+              sija: {
+                primary: 'var(--color-primary)', 
+                dark: 'var(--color-dark)',    
+                light: 'var(--color-light)',   
+                surface: 'var(--color-surface)', 
+                text: 'var(--color-text)', 
+                border: 'var(--color-border)',
+                background: 'var(--color-background)',
+              }
+            },
+            boxShadow: {
+              'hard': '4px 4px 0px 0px var(--color-primary)',
+              'hard-sm': '2px 2px 0px 0px var(--color-primary)',
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Custom CSS Variables -->
+    <style>
+      :root {
+        /* Light Mode Colors */
+        --color-primary: #0055FF;
+        --color-dark: #002B80;
+        --color-light: #E6F0FF;
+        --color-surface: #FFFFFF;
+        --color-text: #0F172A;
+        --color-border: #0055FF;
+        --color-background: #F8FAFC;
+        --dot-color: #cbd5e1;
+      }
+
+      .dark {
+        /* Dark Mode Colors - Deep Midnight Blue Theme */
+        --color-primary: #60A5FA;
+        --color-dark: #0F172A;
+        --color-light: #1E293B;
+        --color-surface: #0F172A;
+        --color-text: #F8FAFC;
+        --color-border: #60A5FA;
+        --color-background: #020617;
+        --dot-color: #1e293b;
+      }
+
+      body {
+        background-color: var(--color-background);
+        color: var(--color-text);
+        font-family: 'Poppins', sans-serif;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .bg-grid-pattern {
+        background-color: var(--color-background);
+        background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+        background-size: 24px 24px;
+        transition: background-color 0.3s, background-image 0.3s;
+      }
+      
+      .text-outline-blue {
+        -webkit-text-stroke: 1px var(--color-primary);
+        color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- MAIN REACT APP SCRIPT -->
+    <script type="text/babel" data-type="module" data-presets="typescript,react">
+      import React, { useState, useEffect } from 'react';
+      import ReactDOM from 'react-dom/client';
+      import { Menu, X, Hexagon, Moon, Sun, ArrowRight, MousePointer2, Clock, User, ArrowUpRight, Box } from 'lucide-react';
+
+      // --- TYPES ---
+      interface Course {
+        id: string;
+        title: string;
+        description: string;
+        level: 'Beginner' | 'Intermediate' | 'Advanced';
+        duration: string;
+        category: string;
+        instructor: string;
+      }
+
+      interface Article {
+        id: string;
+        title: string;
+        excerpt: string;
+        author: string;
+        date: string;
+        readTime: string;
+        category: string;
+        imageUrl?: string;
+      }
+
+      interface NavItem {
+        label: string;
+        href: string;
+      }
+
+      // --- CONSTANTS ---
+      const NAV_ITEMS: NavItem[] = [
+        { label: 'Home', href: '#hero' },
+        { label: 'Courses', href: '#courses' },
+        { label: 'Articles', href: '#articles' },
+        { label: 'About SIJA', href: '#about' },
+      ];
+
+      const COURSES: Course[] = [
+        {
+          id: '1',
+          title: 'Network Fundamentals',
+          description: 'Master the basics of routing, switching, and IP addressing in modern infrastructure.',
+          level: 'Beginner',
+          duration: '8 Weeks',
+          category: 'Networking',
+          instructor: 'Pak Budi',
+        },
+        {
+          id: '2',
+          title: 'Cloud Computing AWS',
+          description: 'Deploy scalable applications using Amazon Web Services core services.',
+          level: 'Advanced',
+          duration: '12 Weeks',
+          category: 'Cloud',
+          instructor: 'Bu Siti',
+        },
+        {
+          id: '3',
+          title: 'IoT System Design',
+          description: 'Learn to build smart devices and connect them using microcontrollers like ESP32.',
+          level: 'Intermediate',
+          duration: '6 Weeks',
+          category: 'Hardware',
+          instructor: 'Pak Asep',
+        },
+        {
+          id: '4',
+          title: 'Cybersecurity Ops',
+          description: 'Introduction to SOC operations, threat hunting, and digital forensics.',
+          level: 'Intermediate',
+          duration: '10 Weeks',
+          category: 'Security',
+          instructor: 'Tim SIJA',
+        },
+      ];
+
+      const ARTICLES: Article[] = [
+        {
+          id: '1',
+          title: 'The Future of Edge Computing',
+          excerpt: 'How processing data closer to the source is changing the landscape of IoT and latency-sensitive apps.',
+          author: 'Siswa XII SIJA A',
+          date: 'Oct 12, 2023',
+          readTime: '5 min read',
+          category: 'Tech Trends',
+          imageUrl: 'https://images.unsplash.com/photo-1558494949-ef526b0042a0?auto=format&fit=crop&w=800&q=80',
+        },
+        {
+          id: '2',
+          title: 'Life at SMKN 1 Cimahi',
+          excerpt: 'A deep dive into the daily activities, projects, and culture of the SIJA department.',
+          author: 'OSIS SIJA',
+          date: 'Sep 28, 2023',
+          readTime: '3 min read',
+          category: 'Campus Life',
+          imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80',
+        },
+        {
+          id: '3',
+          title: 'Understanding Docker',
+          excerpt: 'Why containerization is essential for modern DevOps workflows and how to get started.',
+          author: 'Alumni 2022',
+          date: 'Aug 15, 2023',
+          readTime: '8 min read',
+          category: 'DevOps',
+          imageUrl: 'https://images.unsplash.com/photo-1607799275518-d58665d099db?auto=format&fit=crop&w=800&q=80',
+        },
+      ];
+
+      // --- COMPONENTS ---
+
+      // 1. Navbar
+      const Navbar: React.FC = () => {
+        const [isOpen, setIsOpen] = useState(false);
+        const [isDark, setIsDark] = useState(false);
+
+        useEffect(() => {
+          const savedTheme = localStorage.getItem('theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+          if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            setIsDark(true);
+            document.documentElement.classList.add('dark');
+          } else {
+            setIsDark(false);
+            document.documentElement.classList.remove('dark');
+          }
+        }, []);
+
+        const toggleTheme = () => {
+          if (isDark) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+            setIsDark(false);
+          } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            setIsDark(true);
+          }
+        };
+
+        return (
+          <nav className="fixed top-0 left-0 right-0 z-50 bg-sija-surface/90 backdrop-blur-sm border-b-2 border-sija-primary transition-colors duration-300">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="flex items-center justify-between h-20">
+                <div className="flex items-center gap-3 group cursor-pointer">
+                  <div className="w-10 h-10 bg-sija-primary text-white flex items-center justify-center border-2 border-sija-primary group-hover:bg-sija-surface group-hover:text-sija-primary transition-all shadow-hard-sm">
+                    <Hexagon size={24} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h1 className="font-display text-xl font-bold text-sija-primary tracking-tight">SIJA.ID</h1>
+                    <p className="text-[10px] font-bold text-sija-text uppercase tracking-widest">SMKN 1 Cimahi</p>
+                  </div>
+                </div>
+
+                <div className="hidden md:flex items-center gap-6">
+                  {NAV_ITEMS.map((item) => (
+                    <a key={item.label} href={item.href} className="font-display text-sm font-bold text-sija-text hover:text-sija-primary uppercase tracking-wide transition-colors">
+                      {item.label}
+                    </a>
+                  ))}
+                  <button onClick={toggleTheme} className="p-2 text-sija-text hover:text-sija-primary transition-colors">
+                    {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                  </button>
+                  <a href="#login" className="px-6 py-2.5 font-display font-bold text-sm bg-sija-surface text-sija-primary border-2 border-sija-primary shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-none">
+                    Student Portal
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-4 md:hidden">
+                  <button onClick={toggleTheme} className="p-2 text-sija-primary">
+                      {isDark ? <Sun size={24} /> : <Moon size={24} />}
+                  </button>
+                  <button className="text-sija-primary p-2 border-2 border-transparent hover:border-sija-primary" onClick={() => setIsOpen(!isOpen)}>
+                    {isOpen ? <X size={28} /> : <Menu size={28} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {isOpen && (
+              <div className="md:hidden bg-sija-surface border-b-2 border-sija-primary transition-colors duration-300">
+                <div className="px-6 py-6 space-y-4">
+                  {NAV_ITEMS.map((item) => (
+                    <a key={item.label} href={item.href} className="block font-display text-lg font-bold text-sija-text hover:text-sija-primary hover:pl-2 transition-all" onClick={() => setIsOpen(false)}>
+                      {item.label}
+                    </a>
+                  ))}
+                   <a href="#login" className="block w-full text-center mt-6 px-5 py-4 font-bold bg-sija-primary text-white border-2 border-sija-primary shadow-hard-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]" onClick={() => setIsOpen(false)}>
+                    Access Portal
+                  </a>
+                </div>
+              </div>
+            )}
+          </nav>
+        );
+      };
+
+      // 2. Hero
+      const Hero: React.FC = () => {
+        return (
+          <section id="hero" className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden border-b-2 border-sija-primary bg-sija-surface transition-colors duration-300">
+            <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-7 flex flex-col items-start">
+                <div className="inline-block bg-sija-light border-2 border-sija-primary px-4 py-2 mb-8 shadow-hard-sm">
+                  <span className="font-display font-bold text-sija-primary uppercase tracking-wider text-sm">
+                    Gen. 14 • Open Registration
+                  </span>
+                </div>
+                <h1 className="font-display text-6xl md:text-7xl lg:text-8xl font-black text-sija-primary leading-[0.9] mb-8">
+                  CREATE <br/>
+                  <span className="text-outline-blue">CONNECT</span> <br/>
+                  COMPILE
+                </h1>
+                <p className="max-w-xl text-lg md:text-xl text-sija-text font-medium mb-10 leading-relaxed border-l-4 border-sija-primary pl-6">
+                  The digital HQ for <span className="font-bold text-sija-primary">SIJA SMKN 1 Cimahi</span>. 
+                  Where code meets creativity and students become engineers.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
+                  <a href="#courses" className="flex items-center justify-center gap-2 px-8 py-4 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all">
+                    Start Learning
+                    <ArrowRight size={20} strokeWidth={3} />
+                  </a>
+                  <a href="#articles" className="flex items-center justify-center gap-2 px-8 py-4 bg-sija-surface text-sija-primary font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                    Explore Articles
+                  </a>
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 relative hidden lg:block h-full min-h-[400px]">
+                 <div className="absolute inset-0 bg-sija-light border-2 border-sija-primary shadow-hard flex items-center justify-center overflow-hidden transition-colors duration-300">
+                    <div className="absolute top-4 left-4 w-12 h-12 border-t-4 border-l-4 border-sija-primary"></div>
+                    <div className="absolute bottom-4 right-4 w-12 h-12 border-b-4 border-r-4 border-sija-primary"></div>
+                    <div className="text-center p-8">
+                       <div className="text-9xl font-black text-sija-primary/10 dark:text-sija-primary/20 select-none transition-colors duration-300">SIJA</div>
+                       <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-sija-surface border-2 border-sija-primary p-6 shadow-hard rotate-3 hover:rotate-0 transition-transform duration-300">
+                              <MousePointer2 size={48} className="text-sija-primary mx-auto mb-2" />
+                              <div className="font-display font-bold text-xl text-sija-text">Interactive<br/>Learning</div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // 3. CourseCard
+      const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
+        return (
+          <div className="group relative bg-sija-surface border-2 border-sija-primary p-0 h-full flex flex-col hover:-translate-y-2 transition-transform duration-300">
+            <div className="absolute inset-0 bg-sija-primary translate-x-2 translate-y-2 -z-10 group-hover:translate-x-3 group-hover:translate-y-3 transition-transform"></div>
+            <div className="p-6 flex flex-col flex-grow bg-sija-surface z-10 transition-colors duration-300">
+              <div className="flex justify-between items-start mb-4">
+                <span className="font-mono text-xs font-bold uppercase tracking-wider px-2 py-1 bg-sija-light text-sija-primary border border-sija-primary">
+                  {course.category}
+                </span>
+                <span className={`font-bold text-xs px-2 py-1 border-2 
+                  ${course.level === 'Beginner' ? 'border-green-500 text-green-700 bg-green-50 dark:bg-green-900/30 dark:text-green-300' : 
+                    course.level === 'Intermediate' ? 'border-yellow-500 text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300' : 'border-red-500 text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-300'}`}>
+                  {course.level}
+                </span>
+              </div>
+              <h3 className="font-display text-2xl font-bold text-sija-primary mb-3 leading-tight">
+                {course.title}
+              </h3>
+              <p className="text-sija-text/80 text-sm mb-6 flex-grow font-medium leading-relaxed">
+                {course.description}
+              </p>
+              <div className="flex items-center justify-between pt-4 border-t-2 border-dashed border-sija-text/10 mt-auto">
+                <div className="flex items-center gap-2 text-xs font-bold text-sija-text/70">
+                  <Clock size={16} />
+                  <span>{course.duration}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-sija-text/70">
+                  <User size={16} />
+                  <span>{course.instructor}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // 4. ArticleCard
+      const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
+        return (
+          <article className="group flex flex-col md:flex-row p-0 bg-sija-surface border-2 border-sija-primary hover:shadow-hard transition-all cursor-pointer items-stretch h-full">
+             <div className="w-full md:w-[320px] h-56 md:h-auto flex-shrink-0 relative overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-sija-primary">
+                <div className="absolute inset-0 bg-sija-primary/20 mix-blend-multiply z-10 transition-opacity duration-300 group-hover:opacity-0"></div>
+                <img 
+                  src={article.imageUrl || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"} 
+                  alt={article.title}
+                  className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                />
+                <div className="absolute top-4 left-4 z-20">
+                   <span className="font-mono text-xs font-bold uppercase tracking-wider px-3 py-1 bg-sija-primary text-white border border-sija-primary shadow-sm">
+                      {article.category}
+                   </span>
+                </div>
+             </div>
+             <div className="flex-grow p-6 md:p-8 flex flex-col justify-between bg-sija-surface transition-colors duration-300">
+              <div>
+                <div className="flex items-center gap-3 mb-3 text-xs font-bold text-sija-text/60">
+                   <span>{article.date}</span>
+                   <span>•</span>
+                   <span>{article.readTime}</span>
+                   <span>•</span>
+                   <span className="text-sija-primary">{article.author}</span>
+                </div>
+                <h3 className="font-display text-2xl md:text-3xl font-bold text-sija-text group-hover:text-sija-primary transition-colors mb-3 leading-tight">
+                  {article.title}
+                </h3>
+                <p className="text-sija-text/70 font-medium leading-relaxed mb-6">
+                  {article.excerpt}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-sija-primary font-bold text-sm md:text-base group-hover:underline decoration-2 underline-offset-4">
+                  Read Article <ArrowUpRight size={20} strokeWidth={2.5} />
+              </div>
+            </div>
+          </article>
+        );
+      };
+
+      // 5. Main App
+      const App: React.FC = () => {
+        return (
+          <div className="min-h-screen bg-grid-pattern font-sans selection:bg-sija-primary selection:text-white">
+            <Navbar />
+            <main>
+              <Hero />
+              
+              {/* Courses Section */}
+              <section id="courses" className="py-24 px-6">
+                <div className="max-w-7xl mx-auto">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b-2 border-sija-text/10 pb-8">
+                    <div className="relative">
+                      <div className="absolute -left-6 top-1 w-2 h-full bg-sija-primary"></div>
+                      <h2 className="font-display text-4xl md:text-5xl font-black text-sija-text mb-2">
+                        CURRICULUM
+                      </h2>
+                      <p className="text-lg text-sija-text/60 font-medium max-w-lg">
+                        Industry-standard modules designed to build real-world engineering skills.
+                      </p>
+                    </div>
+                    <a href="#" className="group flex items-center gap-2 px-6 py-3 border-2 border-sija-text font-bold text-sija-text hover:bg-sija-text hover:text-sija-surface transition-all">
+                      View All Modules <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {COURSES.map((course) => (
+                      <CourseCard key={course.id} course={course} />
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* Articles Section */}
+              <section id="articles" className="py-24 px-6 bg-sija-surface border-y-2 border-sija-primary transition-colors duration-300">
+                <div className="max-w-7xl mx-auto">
+                   <div className="flex flex-col md:flex-row justify-between mb-12 gap-8">
+                    <div>
+                      <div className="inline-flex items-center gap-2 mb-4 text-sija-primary">
+                        <Box size={20} strokeWidth={2.5} />
+                        <span className="font-mono font-bold uppercase tracking-wider">Knowledge Base</span>
+                      </div>
+                      <h2 className="font-display text-4xl md:text-5xl font-black text-sija-text">
+                        LATEST INSIGHTS
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    {ARTICLES.map((article) => (
+                      <ArticleCard key={article.id} article={article} />
+                    ))}
+                  </div>
+                   
+                   <div className="mt-12 text-center">
+                      <a href="#" className="inline-block font-display text-xl font-bold text-sija-text border-b-4 border-sija-primary hover:text-sija-primary transition-colors pb-1">
+                        View Article Archive &rarr;
+                      </a>
+                   </div>
+                </div>
+              </section>
+
+              {/* CTA Section */}
+              <section id="about" className="py-24 px-6 bg-sija-primary text-white">
+                <div className="max-w-5xl mx-auto text-center border-2 border-white/20 p-8 md:p-16 bg-sija-primary relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                  <h2 className="relative font-display text-4xl md:text-6xl font-black mb-8 leading-tight">
+                    READY TO DEBUG <br/> YOUR FUTURE?
+                  </h2>
+                  <p className="relative text-xl md:text-2xl text-blue-100 mb-12 max-w-2xl mx-auto font-medium">
+                    Join the SIJA SMKN 1 Cimahi ecosystem. Access resources, connect with alumni, and ship code.
+                  </p>
+                  <div className="relative flex flex-col sm:flex-row gap-6 justify-center">
+                    <button className="px-8 py-4 bg-white text-sija-primary font-bold text-lg border-2 border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                      Apply for Access
+                    </button>
+                    <button className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold text-lg hover:bg-white/10 transition-colors">
+                      Contact Admin
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </main>
+
+            <footer className="bg-sija-text text-sija-background pt-20 pb-10 px-6 border-t-4 border-sija-primary transition-colors duration-300">
+              <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                  <div className="col-span-1 md:col-span-2">
+                    <h3 className="font-display text-3xl font-bold mb-6 text-sija-background">SIJA.ID</h3>
+                    <p className="text-sija-background/70 max-w-sm mb-8 font-medium leading-relaxed">
+                      Sistem Informatika, Jaringan, dan Aplikasi. <br/>
+                      SMK Negeri 1 Cimahi.
+                    </p>
+                    <div className="flex gap-4">
+                       <div className="w-10 h-10 bg-white/10 hover:bg-sija-primary transition-colors flex items-center justify-center cursor-pointer text-white">
+                          <span className="font-bold">IG</span>
+                       </div>
+                       <div className="w-10 h-10 bg-white/10 hover:bg-sija-primary transition-colors flex items-center justify-center cursor-pointer text-white">
+                          <span className="font-bold">GH</span>
+                       </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sija-primary mb-6 uppercase tracking-wider">Resources</h4>
+                    <ul className="space-y-4 text-sm font-medium text-sija-background/80">
+                      <li><a href="#" className="hover:text-white hover:underline">Documentation</a></li>
+                      <li><a href="#" className="hover:text-white hover:underline">Student Handbook</a></li>
+                      <li><a href="#" className="hover:text-white hover:underline">Curriculum</a></li>
+                    </ul>
+                  </div>
+                   <div>
+                    <h4 className="font-bold text-sija-primary mb-6 uppercase tracking-wider">Legal</h4>
+                    <ul className="space-y-4 text-sm font-medium text-sija-background/80">
+                      <li><a href="#" className="hover:text-white hover:underline">Privacy Policy</a></li>
+                      <li><a href="#" className="hover:text-white hover:underline">Terms of Use</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-sm text-sija-background/50 font-bold">
+                  <p>&copy; {new Date().getFullYear()} SIJA SMKN 1 Cimahi.</p>
+                  <p className="uppercase tracking-widest">Forged in Code</p>
+                </div>
+              </div>
+            </footer>
+          </div>
+        );
+      };
+
+      // --- MOUNT ---
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

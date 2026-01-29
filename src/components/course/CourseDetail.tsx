@@ -1,255 +1,429 @@
 // ============================================
 // src/components/course/CourseDetail.tsx
-// Course Detail Component - Full course display
+// Course Detail Component - WITH ENROLLMENT STATE
 // ============================================
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Course } from '@/types';
-import { formatDate } from '@/lib/utils';
+import Image from 'next/image';
+import { Course, Article } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
-import { UserRole } from '@/types';
+import { formatDate } from '@/lib/utils';
+import { 
+  BookOpen, 
+  Users, 
+  Calendar, 
+  User,
+  Lock,
+  CheckCircle2,
+  PlayCircle,
+  LogOut,
+  AlertCircle
+} from 'lucide-react';
 
 interface CourseDetailProps {
-  course: Course;
-  articles?: any[];
+  course: Course & {
+    creator?: {
+      _id?: any;
+      name?: string;
+    };
+  };
+  initialIsEnrolled?: boolean;
 }
 
-export default function CourseDetail({ course, articles = [] }: CourseDetailProps) {
+export default function CourseDetail({ course, initialIsEnrolled = false }: CourseDetailProps) {
   const { user } = useAuth();
-  const [isEnrolled, setIsEnrolled] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(initialIsEnrolled);
+  const [enrolling, setEnrolling] = useState(false);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loadingArticles, setLoadingArticles] = useState(false);
+  const [progress, setProgress] = useState<{
+    completedArticles: string[];
+    percentage: number;
+  }>({ completedArticles: [], percentage: 0 });
 
-  // Check if user can edit
-  const canEdit = user && (
-    course.creator.toString() === user.id || 
-    user.role === UserRole.ADMIN
-  );
-
-  // Check enrollment status
   useEffect(() => {
-    if (user && course._id) {
-      checkEnrollment();
-    } else {
-      setChecking(false);
+    if (course.articles && course.articles.length > 0) {
+      loadArticles();
     }
-  }, [user, course._id]);
+  }, [course.articles]);
 
-  const checkEnrollment = async () => {
+  useEffect(() => {
+    if (isEnrolled && user) {
+      loadProgress();
+    }
+  }, [isEnrolled, user]);
+
+  const loadArticles = async () => {
+    setLoadingArticles(true);
     try {
-      const response = await fetch(`/api/enrollments?courseId=${course._id}`, {
+      const articlePromises = (course.articles || []).map(async (articleId) => {
+        const res = await fetch(`/api/articles/${articleId}`);
+        if (res.ok) {
+          return await res.json();
+        }
+        return null;
+      });
+
+      const loadedArticles = await Promise.all(articlePromises);
+      setArticles(loadedArticles.filter((a) => a !== null));
+    } catch (error) {
+      console.error('Load articles error:', error);
+    } finally {
+      setLoadingArticles(false);
+    }
+  };
+
+  const loadProgress = async () => {
+    if (!course._id) return;
+
+    try {
+      const res = await fetch(`/api/enrollments/${course._id}/progress`, {
         headers: getAuthHeaders(),
       });
-      const data = await response.json();
-      setIsEnrolled(data.enrolled || false);
+
+      if (res.ok) {
+        const data = await res.json();
+        setProgress({
+          completedArticles: data.progress.completedArticles || [],
+          percentage: data.progress.percentage || 0,
+        });
+      }
     } catch (error) {
-      console.error('Check enrollment error:', error);
-    } finally {
-      setChecking(false);
+      console.error('Load progress error:', error);
     }
   };
 
   const handleEnroll = async () => {
     if (!user) {
-      alert('Silakan login terlebih dahulu untuk mendaftar course');
-      window.location.href = '/login';
+      alert('Silakan login terlebih dahulu!');
       return;
     }
 
-    setLoading(true);
+    setEnrolling(true);
     try {
       const response = await fetch('/api/enrollments', {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ courseId: course._id?.toString() }),
+        body: JSON.stringify({ courseId: course._id }),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Gagal mendaftar course');
+      if (response.ok) {
+        setIsEnrolled(true);
+        alert('Berhasil mendaftar course!');
+      } else {
+        alert(data.error || 'Gagal mendaftar course');
       }
-
-      setIsEnrolled(true);
-      alert('✅ Berhasil mendaftar course!');
-      window.location.reload(); // Refresh to update enrollment count
-    } catch (error: any) {
-      alert(error.message || 'Terjadi kesalahan');
+    } catch (error) {
+      console.error('Enroll error:', error);
+      alert('Terjadi kesalahan');
     } finally {
-      setLoading(false);
+      setEnrolling(false);
     }
   };
 
   const handleUnenroll = async () => {
-    if (!confirm('Yakin ingin keluar dari course ini?')) {
-      return;
-    }
+    if (!confirm('Yakin ingin keluar dari course ini?')) return;
 
-    setLoading(true);
     try {
       const response = await fetch(`/api/enrollments/${course._id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Gagal keluar dari course');
+      if (response.ok) {
+        setIsEnrolled(false);
+        setProgress({ completedArticles: [], percentage: 0 });
+        alert('Berhasil keluar dari course');
+      } else {
+        alert('Gagal keluar dari course');
       }
-
-      setIsEnrolled(false);
-      alert('Berhasil keluar dari course');
-      window.location.reload();
-    } catch (error: any) {
-      alert(error.message || 'Terjadi kesalahan');
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Unenroll error:', error);
+      alert('Terjadi kesalahan');
     }
   };
 
+  const isArticleCompleted = (articleId: string) => {
+    return progress.completedArticles.some((id) => id === articleId);
+  };
+
+  const isArticleUnlocked = (index: number) => {
+    if (index === 0) return true; // First article always unlocked
+    
+    // Previous article must be completed
+    const previousArticle = articles[index - 1];
+    if (!previousArticle || !previousArticle._id) return false;
+    
+    return isArticleCompleted(previousArticle._id.toString());
+  };
+
   return (
-    <div className="max-w-4xl mx-auto">
-      <header className="mb-8">
+    <div className="max-w-6xl mx-auto">
+      {/* Course Header - Neobrutalist */}
+      <div className="bg-sija-surface border-2 border-sija-primary shadow-hard mb-8 overflow-hidden">
         {course.thumbnail && (
-          <img 
-            src={course.thumbnail} 
-            alt={course.title}
-            className="w-full h-64 object-cover rounded-lg mb-6"
-          />
+          <div className="relative w-full h-64 md:h-80 border-b-2 border-sija-primary">
+            <Image
+              src={course.thumbnail}
+              alt={course.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
         )}
 
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex gap-4 text-sm text-gray-500">
-            <span>📚 {articles.length} artikel</span>
-            <span>👥 {course.enrolledCount || 0} siswa terdaftar</span>
-            <span>📅 {formatDate(course.createdAt)}</span>
-          </div>
+        <div className="p-6 md:p-8">
+          <h1 className="font-display text-3xl md:text-4xl font-black text-sija-primary mb-4 uppercase leading-tight">
+            {course.title}
+          </h1>
 
-          <div className="flex gap-2">
-            {canEdit && (
-              <Link
-                href={`/courses/${course.slug}/edit`}
-                className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors"
-              >
-                ✏️ Edit Course
-              </Link>
-            )}
-          </div>
-        </div>
+          <p className="text-lg text-sija-text/80 mb-6 font-medium leading-relaxed">
+            {course.description}
+          </p>
 
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          {course.title}
-        </h1>
-
-        <p className="text-lg text-gray-600 mb-6">
-          {course.description}
-        </p>
-
-        {/* Enrollment Button */}
-        {user && !canEdit && (
-          <div className="mb-6">
-            {checking ? (
-              <button 
-                disabled
-                className="bg-gray-300 text-gray-600 px-6 py-3 rounded-lg font-medium cursor-not-allowed"
-              >
-                Checking...
-              </button>
-            ) : isEnrolled ? (
-              <div className="flex gap-3 items-center">
-                <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg font-medium flex items-center gap-2">
-                  ✅ Anda sudah terdaftar
-                </div>
-                <button
-                  onClick={handleUnenroll}
-                  disabled={loading}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          {/* Tags */}
+          {course.tags && course.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {course.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="font-mono text-xs font-bold uppercase tracking-wider px-3 py-1 bg-sija-light text-sija-primary border-2 border-sija-primary"
                 >
-                  {loading ? 'Loading...' : 'Keluar dari Course'}
-                </button>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Meta Info */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6 border-y-2 border-dashed border-sija-text/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-sija-primary border-2 border-sija-primary flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-sija-text/60 uppercase tracking-wider">
+                  Modules
+                </div>
+                <div className="text-lg font-black text-sija-text">
+                  {articles.length}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-500 border-2 border-green-700 flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-sija-text/60 uppercase tracking-wider">
+                  Students
+                </div>
+                <div className="text-lg font-black text-sija-text">
+                  {course.enrolledCount || 0}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-500 border-2 border-blue-700 flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-sija-text/60 uppercase tracking-wider">
+                  Instructor
+                </div>
+                <div className="text-sm font-bold text-sija-text truncate">
+                  {course.creator?.name || 'Unknown'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Enrollment Section */}
+          <div className="mt-6">
+            {!user ? (
+              <div className="bg-yellow-100 border-2 border-yellow-500 p-6 text-center">
+                <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
+                <p className="text-yellow-900 font-bold mb-4">
+                  Silakan login untuk mendaftar course ini
+                </p>
+                <Link
+                  href="/login"
+                  className="inline-block px-8 py-3 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                >
+                  Login Now
+                </Link>
+              </div>
+            ) : isEnrolled ? (
+              <div className="bg-green-100 border-2 border-green-500 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    <span className="font-bold text-green-900 uppercase tracking-wider">
+                      Enrolled
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleUnenroll}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 font-bold border-2 border-red-500 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Leave Course
+                  </button>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-bold text-green-900 uppercase tracking-wider">
+                      Your Progress
+                    </span>
+                    <span className="text-2xl font-black text-green-900">
+                      {progress.percentage}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-sija-light border-2 border-green-500 h-4 overflow-hidden">
+                    <div
+                      className="bg-green-500 h-full transition-all duration-500"
+                      style={{ width: `${progress.percentage}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs font-bold text-green-700 mt-2">
+                    {progress.completedArticles.length} of {articles.length} modules completed
+                  </p>
+                </div>
               </div>
             ) : (
               <button
                 onClick={handleEnroll}
-                disabled={loading}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                disabled={enrolling}
+                className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-lg"
               >
-                {loading ? 'Loading...' : '📝 Daftar Course'}
+                <PlayCircle className="w-6 h-6" />
+                {enrolling ? 'Enrolling...' : 'Enroll Now'}
               </button>
             )}
           </div>
-        )}
+        </div>
+      </div>
 
-        {!user && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800">
-              <Link href="/login" className="font-medium underline hover:text-blue-900">
-                Login
-              </Link>
-              {' '}untuk mendaftar course ini dan mengakses materi pembelajaran
+      {/* Course Content */}
+      <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6 md:p-8">
+        <h2 className="font-display text-2xl font-bold text-sija-text mb-6 uppercase border-b-2 border-dashed border-sija-text/10 pb-4">
+          Course Content
+        </h2>
+
+        {loadingArticles ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-sija-primary border-t-transparent"></div>
+            <p className="mt-4 font-bold text-sija-text uppercase tracking-wider">
+              Loading modules...
             </p>
           </div>
-        )}
-      </header>
-
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Materi Course</h2>
-        
-        {articles.length === 0 ? (
-          <p className="text-gray-500">Belum ada artikel dalam course ini.</p>
+        ) : articles.length === 0 ? (
+          <div className="bg-yellow-100 border-2 border-yellow-500 p-8 text-center">
+            <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
+            <p className="font-bold text-yellow-900 uppercase tracking-wider">
+              No modules available yet
+            </p>
+          </div>
         ) : (
           <div className="space-y-3">
-            {articles.map((article, index) => (
-              <a
-                key={article._id?.toString()}
-                href={`/articles/${article.slug}`}
-                className={`block p-4 border rounded-lg transition-colors ${
-                  isEnrolled || canEdit 
-                    ? 'hover:bg-gray-50 cursor-pointer' 
-                    : 'opacity-75 cursor-not-allowed bg-gray-50'
-                }`}
-                onClick={(e) => {
-                  if (!user) {
-                    e.preventDefault();
-                    alert('Silakan login untuk mengakses artikel');
-                  } else if (!isEnrolled && !canEdit) {
-                    e.preventDefault();
-                    alert('Daftar course terlebih dahulu untuk mengakses materi');
-                  }
-                }}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-gray-500">
-                        {index + 1}.
-                      </span>
-                      <h3 className="font-semibold text-gray-900">
-                        {article.title}
-                      </h3>
-                      {!isEnrolled && !canEdit && (
-                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                          🔒 Terkunci
-                        </span>
-                      )}
+            {articles.map((article, index) => {
+              if (!article) return null;
+
+              const completed = isArticleCompleted(article._id?.toString() || '');
+              const unlocked = isEnrolled ? isArticleUnlocked(index) : false;
+              const canAccess = !isEnrolled || unlocked;
+
+              return (
+                <div
+                  key={article._id?.toString() || index}
+                  className={`border-2 p-4 transition-all ${
+                    completed
+                      ? 'bg-green-100 border-green-500'
+                      : !canAccess
+                      ? 'bg-gray-100 border-gray-300 opacity-60'
+                      : 'bg-sija-light border-sija-primary hover:shadow-hard-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div
+                        className={`w-10 h-10 border-2 flex items-center justify-center font-bold ${
+                          completed
+                            ? 'bg-green-500 border-green-700 text-white'
+                            : !canAccess
+                            ? 'bg-gray-300 border-gray-400 text-gray-600'
+                            : 'bg-sija-primary border-sija-primary text-white'
+                        }`}
+                      >
+                        {completed ? (
+                          <CheckCircle2 className="w-6 h-6" />
+                        ) : !canAccess ? (
+                          <Lock className="w-5 h-5" />
+                        ) : (
+                          <span>{index + 1}</span>
+                        )}
+                      </div>
+
+                      <div className="flex-1">
+                        <h3 className="font-bold text-sija-text mb-1">
+                          {article.title}
+                        </h3>
+                        <p className="text-sm text-sija-text/60 font-medium line-clamp-1">
+                          {article.description}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      {article.description}
-                    </p>
+
+                    {canAccess ? (
+                      <Link
+                        href={
+                          isEnrolled
+                            ? `/articles/${article.slug}?course=${course.slug}`
+                            : `/articles/${article.slug}`
+                        }
+                        className="flex items-center gap-2 px-4 py-2 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm whitespace-nowrap"
+                      >
+                        {completed ? 'Review' : 'Start'}
+                        <PlayCircle className="w-4 h-4" />
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-600 font-bold border-2 border-gray-400 uppercase tracking-wider text-sm cursor-not-allowed">
+                        <Lock className="w-4 h-4" />
+                        Locked
+                      </div>
+                    )}
                   </div>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded ml-4">
-                    {article.category}
-                  </span>
                 </div>
-              </a>
-            ))}
+              );
+            })}
           </div>
         )}
-      </section>
+      </div>
+
+      {/* Additional Info */}
+      <div className="mt-6 bg-blue-100 border-2 border-blue-500 p-6">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+          <div>
+            <h3 className="font-bold text-blue-900 mb-2 uppercase tracking-wider">
+              Sequential Learning
+            </h3>
+            <p className="text-sm text-blue-800 font-medium">
+              Modules must be completed in order. Complete each module to unlock the next one.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

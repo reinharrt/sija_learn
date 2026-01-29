@@ -5,32 +5,55 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
-import { generateSlug } from '@/lib/utils';
-import { createCourse, getCourses } from '@/models/Course';
+import { getCourses, createCourse } from '@/models/Course';
+import { findUserById } from '@/models/User';
 import { UserRole } from '@/types';
 import { ObjectId } from 'mongodb';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const creator = searchParams.get('creator');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
     const published = searchParams.get('published');
     const search = searchParams.get('search');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const tag = searchParams.get('tag');
 
     const skip = (page - 1) * limit;
 
     const filters: any = {};
-    if (creator) filters.creator = creator;
-    if (published !== null) filters.published = published === 'true';
-    if (search) filters.search = search;
+    if (published === 'true') {
+      filters.published = true;
+    }
+    if (search) {
+      filters.search = search;
+    }
 
-    const { courses, total } = await getCourses(filters, skip, limit);
+    let { courses, total } = await getCourses(filters, skip, limit);
+
+    // Filter by tag if provided
+    if (tag) {
+      courses = courses.filter(course => course.tags?.includes(tag));
+      total = courses.length;
+    }
+
+    // Populate creator information
+    const coursesWithCreators = await Promise.all(
+      courses.map(async (course) => {
+        if (course.creator) {
+          const creator = await findUserById(course.creator.toString());
+          if (creator) {
+            const { password, ...creatorWithoutPassword } = creator;
+            return { ...course, creator: creatorWithoutPassword };
+          }
+        }
+        return { ...course, creator: null };
+      })
+    );
 
     return NextResponse.json(
       {
-        courses,
+        courses: coursesWithCreators,
         pagination: {
           page,
           limit,
@@ -61,12 +84,13 @@ export async function POST(request: NextRequest) {
 
     if (!hasPermission(user.role, UserRole.COURSE_ADMIN)) {
       return NextResponse.json(
-        { error: 'Forbidden: Anda tidak memiliki akses untuk membuat course' },
+        { error: 'Forbidden: Course Admin required' },
         { status: 403 }
       );
     }
 
-    const { title, description, thumbnail, articles, published } = await request.json();
+    const body = await request.json();
+    const { title, description, thumbnail, tags, articles } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -75,25 +99,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const slug = generateSlug(title);
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
 
-    const articleIds = articles ? articles.map((id: string) => new ObjectId(id)) : [];
-
-    const courseId = await createCourse({
+    const courseData = {
       title,
       slug,
       description,
-      thumbnail,
-      articles: articleIds,
+      thumbnail: thumbnail || '',
+      articles: articles?.map((id: string) => new ObjectId(id)) || [],
       creator: new ObjectId(user.id),
-      published: published || false,
-    });
+      tags: tags || [],
+      published: false,
+    };
+
+    const courseId = await createCourse(courseData);
 
     return NextResponse.json(
-      { 
+      {
         message: 'Course berhasil dibuat',
         courseId: courseId.toString(),
-        slug 
+        slug,
       },
       { status: 201 }
     );

@@ -1,6 +1,6 @@
 // ============================================
 // src/types/index.ts
-// Type Definitions - TypeScript type definitions
+// Type Definitions - WITH COURSE TAGS
 // ============================================
 
 import { ObjectId } from 'mongodb';
@@ -19,8 +19,8 @@ export enum ArticleCategory {
 }
 
 export enum ArticleType {
-  PUBLIC = 'public',           // Bisa diakses semua orang
-  COURSE_ONLY = 'course-only'  // Hanya bisa diakses via course enrollment
+  PUBLIC = 'public',
+  COURSE_ONLY = 'course-only'
 }
 
 export enum BlockType {
@@ -65,23 +65,6 @@ export interface ContentBlock {
   };
 }
 
-export interface Article {
-  _id?: ObjectId;
-  title: string;
-  slug: string;
-  description: string;
-  banner?: string;
-  category: ArticleCategory;
-  type: ArticleType;              // 🆕 PUBLIC or COURSE_ONLY
-  blocks: ContentBlock[];
-  author: ObjectId;
-  tags: string[];
-  published: boolean;
-  views: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface Course {
   _id?: ObjectId;
   title: string;
@@ -90,6 +73,7 @@ export interface Course {
   thumbnail?: string;
   articles: ObjectId[];
   creator: ObjectId;
+  tags: string[];              // 🆕 Course tags
   published: boolean;
   enrolledCount: number;
   createdAt: Date;
@@ -129,4 +113,35 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
+}
+
+export interface Article {
+  _id?: ObjectId;
+  title: string;
+  slug: string;
+  description: string;
+  banner?: string;
+  category: string;                // Now it's a slug (e.g., "pelajaran", "web-development")
+  type: ArticleType;
+  blocks: ContentBlock[];
+  author: ObjectId;
+  tags: string[];
+  views: number;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ✨ NEW: Category interface
+export interface Category {
+  _id?: ObjectId;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+  usageCount: number;
+  createdBy: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }

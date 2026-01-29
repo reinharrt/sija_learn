@@ -1,9 +1,11 @@
 // ============================================
 // src/components/common/Input.tsx
-// Input Component - Reusable input field
+// Input Component - Neobrutalist Design
 // ============================================
 
 'use client';
+
+import { AlertCircle } from 'lucide-react';
 
 interface InputProps {
   label?: string;
@@ -16,6 +18,7 @@ interface InputProps {
   disabled?: boolean;
   error?: string;
   className?: string;
+  helperText?: string;
 }
 
 export default function Input({
@@ -29,13 +32,14 @@ export default function Input({
   disabled = false,
   error,
   className = '',
+  helperText,
 }: InputProps) {
   return (
-    <div className={`${className}`}>
+    <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-bold text-gray-900 mb-2">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-600 ml-1">*</span>}
         </label>
       )}
       <input
@@ -46,12 +50,20 @@ export default function Input({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
-        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-          error ? 'border-red-500' : 'border-gray-300'
+        className={`w-full px-4 py-3 border-2 font-medium focus:outline-none transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 ${
+          error 
+            ? 'border-red-600 bg-red-50 focus:border-red-700' 
+            : 'border-gray-900 bg-white focus:border-blue-600'
         }`}
       />
       {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
+        <div className="mt-2 flex items-start gap-2 text-red-600">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
+      {helperText && !error && (
+        <p className="mt-2 text-xs text-gray-600">{helperText}</p>
       )}
     </div>
   );

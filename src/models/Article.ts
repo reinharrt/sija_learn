@@ -1,11 +1,12 @@
 // ============================================
 // src/models/Article.ts
-// Article Model - Article database schema
+// Article Model - WITH DYNAMIC CATEGORY SUPPORT
 // ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';
-import { Article, ArticleCategory, ArticleType } from '@/types';
+import { Article, ArticleType } from '@/types';
+import { incrementCategoryUsage, decrementCategoryUsage } from './Category';
 
 const COLLECTION_NAME = 'articles';
 
@@ -15,13 +16,19 @@ export async function createArticle(articleData: Omit<Article, '_id' | 'createdA
   
   const article: Article = {
     ...articleData,
-    type: articleData.type || ArticleType.PUBLIC, // Default to PUBLIC
+    type: articleData.type || ArticleType.PUBLIC,
     views: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
   const result = await collection.insertOne(article);
+  
+  // Increment category usage count
+  if (articleData.category) {
+    await incrementCategoryUsage(articleData.category);
+  }
+  
   return result.insertedId;
 }
 
@@ -41,6 +48,19 @@ export async function updateArticle(id: string, updates: Partial<Article>): Prom
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
   
+  // If category is being changed, update usage counts
+  if (updates.category) {
+    const oldArticle = await findArticleById(id);
+    if (oldArticle && oldArticle.category !== updates.category) {
+      // Decrement old category
+      if (oldArticle.category) {
+        await decrementCategoryUsage(oldArticle.category);
+      }
+      // Increment new category
+      await incrementCategoryUsage(updates.category);
+    }
+  }
+  
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
     { 
@@ -58,7 +78,16 @@ export async function deleteArticle(id: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
   
+  // Get article before deletion to decrement category usage
+  const article = await findArticleById(id);
+  
   const result = await collection.deleteOne({ _id: new ObjectId(id) });
+  
+  // Decrement category usage count
+  if (result.deletedCount > 0 && article && article.category) {
+    await decrementCategoryUsage(article.category);
+  }
+  
   return result.deletedCount > 0;
 }
 
@@ -76,11 +105,11 @@ export async function incrementViews(id: string): Promise<boolean> {
 
 export async function getArticles(
   filters: {
-    category?: ArticleCategory;
+    category?: string;           // Now accepts slug instead of enum
     author?: string;
     published?: boolean;
     search?: string;
-    type?: ArticleType;          // 🆕 Filter by type
+    type?: ArticleType;
   } = {},
   skip: number = 0,
   limit: number = 20
@@ -143,9 +172,9 @@ export async function createIndexes() {
   
   await collection.createIndex({ slug: 1 }, { unique: true });
   await collection.createIndex({ author: 1 });
-  await collection.createIndex({ category: 1 });
+  await collection.createIndex({ category: 1 });      // Now indexes slug
   await collection.createIndex({ published: 1 });
-  await collection.createIndex({ type: 1 });        // 🆕 Index for type
+  await collection.createIndex({ type: 1 });
   await collection.createIndex({ createdAt: -1 });
   await collection.createIndex({ views: -1 });
   await collection.createIndex({ title: 'text', description: 'text', tags: 'text' });
