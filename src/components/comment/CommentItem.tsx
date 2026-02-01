@@ -6,15 +6,16 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Comment } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
-import { 
-  Edit2, 
-  Trash2, 
-  Save, 
-  X, 
-  Loader2, 
+import {
+  Edit2,
+  Trash2,
+  Save,
+  X,
+  Loader2,
   AlertCircle,
   Calendar,
   Clock
@@ -114,7 +115,7 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
             disabled={submitting}
             placeholder="Tulis komentar..."
           />
-          
+
           {error && (
             <div className="bg-red-50 border-2 border-red-600 px-3 py-2 mt-3">
               <div className="flex items-start gap-2">
@@ -155,8 +156,16 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
       ) : (
         // View Mode
         <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Link
+              href={`/profile/${comment.author?._id || comment.userId}`}
+              className="font-bold text-gray-900 hover:text-blue-600 transition-colors"
+            >
+              {comment.author?.name || 'User'}
+            </Link>
+          </div>
           <p className="text-gray-900 mb-3 font-medium leading-relaxed">{comment.content}</p>
-          
+
           <div className="flex items-center justify-between pt-3 border-t-2 border-gray-200">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Calendar className="w-4 h-4" />

@@ -1,12 +1,13 @@
 // ============================================
 // src/app/layout.tsx
-// Root Layout - Neobrutalist Theme
+// Root Layout - Neobrutalist Theme WITH GAMIFICATION
 // ============================================
 
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { GamificationProvider } from '@/contexts/GamificationContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -29,14 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${poppins.variable} scroll-smooth`}>
+    <html lang="id" className={`${poppins.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="min-h-screen bg-grid-pattern font-poppins antialiased selection:bg-sija-primary selection:text-white">
         <AuthProvider>
-          <Header />
-          <main className="min-h-screen pt-24">
-            {children}
-          </main>
-          <Footer />
+          <GamificationProvider>
+            <Header />
+            <main className="min-h-screen pt-24">
+              {children}
+            </main>
+            <Footer />
+          </GamificationProvider>
         </AuthProvider>
       </body>
     </html>

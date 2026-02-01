@@ -1,6 +1,7 @@
 // ============================================
 // src/app/my-courses/page.tsx
 // My Courses Page - User's enrolled courses dashboard
+// FIXED VERSION - Better error handling
 // ============================================
 
 'use client';
@@ -12,6 +13,7 @@ import Image from 'next/image';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { Course } from '@/types';
 import { formatDate } from '@/lib/utils';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import { 
   BookOpen, 
   Calendar, 
@@ -43,6 +45,16 @@ export default function MyCoursesPage() {
   const { user, loading: authLoading } = useAuth();
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unenrollModal, setUnenrollModal] = useState<{
+    isOpen: boolean;
+    courseId: string | null;
+    courseTitle: string;
+  }>({
+    isOpen: false,
+    courseId: null,
+    courseTitle: '',
+  });
+  const [isUnenrolling, setIsUnenrolling] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -89,32 +101,66 @@ export default function MyCoursesPage() {
     }
   };
 
-  const handleUnenroll = async (courseId: string, courseTitle: string) => {
-    if (!confirm(`Yakin ingin keluar dari course "${courseTitle}"?`)) {
-      return;
-    }
+  const openUnenrollModal = (courseId: string, courseTitle: string) => {
+    setUnenrollModal({
+      isOpen: true,
+      courseId,
+      courseTitle,
+    });
+  };
 
+  const closeUnenrollModal = () => {
+    if (!isUnenrolling) {
+      setUnenrollModal({
+        isOpen: false,
+        courseId: null,
+        courseTitle: '',
+      });
+    }
+  };
+
+  const handleUnenroll = async () => {
+    if (!unenrollModal.courseId) return;
+
+    setIsUnenrolling(true);
     try {
-      const response = await fetch(`/api/enrollments/${courseId}`, {
+      const response = await fetch(`/api/enrollments/${unenrollModal.courseId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
 
       if (response.ok) {
-        alert('Berhasil keluar dari course');
-        loadMyEnrollments();
+        setTimeout(() => {
+          closeUnenrollModal();
+          loadMyEnrollments();
+          setIsUnenrolling(false);
+        }, 500);
       } else {
         alert('Gagal keluar dari course');
+        setIsUnenrolling(false);
       }
     } catch (error) {
       console.error('Unenroll error:', error);
       alert('Terjadi kesalahan');
+      setIsUnenrolling(false);
     }
   };
 
   const calculateProgress = (enrollment: EnrollmentWithCourse) => {
-    if (!enrollment.course?.articles?.length) return 0;
+    // ✅ DEFENSIVE: Check all possible undefined/null cases
+    if (!enrollment) return 0;
+    if (!enrollment.course) return 0;
+    if (!enrollment.course.articles) return 0;
+    if (!Array.isArray(enrollment.course.articles)) return 0;
+    if (enrollment.course.articles.length === 0) return 0;
+    
     const total = enrollment.course.articles.length;
+    
+    // ✅ DEFENSIVE: Check progress object exists
+    if (!enrollment.progress) return 0;
+    if (!enrollment.progress.completedArticles) return 0;
+    if (!Array.isArray(enrollment.progress.completedArticles)) return 0;
+    
     const completed = enrollment.progress.completedArticles.length;
     return Math.round((completed / total) * 100);
   };
@@ -132,15 +178,19 @@ export default function MyCoursesPage() {
     return null;
   }
 
-  const inProgressCount = enrollments.filter(e => calculateProgress(e) > 0 && calculateProgress(e) < 100).length;
+  const inProgressCount = enrollments.filter(e => {
+    const progress = calculateProgress(e);
+    return progress > 0 && progress < 100;
+  }).length;
+  
   const completedCount = enrollments.filter(e => calculateProgress(e) === 100).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header - Neobrutalist */}
-      <div className="mb-8 bg-sija-surface border-2 border-sija-primary p-8 shadow-hard">
+      <div className="mb-8 bg-sija-surface border-4 border-sija-primary shadow-hard p-8">
         <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center">
+          <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center shadow-hard-sm">
             <GraduationCap className="w-7 h-7 text-white" />
           </div>
           <div>
@@ -157,9 +207,9 @@ export default function MyCoursesPage() {
       {/* Stats Grid - Neobrutalist */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Total Courses */}
-        <div className="bg-sija-light border-2 border-sija-primary p-6 shadow-hard-sm">
+        <div className="bg-sija-light border-4 border-sija-primary shadow-hard p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center">
+            <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center shadow-hard-sm">
               <Library className="w-6 h-6 text-white" />
             </div>
             <div className="text-4xl font-black text-sija-primary">{enrollments.length}</div>
@@ -170,9 +220,9 @@ export default function MyCoursesPage() {
         </div>
 
         {/* In Progress */}
-        <div className="bg-blue-100 border-2 border-blue-500 p-6 shadow-hard-sm">
+        <div className="bg-blue-100 border-4 border-blue-500 shadow-hard p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-blue-500 border-2 border-blue-700 flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-500 border-2 border-blue-700 flex items-center justify-center shadow-hard-sm">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div className="text-4xl font-black text-blue-700">{inProgressCount}</div>
@@ -183,9 +233,9 @@ export default function MyCoursesPage() {
         </div>
 
         {/* Completed */}
-        <div className="bg-green-100 border-2 border-green-500 p-6 shadow-hard-sm">
+        <div className="bg-green-100 border-4 border-green-500 shadow-hard p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-green-500 border-2 border-green-700 flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-500 border-2 border-green-700 flex items-center justify-center shadow-hard-sm">
               <Trophy className="w-6 h-6 text-white" />
             </div>
             <div className="text-4xl font-black text-green-700">{completedCount}</div>
@@ -198,8 +248,8 @@ export default function MyCoursesPage() {
 
       {/* Courses List */}
       {enrollments.length === 0 ? (
-        <div className="bg-sija-surface border-2 border-sija-primary p-12 text-center shadow-hard">
-          <div className="w-24 h-24 bg-sija-light border-2 border-sija-primary mx-auto mb-6 flex items-center justify-center">
+        <div className="bg-sija-surface border-4 border-sija-primary shadow-hard p-12 text-center">
+          <div className="w-24 h-24 bg-sija-light border-4 border-sija-primary mx-auto mb-6 flex items-center justify-center shadow-hard-sm">
             <BookOpen className="w-12 h-12 text-sija-primary" />
           </div>
           <p className="text-sija-text font-bold text-xl mb-6 uppercase tracking-wide">
@@ -210,7 +260,7 @@ export default function MyCoursesPage() {
           </p>
           <Link
             href="/courses"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase tracking-wider"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-sija-primary text-white font-bold border-4 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase tracking-wider"
           >
             <Search className="w-5 h-5" />
             Explore Courses
@@ -229,7 +279,7 @@ export default function MyCoursesPage() {
             return (
               <div 
                 key={enrollment._id} 
-                className={`bg-sija-surface border-2 shadow-hard overflow-hidden transition-all hover:shadow-hard-lg ${
+                className={`bg-sija-surface border-4 shadow-hard overflow-hidden transition-all hover:shadow-hard-lg ${
                   isCompleted 
                     ? 'border-green-500' 
                     : isInProgress 
@@ -239,7 +289,7 @@ export default function MyCoursesPage() {
               >
                 {/* Thumbnail */}
                 {course.thumbnail && (
-                  <div className="relative w-full h-48 border-b-2 border-sija-primary bg-sija-light overflow-hidden">
+                  <div className="relative w-full h-48 border-b-4 border-current bg-sija-light overflow-hidden">
                     <Image 
                       src={course.thumbnail} 
                       alt={course.title}
@@ -329,7 +379,7 @@ export default function MyCoursesPage() {
                       )}
                     </Link>
                     <button
-                      onClick={() => handleUnenroll(course._id!.toString(), course.title)}
+                      onClick={() => openUnenrollModal(course._id!.toString(), course.title)}
                       className="bg-red-100 text-red-600 px-4 py-3 text-sm font-bold border-2 border-red-500 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center"
                       title="Leave Course"
                     >
@@ -342,6 +392,19 @@ export default function MyCoursesPage() {
           })}
         </div>
       )}
+
+      {/* Unenroll Confirmation Modal */}
+      <ConfirmModal
+        isOpen={unenrollModal.isOpen}
+        onClose={closeUnenrollModal}
+        onConfirm={handleUnenroll}
+        title="Keluar dari Course?"
+        message={`Apakah Anda yakin ingin keluar dari course "${unenrollModal.courseTitle}"? Progress Anda akan hilang dan tidak dapat dikembalikan.`}
+        confirmText="Ya, Keluar"
+        cancelText="Batal"
+        type="danger"
+        isLoading={isUnenrolling}
+      />
     </div>
   );
 }

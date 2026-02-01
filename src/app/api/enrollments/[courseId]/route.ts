@@ -29,6 +29,29 @@ export async function GET(
     const enrollmentCollection = db.collection<Enrollment>('enrollments');
     const coursesCollection = db.collection<Course>('courses');
 
+    // Get course first to check if user is creator
+    const course = await coursesCollection.findOne({
+      _id: new ObjectId(courseId)
+    });
+
+    if (!course) {
+      return NextResponse.json(
+        { error: 'Course tidak ditemukan' },
+        { status: 404 }
+      );
+    }
+
+    // ✅ CHECK IF USER IS CREATOR - They shouldn't have enrollment
+    if (course.creator?.toString() === user.id) {
+      return NextResponse.json(
+        { 
+          error: 'Anda adalah pembuat course ini',
+          isCreator: true 
+        },
+        { status: 403 }
+      );
+    }
+
     // Get enrollment
     const enrollment = await enrollmentCollection.findOne({
       userId: new ObjectId(user.id),
@@ -41,11 +64,6 @@ export async function GET(
         { status: 404 }
       );
     }
-
-    // Get course to calculate progress
-    const course = await coursesCollection.findOne({
-      _id: new ObjectId(courseId)
-    });
 
     const totalArticles = course?.articles?.length || 0;
     const completedCount = enrollment.progress?.completedArticles?.length || 0;
@@ -98,6 +116,14 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Course tidak ditemukan' },
         { status: 404 }
+      );
+    }
+
+    // ✅ CHECK IF USER IS CREATOR - They shouldn't be able to unenroll
+    if (course.creator?.toString() === user.id) {
+      return NextResponse.json(
+        { error: 'Anda adalah pembuat course ini, tidak dapat keluar dari course sendiri' },
+        { status: 403 }
       );
     }
 

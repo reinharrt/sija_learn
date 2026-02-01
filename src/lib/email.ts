@@ -89,3 +89,35 @@ export async function sendWelcomeEmail(email: string, name: string) {
     return { success: false, error };
   }
 }
+
+export async function sendPasswordResetOTP(email: string, name: string, otp: string) {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: 'Kode OTP Ganti Password - SIJA Learn',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Halo ${name}!</h2>
+        <p>Anda telah meminta untuk mengganti password akun SIJA Learn Anda.</p>
+        <p>Berikut adalah kode OTP Anda:</p>
+        <div style="background-color: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+          <h1 style="color: #3b82f6; font-size: 36px; letter-spacing: 8px; margin: 0;">${otp}</h1>
+        </div>
+        <p><strong>Kode ini akan kadaluarsa dalam 10 menit.</strong></p>
+        <p>Jangan bagikan kode ini kepada siapapun, termasuk staff SIJA Learn.</p>
+        <hr style="margin: 24px 0; border: none; border-top: 1px solid #ddd;">
+        <p style="color: #999; font-size: 12px;">
+          Jika Anda tidak meminta perubahan password, abaikan email ini dan pastikan akun Anda aman.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+    return { success: false, error };
+  }
+}

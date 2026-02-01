@@ -5,14 +5,16 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,6 +25,13 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [requiresVerification, setRequiresVerification] = useState(false);
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/');
+    }
+  }, [user, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -69,19 +78,29 @@ export default function RegisterPage() {
     }
   };
 
+  // Show loading state while checking auth
+  if (authLoading) {
+    return null;
+  }
+
+  // Don't render if user is logged in (will redirect)
+  if (user) {
+    return null;
+  }
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md text-center">
           <div className="text-green-600 text-5xl mb-4">✓</div>
           <h1 className="text-2xl font-bold mb-4">Registrasi Berhasil!</h1>
-          
+
           {requiresVerification ? (
             <>
               <p className="text-gray-600 mb-6">
                 Silakan cek email Anda untuk verifikasi akun.
               </p>
-              <Link 
+              <Link
                 href="/login"
                 className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
               >
@@ -93,7 +112,7 @@ export default function RegisterPage() {
               <p className="text-gray-600 mb-6">
                 Akun Anda sudah aktif. Silakan login untuk melanjutkan.
               </p>
-              <Link 
+              <Link
                 href="/login"
                 className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
               >

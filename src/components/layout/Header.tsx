@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
-import { Menu, X, Moon, Sun } from 'lucide-react';
+import { Menu, X, Moon, Sun, UserCog } from 'lucide-react';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -20,7 +20,7 @@ export default function Header() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
       setIsDark(true);
       document.documentElement.classList.add('dark');
@@ -57,18 +57,14 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 lg:gap-3 group cursor-pointer">
-            <div className="w-12 h-12 lg:w-14 lg:h-14 relative border-2 border-sija-primary shadow-hard-sm overflow-hidden transition-transform group-hover:scale-105">
-              <Image 
-                src="/assets/logo/image-placeholder-1024x1024.jpg"
+            <div className="w-16 h-16 lg:w-[80px] lg:h-[80px] relative transition-transform group-hover:scale-105">
+              <Image
+                src="/assets/logo/logo.png"
                 alt="SIJA.ID Logo"
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="font-display text-lg lg:text-xl font-bold text-sija-primary tracking-tight">SIJA.ID</h1>
-              <p className="text-[9px] lg:text-[10px] font-bold text-sija-text uppercase tracking-widest">SMKN 1 Cimahi</p>
             </div>
           </Link>
 
@@ -80,7 +76,10 @@ export default function Header() {
             <Link href="/courses" className="font-display text-sm font-bold text-sija-text hover:text-sija-primary uppercase tracking-wide transition-colors">
               Courses
             </Link>
-            
+            <Link href="/leaderboard" className="font-display text-sm font-bold text-sija-text hover:text-sija-primary uppercase tracking-wide transition-colors">
+              Leaderboard
+            </Link>
+
             {user && (
               <Link href="/my-courses" className="font-display text-sm font-bold text-sija-text hover:text-sija-primary uppercase tracking-wide transition-colors">
                 My Courses
@@ -103,6 +102,14 @@ export default function Header() {
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold text-sija-text hidden lg:inline">{user.name}</span>
+                <Link
+                  href="/profile/edit"
+                  className="p-2 bg-blue-100 text-blue-600 border-2 border-blue-600 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                  aria-label="Edit Profile"
+                  title="Edit Profile"
+                >
+                  <UserCog size={20} />
+                </Link>
                 <button onClick={handleLogout} className="px-4 py-2 font-display font-bold text-sm bg-red-500 text-white border-2 border-red-500 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase">
                   Logout
                 </button>
@@ -136,7 +143,10 @@ export default function Header() {
             <Link href="/courses" className="block font-display text-base font-bold text-sija-text hover:text-sija-primary hover:pl-2 transition-all" onClick={() => setIsOpen(false)}>
               Courses
             </Link>
-            
+            <Link href="/leaderboard" className="block font-display text-base font-bold text-sija-text hover:text-sija-primary hover:pl-2 transition-all" onClick={() => setIsOpen(false)}>
+              Leaderboard
+            </Link>
+
             {user && (
               <Link href="/my-courses" className="block font-display text-base font-bold text-sija-text hover:text-sija-primary hover:pl-2 transition-all" onClick={() => setIsOpen(false)}>
                 My Courses
@@ -152,6 +162,13 @@ export default function Header() {
             {user ? (
               <div className="pt-3 border-t-2 border-sija-text/10 space-y-3">
                 <p className="text-sm font-bold text-sija-text">Logged in as: {user.name}</p>
+                <Link
+                  href="/profile/edit"
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full text-center px-4 py-3 font-bold bg-blue-100 text-blue-600 border-2 border-blue-600 shadow-hard-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px] uppercase"
+                >
+                  Edit Profile
+                </Link>
                 <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block w-full text-center px-4 py-3 font-bold bg-red-500 text-white border-2 border-red-500 shadow-hard-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px] uppercase">
                   Logout
                 </button>

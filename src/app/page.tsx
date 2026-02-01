@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Adjusted spacing */}
-      <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 px-6 overflow-hidden border-b-2 border-sija-primary bg-sija-surface transition-colors duration-300">
+      <section className="relative -mt-4 pt-12 pb-16 md:pt-20 md:pb-24 px-6 overflow-hidden border-b-2 border-sija-primary bg-sija-surface transition-colors duration-300">
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 flex flex-col items-start">
             <div className="inline-block bg-sija-light border-2 border-sija-primary px-4 py-2 mb-6 shadow-hard-sm">
@@ -42,12 +42,12 @@ export default function Home() {
               </span>
             </div>
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-sija-primary leading-[0.9] mb-6">
-              CREATE <br/>
-              <span className="text-outline-blue">CONNECT</span> <br/>
+              CREATE <br />
+              <span className="text-outline-blue">CONNECT</span> <br />
               COMPILE
             </h1>
             <p className="max-w-xl text-base md:text-lg text-sija-text font-medium mb-8 leading-relaxed border-l-4 border-sija-primary pl-6">
-              The digital HQ for <span className="font-bold text-sija-primary">SIJA SMKN 1 Cimahi</span>. 
+              The digital HQ for <span className="font-bold text-sija-primary">SIJA SMKN 1 Cimahi</span>.
               Where code meets creativity and students become engineers.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -70,7 +70,7 @@ export default function Home() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-sija-surface border-2 border-sija-primary p-6 shadow-hard rotate-3 hover:rotate-0 transition-transform duration-300">
                     <MousePointer2 size={48} className="text-sija-primary mx-auto mb-2" />
-                    <div className="font-display font-bold text-xl text-sija-text">Interactive<br/>Learning</div>
+                    <div className="font-display font-bold text-xl text-sija-text">Interactive<br />Learning</div>
                   </div>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default function Home() {
               ))}
             </div>
           )}
-          
+
           <div className="mt-10 text-center">
             <Link href="/articles" className="inline-flex items-center gap-2 font-display text-lg font-bold text-sija-text border-b-4 border-sija-primary hover:text-sija-primary transition-colors pb-1 uppercase tracking-wider">
               View Archive <ArrowRight size={20} />
@@ -161,7 +161,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto text-center border-2 border-white/20 p-8 md:p-12 bg-sija-primary relative overflow-hidden">
           <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <h2 className="relative font-display text-3xl md:text-5xl font-black mb-6 leading-tight uppercase">
-            Ready to Debug <br/> Your Future?
+            Ready to Debug <br /> Your Future?
           </h2>
           <p className="relative text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto font-medium">
             Join the SIJA SMKN 1 Cimahi ecosystem. Access resources, connect with alumni, and ship code.

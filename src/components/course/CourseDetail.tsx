@@ -1,6 +1,6 @@
 // ============================================
 // src/components/course/CourseDetail.tsx
-// Course Detail Component - WITH ENROLLMENT STATE
+// Course Detail Component - WITH CREATOR ENROLLMENT PREVENTION
 // ============================================
 
 'use client';
@@ -11,16 +11,22 @@ import Image from 'next/image';
 import { Course, Article } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { formatDate } from '@/lib/utils';
-import { 
-  BookOpen, 
-  Users, 
-  Calendar, 
+import { getDifficultyDisplay, getDifficultyColor, calculateCourseXP } from '@/lib/xp-calculator';
+import CourseCompletionHandler from './CourseCompletionHandler';
+import {
+  BookOpen,
+  Users,
+  Calendar,
   User,
   Lock,
   CheckCircle2,
   PlayCircle,
   LogOut,
-  AlertCircle
+  AlertCircle,
+  Edit,
+  Crown,
+  Star,
+  Zap
 } from 'lucide-react';
 
 interface CourseDetailProps {
@@ -44,6 +50,17 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
     percentage: number;
   }>({ completedArticles: [], percentage: 0 });
 
+  // ✅ CHECK IF USER IS CREATOR
+  const isCreator = user && course.creator &&
+    (typeof course.creator === 'string'
+      ? course.creator === user.id
+      : course.creator._id?.toString() === user.id);
+
+  // ✅ SYNC ENROLLMENT STATE WITH PROP
+  useEffect(() => {
+    setIsEnrolled(initialIsEnrolled);
+  }, [initialIsEnrolled]);
+
   useEffect(() => {
     if (course.articles && course.articles.length > 0) {
       loadArticles();
@@ -51,10 +68,11 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   }, [course.articles]);
 
   useEffect(() => {
-    if (isEnrolled && user) {
+    // ✅ ONLY LOAD PROGRESS IF NOT CREATOR
+    if (isEnrolled && user && !isCreator) {
       loadProgress();
     }
-  }, [isEnrolled, user]);
+  }, [isEnrolled, user, isCreator]);
 
   const loadArticles = async () => {
     setLoadingArticles(true);
@@ -80,15 +98,15 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
     if (!course._id) return;
 
     try {
-      const res = await fetch(`/api/enrollments/${course._id}/progress`, {
+      const res = await fetch(`/api/enrollments/${course._id}`, {
         headers: getAuthHeaders(),
       });
 
       if (res.ok) {
         const data = await res.json();
         setProgress({
-          completedArticles: data.progress.completedArticles || [],
-          percentage: data.progress.percentage || 0,
+          completedArticles: data.progress?.completedArticles || [],
+          percentage: data.progress?.percentage || 0,
         });
       }
     } catch (error) {
@@ -99,6 +117,12 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   const handleEnroll = async () => {
     if (!user) {
       alert('Silakan login terlebih dahulu!');
+      return;
+    }
+
+    // ✅ PREVENT CREATOR FROM ENROLLING
+    if (isCreator) {
+      alert('Anda tidak dapat mendaftar di course yang Anda buat sendiri');
       return;
     }
 
@@ -153,12 +177,15 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   };
 
   const isArticleUnlocked = (index: number) => {
+    // ✅ CREATORS HAVE ACCESS TO ALL ARTICLES
+    if (isCreator) return true;
+
     if (index === 0) return true; // First article always unlocked
-    
+
     // Previous article must be completed
     const previousArticle = articles[index - 1];
     if (!previousArticle || !previousArticle._id) return false;
-    
+
     return isArticleCompleted(previousArticle._id.toString());
   };
 
@@ -175,6 +202,13 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
               className="object-cover"
               priority
             />
+            {/* ✅ CREATOR BADGE ON THUMBNAIL */}
+            {isCreator && (
+              <div className="absolute top-4 right-4 bg-yellow-400 text-sija-primary px-4 py-2 border-2 border-sija-primary shadow-hard font-bold uppercase tracking-wider flex items-center gap-2">
+                <Crown className="w-5 h-5" />
+                Your Course
+              </div>
+            )}
           </div>
         )}
 
@@ -200,6 +234,23 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
               ))}
             </div>
           )}
+
+          {/* Difficulty & XP Badges */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            {course.difficulty && (
+              <div className={`inline-flex items-center gap-2 px-4 py-2 border-2 font-bold uppercase tracking-wider ${getDifficultyColor(course.difficulty)}`}>
+                <Zap className="w-4 h-4" strokeWidth={2.5} />
+                {getDifficultyDisplay(course.difficulty)}
+              </div>
+            )}
+
+            {(course.xpReward || course.difficulty) && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 border-2 bg-yellow-100 text-yellow-900 border-yellow-500 font-bold uppercase tracking-wider">
+                <Star className="w-4 h-4" strokeWidth={2.5} fill="currentColor" />
+                {course.xpReward || calculateCourseXP(course.difficulty || 'beginner', articles.length)} XP
+              </div>
+            )}
+          </div>
 
           {/* Meta Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6 border-y-2 border-dashed border-sija-text/10">
@@ -248,7 +299,29 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
 
           {/* Enrollment Section */}
           <div className="mt-6">
-            {!user ? (
+            {/* ✅ CREATOR VIEW */}
+            {isCreator ? (
+              <div className="bg-yellow-100 border-2 border-yellow-500 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Crown className="w-8 h-8 text-yellow-600" />
+                  <div>
+                    <h3 className="font-bold text-yellow-900 uppercase tracking-wider text-lg">
+                      You are the Course Creator
+                    </h3>
+                    <p className="text-sm text-yellow-800 font-medium">
+                      You have full access to all modules and can edit this course
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/courses/${course.slug}/edit`}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                >
+                  <Edit className="w-5 h-5" />
+                  Edit Course
+                </Link>
+              </div>
+            ) : !user ? (
               <div className="bg-yellow-100 border-2 border-yellow-500 p-6 text-center">
                 <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
                 <p className="text-yellow-900 font-bold mb-4">
@@ -340,30 +413,28 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
               if (!article) return null;
 
               const completed = isArticleCompleted(article._id?.toString() || '');
-              const unlocked = isEnrolled ? isArticleUnlocked(index) : false;
-              const canAccess = !isEnrolled || unlocked;
+              const unlocked = isCreator ? true : (isEnrolled ? isArticleUnlocked(index) : false);
+              const canAccess = isCreator || !isEnrolled || unlocked;
 
               return (
                 <div
                   key={article._id?.toString() || index}
-                  className={`border-2 p-4 transition-all ${
-                    completed
-                      ? 'bg-green-100 border-green-500'
-                      : !canAccess
+                  className={`border-2 p-4 transition-all ${completed
+                    ? 'bg-green-100 border-green-500'
+                    : !canAccess
                       ? 'bg-gray-100 border-gray-300 opacity-60'
                       : 'bg-sija-light border-sija-primary hover:shadow-hard-sm'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1">
                       <div
-                        className={`w-10 h-10 border-2 flex items-center justify-center font-bold ${
-                          completed
-                            ? 'bg-green-500 border-green-700 text-white'
-                            : !canAccess
+                        className={`w-10 h-10 border-2 flex items-center justify-center font-bold ${completed
+                          ? 'bg-green-500 border-green-700 text-white'
+                          : !canAccess
                             ? 'bg-gray-300 border-gray-400 text-gray-600'
                             : 'bg-sija-primary border-sija-primary text-white'
-                        }`}
+                          }`}
                       >
                         {completed ? (
                           <CheckCircle2 className="w-6 h-6" />
@@ -387,13 +458,13 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
                     {canAccess ? (
                       <Link
                         href={
-                          isEnrolled
+                          isEnrolled || isCreator
                             ? `/articles/${article.slug}?course=${course.slug}`
                             : `/articles/${article.slug}`
                         }
                         className="flex items-center gap-2 px-4 py-2 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm whitespace-nowrap"
                       >
-                        {completed ? 'Review' : 'Start'}
+                        {isCreator ? 'View' : completed ? 'Review' : 'Start'}
                         <PlayCircle className="w-4 h-4" />
                       </Link>
                     ) : (
@@ -411,19 +482,32 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
       </div>
 
       {/* Additional Info */}
-      <div className="mt-6 bg-blue-100 border-2 border-blue-500 p-6">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-          <div>
-            <h3 className="font-bold text-blue-900 mb-2 uppercase tracking-wider">
-              Sequential Learning
-            </h3>
-            <p className="text-sm text-blue-800 font-medium">
-              Modules must be completed in order. Complete each module to unlock the next one.
-            </p>
+      {!isCreator && (
+        <div className="mt-6 bg-blue-100 border-2 border-blue-500 p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="font-bold text-blue-900 mb-2 uppercase tracking-wider">
+                Sequential Learning
+              </h3>
+              <p className="text-sm text-blue-800 font-medium">
+                Modules must be completed in order. Complete each module to unlock the next one.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Course Completion Handler - Automatically awards XP when all articles are completed */}
+      {user && isEnrolled && !isCreator && (
+        <CourseCompletionHandler
+          courseId={course._id?.toString() || ''}
+          totalArticles={articles.length}
+          completedArticles={progress.completedArticles}
+          isEnrolled={isEnrolled}
+          isCreator={!!isCreator}
+        />
+      )}
     </div>
   );
 }

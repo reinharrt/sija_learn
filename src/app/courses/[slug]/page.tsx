@@ -16,7 +16,7 @@ export default function CourseDetailPage() {
   const router = useRouter();
   const slug = params.slug as string;
   const { user } = useAuth();
-  
+
   const [course, setCourse] = useState<Course | null>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export default function CourseDetailPage() {
     try {
       const res = await fetch(`/api/courses/${slug}`);
       const data = await res.json();
-      
+
       if (res.ok) {
         setCourse(data);
       } else {
@@ -64,9 +64,20 @@ export default function CourseDetailPage() {
 
       if (res.ok) {
         const data = await res.json();
-        const enrolled = data.enrollments?.some(
-          (e: any) => e.courseId.toString() === course._id?.toString()
-        );
+        console.log('📋 Enrollment check - All enrollments:', data.enrollments);
+        console.log('📋 Current course ID:', course._id);
+
+        // Compare courseId (now string from API) with current course ID
+        const enrolled = data.enrollments?.some((e: any) => {
+          const enrollmentCourseId = e.courseId; // Already a string from API
+          const currentCourseId = course._id?.toString();
+
+          console.log('🔍 Comparing:', enrollmentCourseId, '===', currentCourseId);
+
+          return enrollmentCourseId === currentCourseId;
+        });
+
+        console.log('✅ Enrollment status:', enrolled);
         setIsEnrolled(enrolled);
       }
     } catch (error) {
@@ -102,8 +113,8 @@ export default function CourseDetailPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <CourseDetail 
-        course={course} 
+      <CourseDetail
+        course={course}
         initialIsEnrolled={isEnrolled}
       />
     </div>

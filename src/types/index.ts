@@ -41,6 +41,16 @@ export interface User {
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
+  // Password reset OTP fields
+  passwordResetOTP?: string;
+  passwordResetOTPExpiry?: Date;
+  // Rate limiting fields
+  otpRequestCount?: number;
+  otpRequestResetAt?: Date;
+  passwordChangeAttempts?: number;
+  passwordChangeResetAt?: Date;
 }
 
 export interface TempUser {
@@ -78,6 +88,8 @@ export interface Course {
   enrolledCount: number;
   createdAt: Date;
   updatedAt: Date;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  xpReward?: number; // Calculated based on difficulty
 }
 
 export interface Comment {
@@ -87,6 +99,11 @@ export interface Comment {
   content: string;
   createdAt: Date;
   updatedAt: Date;
+  author?: {
+    _id: string;
+    name: string;
+    email?: string;
+  };
 }
 
 export interface Enrollment {
@@ -144,4 +161,33 @@ export interface Category {
   createdBy: ObjectId;
   createdAt: Date;
   updatedAt: Date;
+}
+
+// New gamification types:
+export interface UserProgress {
+  _id?: string;
+  userId: string;
+  totalXP: number;
+  currentLevel: number;
+  badges: string[];
+  stats: {
+    coursesCompleted: number;
+    articlesRead: number;
+    commentsPosted: number;
+    currentStreak: number;
+    longestStreak: number;
+    lastActivityDate: Date;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface BadgeDefinition {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  category: 'progress' | 'streak' | 'social' | 'speed' | 'explorer' | 'special';
+  xpReward?: number;
 }

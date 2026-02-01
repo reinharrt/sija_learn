@@ -10,6 +10,7 @@ import { ReactNode } from 'react';
 export interface Column<T> {
   key: string;
   label: string;
+  width?: string;
   render?: (item: T) => ReactNode;
   className?: string;
 }
@@ -147,7 +148,7 @@ export default function DataTable<T extends { _id?: any }>({
                 {columns.map((column) => (
                   <th
                     key={column.key}
-                    className={`px-6 py-4 text-left font-display text-xs font-black text-sija-primary uppercase tracking-wider ${column.className || ''}`}
+                    className={`px-6 py-4 text-left font-display text-xs font-black text-sija-primary uppercase tracking-wider ${column.width || ''} ${column.className || ''}`}
                   >
                     {column.label}
                   </th>
@@ -163,7 +164,7 @@ export default function DataTable<T extends { _id?: any }>({
                   } hover:bg-sija-primary/5 transition-colors`}
                 >
                   {columns.map((column) => (
-                    <td key={column.key} className={`px-6 py-4 ${column.className || ''}`}>
+                    <td key={column.key} className={`px-6 py-4 ${column.width || ''} ${column.className || ''}`}>
                       {column.render
                         ? column.render(item)
                         : String((item as any)[column.key] || '-')}

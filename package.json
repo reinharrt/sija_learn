@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "migrate:tags": "npx scripts/migrate-tags.ts"
-
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

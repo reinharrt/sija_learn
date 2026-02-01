@@ -1,6 +1,7 @@
 // ============================================
 // src/app/articles/[slug]/page.tsx  
 // Article Detail Page - WITH NEOBRUTALIST STYLE
+// FULL LUCIDE ICONS - NO EMOJI VERSION
 // ============================================
 
 'use client';
@@ -12,7 +13,7 @@ import CourseArticleReader from '@/components/course/CourseArticleReader';
 import CommentItem from '@/components/comment/CommentItem';
 import { Article, Comment, ArticleType } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
-import { Lock, BookOpen, GraduationCap, Home, Search } from 'lucide-react';
+import { Lock, BookOpen, GraduationCap, Home, Search, AlertCircle, LogIn } from 'lucide-react';
 
 interface PageState {
   article: Article | null;
@@ -323,13 +324,15 @@ export default function ArticleDetailPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center bg-sija-surface border-4 border-sija-primary shadow-hard p-12">
-          <div className="text-8xl mb-6">❌</div>
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-red-100 border-4 border-red-500 shadow-hard-sm mb-6">
+            <AlertCircle className="w-16 h-16 text-red-500" />
+          </div>
           <h1 className="font-display text-3xl font-black text-sija-text mb-6 uppercase">
             Artikel Tidak Ditemukan
           </h1>
           <button
             onClick={() => router.push('/articles')}
-            className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+            className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-4 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
           >
             <Home className="w-5 h-5" />
             Kembali
@@ -381,14 +384,14 @@ export default function ArticleDetailPage() {
               <>
                 <button
                   onClick={() => router.push('/courses')}
-                  className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                  className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-4 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
                   <Search className="w-5 h-5" />
                   Jelajahi Course
                 </button>
                 <button
                   onClick={() => router.push('/my-courses')}
-                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-2 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-4 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
                   <BookOpen className="w-5 h-5" />
                   Course Saya
@@ -398,13 +401,14 @@ export default function ArticleDetailPage() {
               <>
                 <button
                   onClick={() => router.push('/login')}
-                  className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                  className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-4 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
-                  🔐 Login
+                  <LogIn className="w-5 h-5" />
+                  Login
                 </button>
                 <button
                   onClick={() => router.push('/courses')}
-                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-2 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-4 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
                   <Search className="w-5 h-5" />
                   Lihat Course
@@ -457,7 +461,7 @@ export default function ArticleDetailPage() {
             <button
               type="submit"
               disabled={submitting || !newComment.trim()}
-              className="mt-4 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
+              className="mt-4 bg-sija-primary text-white px-6 py-3 border-4 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
             >
               {submitting ? 'Mengirim...' : 'Kirim Komentar'}
             </button>
@@ -469,8 +473,9 @@ export default function ArticleDetailPage() {
             </p>
             <a 
               href="/login" 
-              className="inline-block bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+              className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-4 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
             >
+              <LogIn className="w-5 h-5" />
               Login
             </a>
           </div>

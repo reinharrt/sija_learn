@@ -1,14 +1,15 @@
 // ============================================
 // src/app/api/enrollments/[courseId]/progress/route.ts
-// Progress Tracking API - Mark article as completed
+// UPDATED - Progress Tracking dengan Gamification Integration
 // ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { getUserFromRequest } from '@/lib/auth';
+import { readArticle } from '@/lib/gamification';
 
-// POST /api/enrollments/[courseId]/progress - Mark article as completed
+// POST - Mark article as completed AND award XP
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -16,24 +17,17 @@ export async function POST(
   try {
     const user = getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { courseId } = await params;
-    const { articleId } = await request.json();
+    const { articleId, wordCount } = await request.json();
 
     if (!articleId) {
-      return NextResponse.json(
-        { error: 'articleId required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'articleId required' }, { status: 400 });
     }
 
-    const client = await clientPromise;
-    const db = client.db('sija-learn');
+    const db = await getDatabase();
 
     // Check if enrollment exists
     const enrollment = await db.collection('enrollments').findOne({
@@ -42,11 +36,13 @@ export async function POST(
     });
 
     if (!enrollment) {
-      return NextResponse.json(
-        { error: 'Not enrolled in this course' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Not enrolled in this course' }, { status: 404 });
     }
+
+    // Check if article is already completed
+    const isAlreadyCompleted = enrollment.progress?.completedArticles?.some(
+      (id: ObjectId) => id.toString() === articleId
+    );
 
     // Add article to completedArticles if not already there
     await db.collection('enrollments').updateOne(
@@ -63,6 +59,18 @@ export async function POST(
         },
       }
     );
+
+    // 🎮 GAMIFICATION: Award XP for reading article (only if first time)
+    let xpGained = 0;
+    if (!isAlreadyCompleted) {
+      try {
+        const result = await readArticle(user.id, articleId, wordCount);
+        xpGained = result.xpGained;
+      } catch (error) {
+        console.error('Failed to award XP:', error);
+        // Don't fail the request if gamification fails
+      }
+    }
 
     // Get updated enrollment
     const updatedEnrollment = await db.collection('enrollments').findOne({
@@ -81,6 +89,9 @@ export async function POST(
       ? Math.round((completedCount / totalArticles) * 100) 
       : 0;
 
+    // 🎮 Check if course is now complete
+    const courseCompleted = completedCount === totalArticles && totalArticles > 0;
+
     return NextResponse.json({
       message: 'Article marked as completed',
       progress: {
@@ -89,6 +100,10 @@ export async function POST(
         percentage: progressPercentage,
         completedArticles: updatedEnrollment?.progress?.completedArticles || [],
       },
+      gamification: {
+        xpGained,
+        courseCompleted
+      }
     });
   } catch (error) {
     console.error('Mark progress error:', error);
@@ -99,7 +114,7 @@ export async function POST(
   }
 }
 
-// GET /api/enrollments/[courseId]/progress - Get progress details
+// GET - Get progress details (unchanged)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -107,16 +122,11 @@ export async function GET(
   try {
     const user = getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { courseId } = await params;
-
-    const client = await clientPromise;
-    const db = client.db('sija-learn');
+    const db = await getDatabase();
 
     const enrollment = await db.collection('enrollments').findOne({
       userId: new ObjectId(user.id),
@@ -124,10 +134,7 @@ export async function GET(
     });
 
     if (!enrollment) {
-      return NextResponse.json(
-        { error: 'Not enrolled in this course' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Not enrolled in this course' }, { status: 404 });
     }
 
     const course = await db.collection('courses').findOne({

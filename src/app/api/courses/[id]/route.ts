@@ -78,6 +78,26 @@ export async function PUT(
     delete updates.enrolledCount;
     delete updates.createdAt;
 
+    // Validate difficulty if provided
+    if (updates.difficulty && !['beginner', 'intermediate', 'advanced'].includes(updates.difficulty)) {
+      return NextResponse.json(
+        { error: 'Invalid difficulty level. Must be: beginner, intermediate, or advanced' },
+        { status: 400 }
+      );
+    }
+
+    // Validate xpReward if provided
+    if (updates.xpReward !== undefined && updates.xpReward !== null) {
+      const xpValue = Number(updates.xpReward);
+      if (isNaN(xpValue) || xpValue < 0) {
+        return NextResponse.json(
+          { error: 'Invalid XP reward. Must be a positive number' },
+          { status: 400 }
+        );
+      }
+      updates.xpReward = xpValue;
+    }
+
     if (updates.articles) {
       updates.articles = updates.articles.map((aid: string) => new ObjectId(aid));
     }

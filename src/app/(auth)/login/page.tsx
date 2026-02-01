@@ -5,22 +5,30 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import { SquareAsterisk } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/');
+    }
+  }, [user, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -45,18 +53,38 @@ export default function LoginPage() {
     }
   };
 
+  // Show loading state while checking auth
+  if (authLoading) {
+    return null;
+  }
+
+  // Don't render if user is logged in (will redirect)
+  if (user) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
+    <div className="min-h-screen flex items-center justify-center px-4 bg-sija-surface">
+      <div className="max-w-md w-full bg-white p-8 border-2 border-sija-primary shadow-hard">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-sija-primary text-white mb-4 border-2 border-sija-primary shadow-hard-sm">
+            <SquareAsterisk size={32} />
+          </div>
+          <h1 className="text-3xl font-display font-black text-sija-primary uppercase tracking-tight">
+            Login
+          </h1>
+          <p className="text-sija-text/70 font-medium mt-2">
+            Welcome back, engineer.
+          </p>
+        </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border-2 border-red-500 text-red-700 px-4 py-3 mb-6 font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <Input
             label="Email"
             type="email"
@@ -65,6 +93,7 @@ export default function LoginPage() {
             onChange={handleChange}
             placeholder="email@example.com"
             required
+            className="mb-4"
           />
 
           <Input
@@ -81,15 +110,22 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="w-full"
+            size="lg"
           >
-            {loading ? 'Loading...' : 'Login'}
+            {loading ? 'Authenticating...' : 'Login'}
           </Button>
         </form>
 
-        <p className="text-center mt-4 text-gray-600 text-sm">
+        <p className="text-center mt-4 text-sija-text/70 font-medium text-sm">
+          <Link href="/forgot-password" className="text-sija-primary hover:underline font-bold">
+            Lupa Password?
+          </Link>
+        </p>
+
+        <p className="text-center mt-8 text-sija-text font-medium text-sm">
           Belum punya akun?{' '}
-          <Link href="/register" className="text-blue-600 hover:text-blue-800 font-medium">
-            Daftar
+          <Link href="/register" className="text-sija-primary hover:bg-sija-primary hover:text-white transition-all px-1 font-bold uppercase underline decoration-2 underline-offset-2">
+            Daftar Sekarang
           </Link>
         </p>
       </div>
