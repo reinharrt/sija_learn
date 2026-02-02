@@ -20,22 +20,22 @@ It acts as both a **Learning Management System (LMS)** and a **Knowledge Base** 
 
 ---
 
-## 2. 📂 Complete Folder Structure
+## 2. 📂 Project File Structure
 
-This section explains how the project is organized. Use this as a map to find what you need.
+For a comprehensive **Visual Map** of every single file in this project, check the separate structure document:
+👉 **[📂 Lihat Struktur File Lengkap (PROJECT_STRUCTURE.md)](PROJECT_STRUCTURE.md)**
+
+Below is a general overview of the high-level folders:
 
 | Folder | Description |
 | :--- | :--- |
-| **`src/app`** | **Frontend Pages & Routing**. Contains all the pages users see in the browser. The folder structure matches the URL (e.g., `app/login` matches `website.com/login`). |
-| **`src/app/api`** | **Backend API Endpoints**. The "Engine" of the server. These files handle logic like logging in, saving quiz scores, and fetching data from the database. |
-| **`src/components`** | **UI Building Blocks**. Reusable visual elements like Buttons, Cards, Modals, and Navigation Bars. Grouped by feature (e.g., `components/quiz` for quiz-related UI). |
-| **`src/lib`** | **Core Logic & Utilities**. The "Brain" of the application. Contains helper functions for Database connection, Auth checks, Email sending, and Gamification math. |
-| **`src/models`** | **Database Schemas**. Defines the shape of data. Although we use the Native MongoDB Driver, these files serve as the "Type Definitions" and Data Access Layer (CRUD functions) for concepts like Users, Courses, and Articles. |
-| **`src/contexts`** | **Global State**. React Contexts that store data accessible by the entire app, such as the current User's profile or Theme settings. |
-| **`src/hooks`** | **Custom Logic Hooks**. Reusable logic bundles for the Frontend, such as "Track view time" or "Calculate XP progress". |
-| **`public`** | **Static Assets**. Stores images, fonts, and uploads that are directly accessible via URL. |
+| **`src/app`** | **Frontend Pages & Routing**. Contains all the pages users see in the browser. |
+| **`src/app/api`** | **Backend API Endpoints**. Handles server-side logic and database communication. |
+| **`src/components`** | **UI Components**. Reusable building blocks like Buttons, Cards, and Modals. |
+| **`src/lib`** | **Core Logic**. Helper functions for Auth, Database, and Gamification. |
+| **`src/models`** | **Database Schemas**. Definitions for Users, Courses, and other data types. |
+| **`src/contexts`** | **Global State**. Data shared across the entire app (e.g., User Login status). |
 
-> 💡 **Tip**: For detailed explanation of each file, check the localized `README.md` inside each of these folders.
 
 ---
 
