@@ -4,9 +4,9 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies berdasarkan package manager
+# Install dependencies (SEMUA dependencies termasuk devDependencies)
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+RUN npm ci
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -15,6 +15,11 @@ WORKDIR /app
 # Copy dependencies dari stage deps
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Set DUMMY env untuk build (tidak akan dipakai di runtime)
+ENV MONGODB_URI=mongodb://dummy:27017/dummy
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
 # Build Next.js app
 RUN npm run build

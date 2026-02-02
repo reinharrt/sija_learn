@@ -1,15 +1,21 @@
-version: '3.8'
-
 services:
-  # MongoDB Database
+  # MongoDB Database (versi 4.4 - tanpa AVX requirement)
   mongodb:
-    image: mongo:6.0
+    image: mongo:4.4
     container_name: sija-learn-mongodb
     restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: sija-learn
+    command: mongod --wiredTigerCacheSizeGB 0.25 --quiet
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
@@ -23,6 +29,12 @@ services:
       dockerfile: Dockerfile
     container_name: sija-learn-app
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
     ports:
       - "3000:3000"
     environment:
@@ -38,25 +50,12 @@ services:
       - ./public:/app/public
       - ./uploads:/app/uploads
 
-  # Cloudflare Tunnel
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: sija-cloudflare-tunnel
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run --token eyJhIjoiMTQxNGU3MTIwM2Q1OTJjZTRjYjUyNzIxNDNmNmVkN2UiLCJ0IjoiYWZkZDJhMzMtNjAzYy00NzYyLThmNjItNThlZDQ3NDBjNmU1IiwicyI6Ik1qbGtNR0UzWldRdE9UWmhOQzAwWldFMkxUazVOVE10WXpBMVlUUXhZVFE0WXpOaCJ9
-    networks:
-      - sija-network
-    depends_on:
-      - app
-
-# Volumes untuk persist data MongoDB
 volumes:
   mongodb_data:
     driver: local
   mongodb_config:
     driver: local
 
-# Network agar services bisa berkomunikasi
 networks:
   sija-network:
     driver: bridge

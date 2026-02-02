@@ -140,3 +140,4 @@ export async function POST(request: NextRequest) {
 }
 
 // Disable body parser for file uploads
+export const dynamic = 'force-dynamic';
