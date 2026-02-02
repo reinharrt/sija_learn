@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ArticleDetail from '@/components/article/ArticleDetail';
 import CourseArticleReader from '@/components/course/CourseArticleReader';
@@ -14,7 +14,7 @@ import CommentItem from '@/components/comment/CommentItem';
 import ArticleAccessLoader from '@/components/article/ArticleAccessLoader';
 import { Article, Comment, ArticleType } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
-import { Lock, BookOpen, GraduationCap, Home, Search, AlertCircle, LogIn } from 'lucide-react';
+import { Lock, BookOpen, GraduationCap, Home, Search, AlertCircle, LogIn, Loader2 } from 'lucide-react';
 
 interface PageState {
   article: Article | null;
@@ -29,7 +29,7 @@ interface CourseContext {
   completedArticleIds: string[];
 }
 
-export default function ArticleDetailPage() {
+function ArticleDetailContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -533,5 +533,20 @@ export default function ArticleDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ArticleDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-100 border-2 border-blue-500 rounded-full mb-8 animate-pulse">
+          <Loader2 size={48} className="text-blue-600 animate-spin" />
+        </div>
+        <p className="text-sija-text font-bold uppercase tracking-wider">Loading Article...</p>
+      </div>
+    }>
+      <ArticleDetailContent />
+    </Suspense>
   );
 }

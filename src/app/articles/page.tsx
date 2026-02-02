@@ -1,20 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ArticleCard from '@/components/article/ArticleCard';
 import { Article, ArticleCategory } from '@/types';
-import { 
-  FileText, 
-  BookOpen, 
-  Code, 
+import {
+  FileText,
+  BookOpen,
+  Code,
   Lightbulb,
   ChevronLeft,
   ChevronRight,
   Search as SearchIcon
 } from 'lucide-react';
 
-export default function ArticlesPage() {
+function ArticlesContent() {
   const searchParams = useSearchParams();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,22 +67,21 @@ export default function ArticlesPage() {
             </p>
           </div>
         </div>
-        
+
         {/* Category Filter - Neobrutalist */}
         <div className="flex flex-wrap gap-3 mt-6">
           {categories.map((cat) => {
             const isActive = category === cat.value;
             const Icon = cat.icon;
-            
+
             return (
               <a
                 key={cat.value || 'all'}
                 href={cat.value ? `/articles?category=${cat.value}` : '/articles'}
-                className={`px-6 py-3 text-sm font-bold border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider flex items-center gap-2 ${
-                  isActive
-                    ? 'bg-sija-primary text-white border-sija-primary'
-                    : 'bg-sija-light text-sija-text border-sija-primary'
-                }`}
+                className={`px-6 py-3 text-sm font-bold border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider flex items-center gap-2 ${isActive
+                  ? 'bg-sija-primary text-white border-sija-primary'
+                  : 'bg-sija-light text-sija-text border-sija-primary'
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {cat.label}
@@ -106,11 +105,11 @@ export default function ArticlesPage() {
             No Articles Found
           </p>
           <p className="text-sija-text/60 font-medium">
-            {search 
+            {search
               ? `Tidak ada artikel yang cocok dengan pencarian "${search}"`
               : category
-              ? `Tidak ada artikel dalam kategori "${category}"`
-              : 'Belum ada artikel tersedia'}
+                ? `Tidak ada artikel dalam kategori "${category}"`
+                : 'Belum ada artikel tersedia'}
           </p>
         </div>
       ) : (
@@ -133,13 +132,13 @@ export default function ArticlesPage() {
                 <ChevronLeft className="w-5 h-5" />
                 Prev
               </button>
-              
+
               <div className="bg-sija-surface border-2 border-sija-primary px-6 py-3 shadow-hard-sm">
                 <span className="font-bold text-sija-text uppercase tracking-wider">
                   Page <span className="text-sija-primary font-black">{page}</span> of <span className="text-sija-primary font-black">{totalPages}</span>
                 </span>
               </div>
-              
+
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
@@ -153,5 +152,18 @@ export default function ArticlesPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function ArticlesPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sija-primary border-t-transparent"></div>
+        <p className="text-sija-text font-bold uppercase tracking-wider mt-4">Loading Articles...</p>
+      </div>
+    }>
+      <ArticlesContent />
+    </Suspense>
   );
 }

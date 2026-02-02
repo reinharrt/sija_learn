@@ -5,12 +5,12 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 
-export default function VerifyPage() {
+function VerifyContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -136,5 +136,22 @@ export default function VerifyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-100 border-2 border-blue-500 rounded-full mb-8 animate-pulse">
+            <Loader2 size={48} className="text-blue-600 animate-spin" />
+          </div>
+          <h1 className="text-3xl font-display font-black text-sija-text uppercase tracking-tight">Memverifikasi...</h1>
+        </div>
+      </div>
+    }>
+      <VerifyContent />
+    </Suspense>
   );
 }
