@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Adjusted spacing */}
-      <section className="relative -mt-4 pt-12 pb-16 md:pt-20 md:pb-24 px-6 overflow-hidden border-b-2 border-sija-primary bg-sija-surface transition-colors duration-300">
+      <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 px-6 overflow-hidden border-b-2 border-sija-primary bg-sija-surface transition-colors duration-300">
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 flex flex-col items-start">
             <div className="inline-block bg-sija-light border-2 border-sija-primary px-4 py-2 mb-6 shadow-hard-sm">

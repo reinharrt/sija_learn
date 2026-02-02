@@ -122,41 +122,41 @@ export default function ProfilePage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-sija-surface border-2 border-sija-primary p-6 hover:shadow-hard transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <BookOpen className="w-5 h-5 text-sija-primary" />
-              <p className="text-sm text-sija-text/60 uppercase tracking-wider">Courses</p>
+          <div className="bg-sija-surface border-2 border-sija-primary p-6 text-center hover:shadow-hard transition-all">
+            <div className="text-sija-primary mb-2 flex justify-center">
+              <BookOpen className="w-8 h-8" />
             </div>
+            <p className="text-sm text-sija-text/60 uppercase tracking-wider mb-1">Courses</p>
             <p className="font-display text-3xl font-black text-sija-primary">
               {progress.stats.coursesCompleted}
             </p>
           </div>
 
-          <div className="bg-sija-surface border-2 border-sija-primary p-6 hover:shadow-hard transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <Award className="w-5 h-5 text-sija-primary" />
-              <p className="text-sm text-sija-text/60 uppercase tracking-wider">Articles</p>
+          <div className="bg-sija-surface border-2 border-sija-primary p-6 text-center hover:shadow-hard transition-all">
+            <div className="text-sija-primary mb-2 flex justify-center">
+              <Award className="w-8 h-8" />
             </div>
+            <p className="text-sm text-sija-text/60 uppercase tracking-wider mb-1">Articles</p>
             <p className="font-display text-3xl font-black text-sija-primary">
               {progress.stats.articlesRead}
             </p>
           </div>
 
-          <div className="bg-sija-surface border-2 border-sija-primary p-6 hover:shadow-hard transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <MessageCircle className="w-5 h-5 text-sija-primary" />
-              <p className="text-sm text-sija-text/60 uppercase tracking-wider">Comments</p>
+          <div className="bg-sija-surface border-2 border-sija-primary p-6 text-center hover:shadow-hard transition-all">
+            <div className="text-sija-primary mb-2 flex justify-center">
+              <MessageCircle className="w-8 h-8" />
             </div>
+            <p className="text-sm text-sija-text/60 uppercase tracking-wider mb-1">Comments</p>
             <p className="font-display text-3xl font-black text-sija-primary">
               {progress.stats.commentsPosted}
             </p>
           </div>
 
-          <div className="bg-sija-surface border-2 border-sija-primary p-6 hover:shadow-hard transition-all">
-            <div className="flex items-center gap-3 mb-2">
-              <Flame className="w-5 h-5 text-sija-primary" />
-              <p className="text-sm text-sija-text/60 uppercase tracking-wider">Streak</p>
+          <div className="bg-sija-surface border-2 border-sija-primary p-6 text-center hover:shadow-hard transition-all">
+            <div className="text-sija-primary mb-2 flex justify-center">
+              <Flame className="w-8 h-8" />
             </div>
+            <p className="text-sm text-sija-text/60 uppercase tracking-wider mb-1">Streak</p>
             <p className="font-display text-3xl font-black text-sija-primary">
               {progress.stats.currentStreak}
               <span className="text-lg ml-1">days</span>

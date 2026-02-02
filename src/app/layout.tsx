@@ -35,7 +35,7 @@ export default function RootLayout({
         <AuthProvider>
           <GamificationProvider>
             <Header />
-            <main className="min-h-screen pt-24">
+            <main className="min-h-screen pt-20">
               {children}
             </main>
             <Footer />

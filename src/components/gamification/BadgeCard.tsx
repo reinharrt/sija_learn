@@ -6,7 +6,8 @@
 'use client';
 
 import { type BadgeDefinition, RARITY_COLORS } from '@/lib/badge-definitions';
-import { Lock } from 'lucide-react';
+import { Lock, HelpCircle } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 interface BadgeCardProps {
   badge: BadgeDefinition;
@@ -16,35 +17,40 @@ interface BadgeCardProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export default function BadgeCard({ 
-  badge, 
-  earned = false, 
+export default function BadgeCard({
+  badge,
+  earned = false,
   progress = 0,
   onClick,
-  size = 'md' 
+  size = 'md'
 }: BadgeCardProps) {
   const colors = RARITY_COLORS[badge.rarity];
-  
+
   const sizes = {
     sm: {
-      icon: 'text-3xl',
+      icon: 'w-8 h-8',
       container: 'p-3',
       title: 'text-sm',
       description: 'text-xs'
     },
     md: {
-      icon: 'text-4xl',
+      icon: 'w-10 h-10',
       container: 'p-4',
       title: 'text-base',
       description: 'text-sm'
     },
     lg: {
-      icon: 'text-5xl',
+      icon: 'w-12 h-12',
       container: 'p-6',
       title: 'text-lg',
       description: 'text-base'
     }
   };
+
+  // Resolve Lucide Icon
+  const IconComponent = (LucideIcons as any)[badge.icon];
+  const DisplayIcon = IconComponent || HelpCircle;
+  const isLucideIcon = !!IconComponent;
 
   return (
     <div
@@ -66,15 +72,15 @@ export default function BadgeCard({
       )}
 
       {/* Badge Icon */}
-      <div className="relative text-center mb-3">
+      <div className="relative text-center mb-3 flex justify-center">
         {earned ? (
           <div className={`${sizes[size].icon} ${badge.rarity === 'legendary' ? 'animate-pulse' : ''}`}>
-            {badge.icon}
+            {isLucideIcon ? <DisplayIcon className="w-full h-full" /> : <span className="text-3xl">{badge.icon}</span>}
           </div>
         ) : (
           <div className="relative">
-            <div className={`${sizes[size].icon} grayscale blur-sm`}>
-              {badge.icon}
+            <div className={`${sizes[size].icon} grayscale blur-sm opacity-50`}>
+              {isLucideIcon ? <DisplayIcon className="w-full h-full" /> : <span className="text-3xl">{badge.icon}</span>}
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
               <Lock className="w-6 h-6 text-sija-text/40" />
@@ -95,7 +101,7 @@ export default function BadgeCard({
             </span>
           )}
         </div>
-        
+
         <p className={`${sizes[size].description} text-sija-text/70 mb-2`}>
           {badge.description}
         </p>
@@ -105,12 +111,12 @@ export default function BadgeCard({
           <span className={`text-xs font-bold ${colors.text} uppercase tracking-widest`}>
             {badge.rarity}
           </span>
-          
+
           {/* Progress bar for locked badges */}
           {!earned && progress > 0 && (
             <div className="flex items-center gap-2">
               <div className="w-16 h-1.5 bg-sija-surface border border-sija-text/20">
-                <div 
+                <div
                   className={`h-full bg-current ${colors.text}`}
                   style={{ width: `${progress}%` }}
                 />
@@ -118,7 +124,7 @@ export default function BadgeCard({
               <span className="text-xs font-mono">{Math.floor(progress)}%</span>
             </div>
           )}
-          
+
           {earned && (
             <span className="text-xs text-sija-primary font-bold">✓ EARNED</span>
           )}
