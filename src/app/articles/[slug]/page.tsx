@@ -11,6 +11,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ArticleDetail from '@/components/article/ArticleDetail';
 import CourseArticleReader from '@/components/course/CourseArticleReader';
 import CommentItem from '@/components/comment/CommentItem';
+import ArticleAccessLoader from '@/components/article/ArticleAccessLoader';
 import { Article, Comment, ArticleType } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { Lock, BookOpen, GraduationCap, Home, Search, AlertCircle, LogIn } from 'lucide-react';
@@ -35,17 +36,18 @@ export default function ArticleDetailPage() {
   const slug = params.slug as string;
   const courseSlugParam = searchParams.get('course'); // ?course=slug
   const { user, loading: authLoading } = useAuth();
-  
+
   const [pageState, setPageState] = useState<PageState>({
     article: null,
     loading: true,
     accessDenied: false,
   });
-  
+
   const [courseContext, setCourseContext] = useState<CourseContext | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showAccessLoader, setShowAccessLoader] = useState(false);
 
   // Check if opened from course
   const isInCourseMode = !!courseSlugParam;
@@ -55,7 +57,7 @@ export default function ArticleDetailPage() {
       console.log('⏳ Waiting for auth...');
       return;
     }
-    
+
     console.log('✅ Auth ready, loading article...');
     loadArticle();
   }, [slug, user, authLoading]);
@@ -69,21 +71,21 @@ export default function ArticleDetailPage() {
 
   const loadArticle = async () => {
     setPageState({ article: null, loading: true, accessDenied: false });
-    
+
     try {
       const viewedKey = `viewed-article-${slug}`;
       const hasViewed = checkRecentView(viewedKey);
-      
+
       const viewParam = hasViewed ? '' : '?view=true';
       const res = await fetch(`/api/articles/${slug}${viewParam}`);
-      
+
       if (!res.ok) {
         setPageState({ article: null, loading: false, accessDenied: false });
         return;
       }
 
       const data = await res.json();
-      
+
       if (!hasViewed) {
         markAsViewed(viewedKey);
       }
@@ -91,9 +93,9 @@ export default function ArticleDetailPage() {
       // Check access for COURSE_ONLY
       if (data.type === ArticleType.COURSE_ONLY) {
         console.log('📌 COURSE_ONLY - checking access...');
-        
+
         const hasAccess = await checkArticleAccess(data);
-        
+
         if (!hasAccess) {
           console.log('❌ DENIED');
           setPageState({
@@ -103,7 +105,7 @@ export default function ArticleDetailPage() {
           });
           return;
         }
-        
+
         console.log('✅ GRANTED');
       }
 
@@ -132,20 +134,20 @@ export default function ArticleDetailPage() {
       // Load course details
       const courseRes = await fetch(`/api/courses/${courseSlug}`);
       if (!courseRes.ok) return;
-      
+
       const course = await courseRes.json();
-      
+
       // Load all articles in course
       const articlePromises = (course.articles || []).map((articleId: any) =>
         fetch(`/api/articles/${articleId}`).then((r) => r.json())
       );
       const articles = await Promise.all(articlePromises);
-      
+
       // Load enrollment progress
       const progressRes = await fetch(`/api/enrollments/${course._id}/progress`, {
         headers: getAuthHeaders(),
       });
-      
+
       let completedIds: string[] = [];
       if (progressRes.ok) {
         const progressData = await progressRes.json();
@@ -158,14 +160,34 @@ export default function ArticleDetailPage() {
         allArticles: articles.filter((a) => a && !a.error),
         completedArticleIds: completedIds,
       });
+
+      // Check if current article is completed
+      if (article) {
+        const isCompleted = completedIds.some(
+          (id: string) => id.toString() === article._id?.toString()
+        );
+
+        // If not completed, show access loader to track progress
+        if (!isCompleted) {
+          setShowAccessLoader(true);
+        }
+      }
     } catch (error) {
       console.error('Load course context error:', error);
     }
   };
 
+  const handleAccessComplete = () => {
+    setShowAccessLoader(false);
+    // Reload context to update completed status in UI
+    if (courseSlugParam) {
+      loadCourseContext(courseSlugParam);
+    }
+  };
+
   const checkRecentView = (key: string): boolean => {
     if (typeof window === 'undefined') return false;
-    
+
     try {
       const viewData = localStorage.getItem(key);
       if (!viewData) return false;
@@ -180,7 +202,7 @@ export default function ArticleDetailPage() {
 
   const markAsViewed = (key: string): void => {
     if (typeof window === 'undefined') return;
-    
+
     try {
       localStorage.setItem(key, JSON.stringify({
         timestamp: Date.now(),
@@ -223,7 +245,7 @@ export default function ArticleDetailPage() {
       const enrollRes = await fetch('/api/enrollments', {
         headers: getAuthHeaders(),
       });
-      
+
       if (!enrollRes.ok) {
         console.log('❌ Enroll fetch failed');
         return false;
@@ -237,11 +259,11 @@ export default function ArticleDetailPage() {
       for (const enrollment of enrollments) {
         const courseRes = await fetch(`/api/courses/${enrollment.courseId}`);
         if (!courseRes.ok) continue;
-        
+
         const course = await courseRes.json();
-        
+
         if (course.articles && Array.isArray(course.articles)) {
-          const hasArticle = course.articles.some((aid: any) => 
+          const hasArticle = course.articles.some((aid: any) =>
             normalizeId(aid) === normalizeId(article._id)
           );
 
@@ -262,7 +284,7 @@ export default function ArticleDetailPage() {
 
   const loadComments = async () => {
     if (!pageState.article) return;
-    
+
     try {
       const res = await fetch(`/api/comments?articleId=${pageState.article._id}`);
       const data = await res.json();
@@ -360,7 +382,7 @@ export default function ArticleDetailPage() {
               Artikel ini hanya bisa diakses melalui course yang sudah Anda daftar.
             </p>
           </div>
-          
+
           <div className="bg-white border-4 border-sija-text shadow-hard p-6 mb-8">
             <h3 className="font-display font-black text-sija-text mb-4 uppercase text-lg">Cara Mengakses:</h3>
             <ol className="space-y-3">
@@ -423,6 +445,16 @@ export default function ArticleDetailPage() {
 
   // COURSE MODE: Show CourseArticleReader
   if (isInCourseMode && courseContext) {
+    if (showAccessLoader && article) {
+      return (
+        <ArticleAccessLoader
+          courseId={courseContext.courseId}
+          articleId={article._id?.toString() || ''}
+          onComplete={handleAccessComplete}
+        />
+      );
+    }
+
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <CourseArticleReader
@@ -471,8 +503,8 @@ export default function ArticleDetailPage() {
             <p className="text-sija-text font-bold mb-4 uppercase tracking-wider">
               Login untuk memberikan komentar
             </p>
-            <a 
-              href="/login" 
+            <a
+              href="/login"
               className="inline-flex items-center gap-2 bg-sija-primary text-white px-6 py-3 border-4 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
             >
               <LogIn className="w-5 h-5" />

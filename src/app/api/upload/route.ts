@@ -64,13 +64,13 @@ export async function POST(request: NextRequest) {
     // Structure: uploads/{entityType}/{entityId}/{type}/
     // Example: uploads/posts/post-123/banner/
     //          uploads/courses/course-456/content/
-    
+
     let relativePath: string;
-    
+
     if (entityType && entityId) {
       // Organized by entity
-      const entityFolder = entityType === 'post' ? 'posts' : 
-                          entityType === 'course' ? 'courses' : 'general';
+      const entityFolder = entityType === 'post' ? 'posts' :
+        entityType === 'course' ? 'courses' : 'general';
       relativePath = path.join(entityFolder, entityId, type || 'images');
     } else {
       // Fallback to date-based organization if no entity info
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       const month = String(now.getMonth() + 1).padStart(2, '0');
       relativePath = path.join('general', year.toString(), month, type || 'images');
     }
-    
+
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', relativePath);
 
     // Create directory if it doesn't exist
@@ -97,18 +97,18 @@ export async function POST(request: NextRequest) {
     if (type === 'banner') {
       // Banner: max width 1200px, quality 80
       processedBuffer = await sharp(buffer)
-        .resize(1200, null, { 
+        .resize(1200, null, {
           fit: 'inside',
-          withoutEnlargement: true 
+          withoutEnlargement: true
         })
         .jpeg({ quality: 80, progressive: true })
         .toBuffer();
     } else {
       // Content images: max width 800px, quality 85
       processedBuffer = await sharp(buffer)
-        .resize(800, null, { 
+        .resize(800, null, {
           fit: 'inside',
-          withoutEnlargement: true 
+          withoutEnlargement: true
         })
         .jpeg({ quality: 85, progressive: true })
         .toBuffer();
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     const url = `/uploads/${relativePath}/${filename}`.replace(/\\/g, '/');
 
     return NextResponse.json(
-      { 
+      {
         url,
         message: 'Upload berhasil',
         size: processedBuffer.length,
@@ -140,8 +140,3 @@ export async function POST(request: NextRequest) {
 }
 
 // Disable body parser for file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

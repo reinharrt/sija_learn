@@ -5,14 +5,14 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import CourseCard from '@/components/course/CourseCard';
 import { Course } from '@/types';
-import { 
-  BookOpen, 
-  Filter, 
-  ChevronLeft, 
+import {
+  BookOpen,
+  Filter,
+  ChevronLeft,
   ChevronRight,
   Search as SearchIcon,
   X
@@ -26,7 +26,7 @@ interface TagData {
   category: string;
 }
 
-export default function CoursesPage() {
+function CoursesContent() {
   const searchParams = useSearchParams();
   const [courses, setCourses] = useState<Course[]>([]);
   const [allTags, setAllTags] = useState<TagData[]>([]);
@@ -51,9 +51,9 @@ export default function CoursesPage() {
     try {
       const res = await fetch('/api/tags?type=courses');
       const data = await res.json();
-      
+
       console.log('Tags API Response:', data);
-      
+
       if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
         // API returns full tag objects with name, slug, etc.
         setAllTags(data.tags);
@@ -146,11 +146,10 @@ export default function CoursesPage() {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setSelectedTag(null)}
-                  className={`px-4 md:px-5 py-2.5 font-bold text-xs md:text-sm uppercase tracking-wider border-2 transition-all ${
-                    selectedTag === null
-                      ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
-                      : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600 hover:border-sija-primary dark:hover:border-yellow-400 hover:translate-x-[2px] hover:translate-y-[2px]'
-                  }`}
+                  className={`px-4 md:px-5 py-2.5 font-bold text-xs md:text-sm uppercase tracking-wider border-2 transition-all ${selectedTag === null
+                    ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
+                    : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600 hover:border-sija-primary dark:hover:border-yellow-400 hover:translate-x-[2px] hover:translate-y-[2px]'
+                    }`}
                 >
                   All Courses
                 </button>
@@ -158,11 +157,10 @@ export default function CoursesPage() {
                   <button
                     key={tag._id}
                     onClick={() => handleTagClick(tag.slug)}
-                    className={`px-4 md:px-5 py-2.5 font-bold text-xs md:text-sm uppercase tracking-wider border-2 transition-all ${
-                      selectedTag === tag.slug
-                        ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
-                        : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600 hover:border-sija-primary dark:hover:border-yellow-400 hover:translate-x-[2px] hover:translate-y-[2px]'
-                    }`}
+                    className={`px-4 md:px-5 py-2.5 font-bold text-xs md:text-sm uppercase tracking-wider border-2 transition-all ${selectedTag === tag.slug
+                      ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
+                      : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600 hover:border-sija-primary dark:hover:border-yellow-400 hover:translate-x-[2px] hover:translate-y-[2px]'
+                      }`}
                   >
                     {tag.name}
                   </button>
@@ -204,7 +202,7 @@ export default function CoursesPage() {
                 No Courses Found
               </h3>
               <p className="text-sija-text dark:text-gray-300 font-medium mb-6">
-                {selectedTag 
+                {selectedTag
                   ? `Tidak ada course dengan tag "${allTags.find(t => t.slug === selectedTag)?.name || selectedTag}"`
                   : 'Tidak ada course ditemukan'
                 }
@@ -224,7 +222,7 @@ export default function CoursesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {courses.map((course) => (
                 <div key={course._id?.toString()}>
-                  <CourseCard course={course} />
+                  <CourseCard course={course as any} />
                 </div>
               ))}
             </div>
@@ -257,5 +255,17 @@ export default function CoursesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CoursesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen pt-24 pb-12 flex justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-sija-primary border-t-transparent"></div>
+      </div>
+    }>
+      <CoursesContent />
+    </Suspense>
   );
 }

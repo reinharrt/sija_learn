@@ -10,8 +10,9 @@ import { getUserQuizAttempts, getBestAttempt } from '@/models/QuizAttempt';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const user = getUserFromRequest(request);
 
@@ -22,7 +23,7 @@ export async function GET(
             );
         }
 
-        const quiz = await findQuizById(params.id);
+        const quiz = await findQuizById(id);
 
         if (!quiz) {
             return NextResponse.json(
@@ -31,8 +32,8 @@ export async function GET(
             );
         }
 
-        const attempts = await getUserQuizAttempts(user.id, params.id);
-        const bestAttempt = await getBestAttempt(user.id, params.id);
+        const attempts = await getUserQuizAttempts(user.id, id);
+        const bestAttempt = await getBestAttempt(user.id, id);
 
         return NextResponse.json({
             attempts,

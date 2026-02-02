@@ -1,245 +1,115 @@
-# SIJA Learn - Platform Pembelajaran
+# 🎓 SIJA Learn - Project Documentation
 
-Platform repositori materi digital dan pusat informasi untuk siswa jurusan Sistem Informatika, Jaringan dan Aplikasi.
-
-## 🚀 Update ke Next.js 15.5.9 & Nodemailer 7.0.12
-
-### Langkah Update
-
-1. **Backup project Anda terlebih dahulu**
-
-2. **Update package.json**
-   - Ganti file `package.json` dengan versi yang sudah diupdate
-
-3. **Hapus dependencies lama**
-   ```bash
-   rm -rf node_modules package-lock.json
-   ```
-
-4. **Install dependencies baru**
-   ```bash
-   npm install
-   ```
-
-5. **Atau gunakan automated upgrade CLI**
-   ```bash
-   npx @next/codemod@canary upgrade latest
-   ```
-
-### Perubahan Penting
-
-#### Next.js 15.5.9
-- ✅ **Turbopack Builds (beta)**: Production builds lebih cepat
-- ✅ **Node.js Middleware (stable)**: Full Node.js API support di middleware
-- ✅ **TypeScript Improvements**: Typed routes, route validation
-- ⚠️ **Deprecation Warnings**: Persiapan untuk Next.js 16
-
-#### Nodemailer 7.0.12
-- ✅ Security improvements
-- ✅ DoS vulnerability fixes
-- ✅ Better domain handling
-
-### File yang Diupdate
-
-1. **package.json**
-   - Next.js: `15.1.11` → `15.5.9`
-   - Nodemailer: `6.9.16` → `7.0.12`
-   - ESLint config: `15.1.11` → `15.5.9`
-
-2. **next.config.js**
-   - Added `images.qualities` untuk Next.js 16 compatibility
-   - Added `images.localPatterns` untuk local images dengan query strings
-   - Ready untuk `typedRoutes` (uncomment jika dibutuhkan)
-
-3. **middleware.ts**
-   - Updated dengan Node.js runtime (now stable!)
-   - Better performance dan full Node.js APIs access
-
-4. **lib/email.ts**
-   - Updated untuk Nodemailer 7.0.12
-   - Improved security dengan TLS options
-   - Better error handling
-
-5. **.env.example**
-   - Added `SMTP_SECURE` option
-
-## 📦 Tech Stack
-
-- **Framework**: Next.js 15.5.9 (App Router)
-- **Language**: TypeScript
-- **Database**: MongoDB
-- **Authentication**: JWT + bcryptjs
-- **Email**: Nodemailer 7.0.12
-- **Styling**: Tailwind CSS
-- **Icons**: Font Awesome
-
-## 🛠️ Installation
-
-1. **Clone repository**
-   ```bash
-   git clone <repository-url>
-   cd sija-learn
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Setup environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   Edit `.env.local` dan isi dengan konfigurasi Anda:
-   - MongoDB URI
-   - JWT Secret
-   - SMTP credentials (Gmail)
-   - App URL
-
-4. **Run development server**
-   ```bash
-   npm run dev
-   ```
-   
-   Atau dengan Turbopack (lebih cepat):
-   ```bash
-   npm run dev --turbopack
-   ```
-
-5. **Build untuk production**
-   ```bash
-   npm run build
-   ```
-   
-   Atau dengan Turbopack (beta):
-   ```bash
-   npm run build --turbopack
-   ```
-
-6. **Start production server**
-   ```bash
-   npm start
-   ```
-
-## 🔐 User Roles
-
-- **USER**: Membaca artikel, memberikan komentar
-- **WRITER**: Membuat dan mengedit artikel sendiri
-- **COURSE_ADMIN**: Membuat dan mengelola course
-- **ADMIN**: Full access ke semua fitur
-
-## 📁 Project Structure
-
-```
-sija-learn/
-├── src/
-│   ├── app/                 # Next.js App Router
-│   │   ├── api/            # API Routes
-│   │   ├── (auth)/         # Auth pages
-│   │   ├── articles/       # Article pages
-│   │   ├── courses/        # Course pages
-│   │   └── admin/          # Admin dashboard
-│   ├── components/         # React components
-│   ├── contexts/           # React contexts
-│   ├── lib/               # Utility libraries
-│   ├── models/            # Database models
-│   └── types/             # TypeScript types
-├── public/                # Static files
-└── ...config files
-```
-
-## 🔒 Security Updates
-
-### Fixed Vulnerabilities
-
-#### Next.js 15.5.9
-- ✅ Fixed Information exposure in dev server
-- ✅ Fixed Cache Key Confusion for Image Optimization
-- ✅ Fixed Content Injection Vulnerability
-- ✅ Fixed Improper Middleware Redirect (SSRF)
-- ✅ Fixed Authorization Bypass in Middleware
-
-#### Nodemailer 7.0.12
-- ✅ Fixed Email to unintended domain issue
-- ✅ Fixed DoS via recursive calls in addressparser
-- ✅ Fixed DoS through uncontrolled recursion
-
-## 🚨 Breaking Changes Preparation (Next.js 16)
-
-Aplikasi ini sudah dipersiapkan untuk Next.js 16 dengan:
-
-1. ✅ Tidak menggunakan `legacyBehavior` pada `<Link>`
-2. ✅ Tidak menggunakan AMP
-3. ✅ Explicit `images.qualities` configuration
-4. ✅ Explicit `images.localPatterns` configuration
-5. ✅ Ready untuk TypeScript typed routes
-
-## 📚 Features
-
-- ✨ User authentication (Register, Login, Email Verification)
-- 📝 Article management dengan block editor
-- 🎓 Course management
-- 💬 Comment system
-- 👥 User role management
-- 🔍 Search & filter articles
-- 📊 Admin dashboard
-- 📱 Responsive design
-
-## 🧪 Development
-
-```bash
-# Run development server
-npm run dev
-
-# Run with Turbopack (faster)
-npm run dev --turbopack
-
-# Build for production
-npm run build
-
-# Build with Turbopack (beta, faster)
-npm run build --turbopack
-
-# Type checking
-npm run lint
-```
-
-## 📝 Environment Variables
-
-```env
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/sija-learn
-
-# JWT
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=7d
-
-# Email (Gmail)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-EMAIL_FROM=SIJA Learn <noreply@sijalearn.com>
-
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NODE_ENV=development
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is for educational purposes - Kelompok 5.
-
-## 👥 Team
-
-SIJA Learn - Kelompok 5
+**Project Name**: SIJA Learn  
+**Version**: 0.1.0  
+**Last Updated**: February 2026
 
 ---
 
-**Updated for Next.js 15.5.9 & Nodemailer 7.0.12**
+## 1. 📖 Project Overview
+
+**SIJA Learn** is a specialized E-Learning platform designed for students majoring in **SIJA (Sistem Informatika, Jaringan, dan Aplikasi)**.
+
+The platform solves the problem of scattered learning materials by providing a centralized digital repository where students can:
+*   📚 **Read Articles**: Access technical tutorials and general knowledge.
+*   🎓 **Take Courses**: Follow structured learning paths (Chapters & Lessons).
+*   🧠 **Take Quizzes**: Test their knowledge with interactive exams.
+*   🏆 **Earn XP**: Gamification system (Level up & Badges) to motivate learning.
+
+It acts as both a **Learning Management System (LMS)** and a **Knowledge Base** for the community.
+
+---
+
+## 2. 📂 Complete Folder Structure
+
+This section explains how the project is organized. Use this as a map to find what you need.
+
+| Folder | Description |
+| :--- | :--- |
+| **`src/app`** | **Frontend Pages & Routing**. Contains all the pages users see in the browser. The folder structure matches the URL (e.g., `app/login` matches `website.com/login`). |
+| **`src/app/api`** | **Backend API Endpoints**. The "Engine" of the server. These files handle logic like logging in, saving quiz scores, and fetching data from the database. |
+| **`src/components`** | **UI Building Blocks**. Reusable visual elements like Buttons, Cards, Modals, and Navigation Bars. Grouped by feature (e.g., `components/quiz` for quiz-related UI). |
+| **`src/lib`** | **Core Logic & Utilities**. The "Brain" of the application. Contains helper functions for Database connection, Auth checks, Email sending, and Gamification math. |
+| **`src/models`** | **Database Schemas**. Defines the shape of data. Although we use the Native MongoDB Driver, these files serve as the "Type Definitions" and Data Access Layer (CRUD functions) for concepts like Users, Courses, and Articles. |
+| **`src/contexts`** | **Global State**. React Contexts that store data accessible by the entire app, such as the current User's profile or Theme settings. |
+| **`src/hooks`** | **Custom Logic Hooks**. Reusable logic bundles for the Frontend, such as "Track view time" or "Calculate XP progress". |
+| **`public`** | **Static Assets**. Stores images, fonts, and uploads that are directly accessible via URL. |
+
+> 💡 **Tip**: For detailed explanation of each file, check the localized `README.md` inside each of these folders.
+
+---
+
+## 3. 🛠️ Technology Stack & Versions
+
+We use modern web technologies to ensure performance and scalability.
+
+### Core Framework
+*   **Framework**: [Next.js](https://nextjs.org/) `v16.1.6` (App Router)
+*   **Language**: [TypeScript](https://www.typescriptlang.org/) `v5.7.2`
+*   **Runtime**: Node.js (Latest LTS)
+
+### Database & Backend
+*   **Database**: [MongoDB](https://www.mongodb.com/) `v6.12.0` (Native Driver)
+*   **Authentication**: Custom JWT (JSON Web Token) implementation + `bcryptjs` for security.
+*   **Email Service**: [Nodemailer](https://nodemailer.com/) `v7.0.12` (SMTP)
+
+### Frontend & Styling
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/) `v3.4.17`
+*   **Icons**: [Lucide React](https://lucide.dev/) `v0.563.0` & Font Awesome
+*   **UI Library**: Custom built components (no heavy external UI framework).
+
+### Key Features
+*   **Gamification**: Custom logic for XP and Levels (`src/lib/gamification.ts`).
+*   **Security**: Middleware-based Route Protection (`src/middleware.ts`).
+
+---
+
+## 4. 🔗 System Architecture Overview
+
+How do the pieces fit together?
+
+1.  **Client (Browser)**:
+    *   The user interacts with **React Components** (`src/components`).
+    *   Pages are rendered on the server (Server Components) for speed, but turn interactive (Client Components) for things like Quizzes.
+
+2.  **API Layer (Server)**:
+    *   When a user clicks "Submit Quiz", the browser sends a request to `/api/quizzes/[id]/submit`.
+    *   **Route Handlers** (`src/app/api`) receive this request.
+    *   They check **Auth** (`src/lib/auth.ts`) to ensure the user is logged in.
+
+3.  **Data Layer (Database)**:
+    *   The API talks to **MongoDB** using helper functions from `src/lib/mongodb.ts`.
+    *   Data is read/written using the structure defined in `src/models`.
+    *   **Important**: We do **NOT** use an ORM like Mongoose or Prisma. We write direct MongoDB queries for maximum control and performance.
+
+4.  **Feedback Loop**:
+    *   After saving data, the Server calculates new XP (`src/lib/gamification.ts`).
+    *   The new Score and XP are sent back to the Client.
+    *   **Context** (`GamificationContext`) updates the UI instantly.
+
+---
+
+## 5. 🤖 Notes for Team & AI Usage
+
+**For Team Members:**
+*   Use this README to understand the "Big Picture" before diving into code.
+*   If you need to change a specific logical flow (e.g., how Login works), look at the **Documentation Hub** table below for the specific documentation file.
+
+**For AI Assistants:**
+*   This file is the **Source of Truth** for the project structure and technology.
+*   When asked to generate code, strictly follow the **Tech Stack** listed here (e.g., use Tailwind, use Native MongoDB driver).
+*   Refer to the detailed sub-documentation files for logic constraints.
+
+### 📚 Documentation Hub
+
+| Documentation | Description | Link |
+| :--- | :--- | :--- |
+| **System Logic** | Deep dive into Login, Progress Tracking, & Quiz Logic | [📄 System Logic](src/SYSTEM_LOGIC.md) |
+| **API Reference** | List of all Backend Endpoints | [🔌 API Docs](src/app/api/README.md) |
+| **Middleware** | Security & App Config | [🛡️ Config Docs](src/MIDDLEWARE_AND_CONFIG.md) |
+| **Database** | Data Models & Schemas | [🗄️ Models Docs](src/models/README.md) |
+| **Components** | UI Component Catalog | [🧩 Component Docs](src/components/README.md) |
+| **Library** | Helper Functions | [📚 Lib Docs](src/lib/README.md) |
+
+---
+*Maintained by Team 5 - SIJA Learn*

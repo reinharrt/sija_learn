@@ -11,8 +11,9 @@ import { UserRole } from '@/types';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const user = getUserFromRequest(request);
 
@@ -30,7 +31,7 @@ export async function GET(
             );
         }
 
-        const quiz = await findQuizById(params.id);
+        const quiz = await findQuizById(id);
 
         if (!quiz) {
             return NextResponse.json(
@@ -39,7 +40,7 @@ export async function GET(
             );
         }
 
-        const statistics = await getQuizStatistics(params.id);
+        const statistics = await getQuizStatistics(id);
 
         return NextResponse.json({
             quiz: {
