@@ -59,6 +59,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ============================================
+    // NEW: Check if user has passed all quizzes
+    // ============================================
+    const { hasUserPassedAllCourseQuizzes } = await import('@/models/QuizAttempt');
+    const quizStatus = await hasUserPassedAllCourseQuizzes(user.id, courseId);
+
+    if (!quizStatus.allPassed) {
+      return NextResponse.json(
+        {
+          error: 'Quiz requirements not met',
+          message: `Anda harus lulus semua quiz untuk menyelesaikan course ini. (${quizStatus.passedQuizzes}/${quizStatus.totalQuizzes} quiz lulus)`,
+          quizStatus
+        },
+        { status: 400 }
+      );
+    }
+
     // Mark as completed in enrollment FIRST to prevent race conditions
     // (though strictly speaking we should transaction this, but for now this is better than nothing)
     const marked = await markCourseCompleted(user.id, courseId);

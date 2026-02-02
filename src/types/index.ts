@@ -86,6 +86,7 @@ export interface Course {
   tags: string[];              // 🆕 Course tags
   published: boolean;
   enrolledCount: number;
+  finalQuizId?: ObjectId;      // 🆕 Optional final quiz
   createdAt: Date;
   updatedAt: Date;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
@@ -144,6 +145,7 @@ export interface Article {
   author: ObjectId;
   tags: string[];
   views: number;
+  quizId?: ObjectId;               // 🆕 Optional quiz for this article
   published: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -190,4 +192,91 @@ export interface BadgeDefinition {
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
   category: 'progress' | 'streak' | 'social' | 'speed' | 'explorer' | 'special';
   xpReward?: number;
+}
+
+// ============================================
+// QUIZ SYSTEM TYPES
+// ============================================
+
+export enum QuizQuestionType {
+  MULTIPLE_CHOICE = 'multiple-choice',      // Single answer
+  MULTIPLE_ANSWER = 'multiple-answer',      // Multiple answers
+  TRUE_FALSE = 'true-false'                 // True or False
+}
+
+export enum QuizType {
+  ARTICLE_QUIZ = 'article-quiz',            // Quiz for specific article
+  FINAL_QUIZ = 'final-quiz'                 // Final course quiz
+}
+
+export interface QuizOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+}
+
+export interface QuizQuestion {
+  id: string;
+  type: QuizQuestionType;
+  question: string;
+  options: QuizOption[];                    // For multiple choice/answer
+  points: number;
+  explanation?: string;                     // Shown after answering
+  order: number;
+}
+
+export interface Quiz {
+  _id?: ObjectId;
+  title: string;
+  description?: string;
+  courseId: ObjectId;
+  articleId?: ObjectId;                     // Optional - for article quizzes
+  type: QuizType;
+  questions: QuizQuestion[];
+  passingScore: number;                     // Percentage (0-100)
+  timeLimit?: number;                       // In minutes, optional
+  maxAttempts?: number;                     // Optional limit on attempts
+  xpReward: number;                         // XP awarded on passing
+  prerequisiteQuizIds?: ObjectId[];         // 🆕 Optional prerequisites
+  createdBy: ObjectId;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface StudentAnswer {
+  questionId: string;
+  selectedOptions: string[];                // Array of option IDs
+}
+
+export interface QuizAttempt {
+  _id?: ObjectId;
+  quizId: ObjectId;
+  userId: ObjectId;
+  answers: StudentAnswer[];
+  score: number;                            // Percentage (0-100)
+  passed: boolean;
+  xpEarned: number;
+  timeSpent?: number;                       // In seconds
+  startedAt: Date;
+  completedAt: Date;
+}
+
+export interface QuizResult {
+  attempt: QuizAttempt;
+  questionResults: {
+    questionId: string;
+    question: string;
+    type: QuizQuestionType;
+    studentAnswer: string[];
+    correctAnswer: string[];
+    isCorrect: boolean;
+    points: number;
+    earnedPoints: number;
+    explanation?: string;
+  }[];
+  totalPoints: number;
+  earnedPoints: number;
+  percentage: number;
+  passed: boolean;
 }

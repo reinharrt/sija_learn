@@ -1,6 +1,6 @@
 // ============================================
 // src/components/course/CourseDetail.tsx
-// Course Detail Component - WITH CREATOR ENROLLMENT PREVENTION
+// Course Detail Component - WITH QUIZ HIERARCHY SIDEBAR
 // ============================================
 
 'use client';
@@ -13,6 +13,7 @@ import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { formatDate } from '@/lib/utils';
 import { getDifficultyDisplay, getDifficultyColor, calculateCourseXP } from '@/lib/xp-calculator';
 import CourseCompletionHandler from './CourseCompletionHandler';
+import CourseSidebar from './CourseSidebar';
 import {
   BookOpen,
   Users,
@@ -26,7 +27,9 @@ import {
   Edit,
   Crown,
   Star,
-  Zap
+  Zap,
+  XCircle,
+  Clock
 } from 'lucide-react';
 
 interface CourseDetailProps {
@@ -49,6 +52,13 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
     completedArticles: string[];
     percentage: number;
   }>({ completedArticles: [], percentage: 0 });
+  const [quizStatus, setQuizStatus] = useState<any>(null);
+  const [loadingQuizStatus, setLoadingQuizStatus] = useState(false);
+  const [quizData, setQuizData] = useState<{
+    articleQuizzes: any[];
+    finalQuiz: any | null;
+  }>({ articleQuizzes: [], finalQuiz: null });
+  const [loadingQuizData, setLoadingQuizData] = useState(false);
 
   // ✅ CHECK IF USER IS CREATOR
   const isCreator = user && course.creator &&
@@ -71,8 +81,16 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
     // ✅ ONLY LOAD PROGRESS IF NOT CREATOR
     if (isEnrolled && user && !isCreator) {
       loadProgress();
+      loadQuizStatus();
     }
   }, [isEnrolled, user, isCreator]);
+
+  useEffect(() => {
+    // Load quiz data when user is enrolled or is creator
+    if ((isEnrolled || isCreator) && user && course._id) {
+      loadQuizData();
+    }
+  }, [isEnrolled, isCreator, user, course._id]);
 
   const loadArticles = async () => {
     setLoadingArticles(true);
@@ -111,6 +129,49 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
       }
     } catch (error) {
       console.error('Load progress error:', error);
+    }
+  };
+
+  const loadQuizStatus = async () => {
+    if (!course._id || !user) return;
+
+    setLoadingQuizStatus(true);
+    try {
+      const res = await fetch(`/api/courses/${course._id}/quiz-status`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setQuizStatus(data);
+      }
+    } catch (error) {
+      console.error('Load quiz status error:', error);
+    } finally {
+      setLoadingQuizStatus(false);
+    }
+  };
+
+  const loadQuizData = async () => {
+    if (!course._id) return;
+
+    setLoadingQuizData(true);
+    try {
+      const res = await fetch(`/api/courses/${course._id}/quizzes`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setQuizData({
+          articleQuizzes: data.articleQuizzes || [],
+          finalQuiz: data.finalQuiz || null,
+        });
+      }
+    } catch (error) {
+      console.error('Load quiz data error:', error);
+    } finally {
+      setLoadingQuizData(false);
     }
   };
 
@@ -162,6 +223,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
       if (response.ok) {
         setIsEnrolled(false);
         setProgress({ completedArticles: [], percentage: 0 });
+        setQuizStatus(null);
         alert('Berhasil keluar dari course');
       } else {
         alert('Gagal keluar dari course');
@@ -190,9 +252,9 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Course Header - Neobrutalist */}
-      <div className="bg-sija-surface border-2 border-sija-primary shadow-hard mb-8 overflow-hidden">
+    <div className="max-w-7xl mx-auto">
+      {/* Course Header - Full Width */}
+      <div className="bg-sija-surface border-2 border-sija-primary shadow-hard mb-6 overflow-hidden">
         {course.thumbnail && (
           <div className="relative w-full h-64 md:h-80 border-b-2 border-sija-primary">
             <Image
@@ -387,127 +449,325 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
         </div>
       </div>
 
-      {/* Course Content */}
-      <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6 md:p-8">
-        <h2 className="font-display text-2xl font-bold text-sija-text mb-6 uppercase border-b-2 border-dashed border-sija-text/10 pb-4">
-          Course Content
-        </h2>
-
-        {loadingArticles ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-sija-primary border-t-transparent"></div>
-            <p className="mt-4 font-bold text-sija-text uppercase tracking-wider">
-              Loading modules...
-            </p>
+      {/* Two-column layout: Sidebar (Left) + Main Content (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar - LEFT SIDE */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-4">
+            <CourseSidebar
+              courseId={course._id?.toString() || ''}
+              courseSlug={course.slug}
+              articles={articles.map(a => ({
+                _id: a._id?.toString() || '',
+                title: a.title,
+                slug: a.slug
+              }))}
+              articleQuizzes={quizData.articleQuizzes}
+              finalQuiz={quizData.finalQuiz}
+              completedArticles={progress.completedArticles}
+              isEnrolled={isEnrolled || !!isCreator}
+            />
           </div>
-        ) : articles.length === 0 ? (
-          <div className="bg-yellow-100 border-2 border-yellow-500 p-8 text-center">
-            <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
-            <p className="font-bold text-yellow-900 uppercase tracking-wider">
-              No modules available yet
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {articles.map((article, index) => {
-              if (!article) return null;
+        </div>
 
-              const completed = isArticleCompleted(article._id?.toString() || '');
-              const unlocked = isCreator ? true : (isEnrolled ? isArticleUnlocked(index) : false);
-              const canAccess = isCreator || !isEnrolled || unlocked;
+        {/* Main Content - RIGHT SIDE */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Course Content */}
+          <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6 md:p-8">
+            <h2 className="font-display text-2xl font-bold text-sija-text mb-6 uppercase border-b-2 border-dashed border-sija-text/10 pb-4">
+              Course Content
+            </h2>
 
-              return (
-                <div
-                  key={article._id?.toString() || index}
-                  className={`border-2 p-4 transition-all ${completed
-                    ? 'bg-green-100 border-green-500'
-                    : !canAccess
-                      ? 'bg-gray-100 border-gray-300 opacity-60'
-                      : 'bg-sija-light border-sija-primary hover:shadow-hard-sm'
-                    }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div
-                        className={`w-10 h-10 border-2 flex items-center justify-center font-bold ${completed
-                          ? 'bg-green-500 border-green-700 text-white'
-                          : !canAccess
-                            ? 'bg-gray-300 border-gray-400 text-gray-600'
-                            : 'bg-sija-primary border-sija-primary text-white'
-                          }`}
-                      >
-                        {completed ? (
-                          <CheckCircle2 className="w-6 h-6" />
-                        ) : !canAccess ? (
-                          <Lock className="w-5 h-5" />
+            {loadingArticles ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-sija-primary border-t-transparent"></div>
+                <p className="mt-4 font-bold text-sija-text uppercase tracking-wider">
+                  Loading modules...
+                </p>
+              </div>
+            ) : articles.length === 0 ? (
+              <div className="bg-yellow-100 border-2 border-yellow-500 p-8 text-center">
+                <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
+                <p className="font-bold text-yellow-900 uppercase tracking-wider">
+                  No modules available yet
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {articles.map((article, index) => {
+                  if (!article) return null;
+
+                  const completed = isArticleCompleted(article._id?.toString() || '');
+                  const unlocked = isCreator ? true : (isEnrolled ? isArticleUnlocked(index) : false);
+                  const canAccess = isCreator || !isEnrolled || unlocked;
+
+                  return (
+                    <div
+                      key={article._id?.toString() || index}
+                      className={`border-2 p-4 transition-all ${completed
+                        ? 'bg-green-100 border-green-500'
+                        : !canAccess
+                          ? 'bg-gray-100 border-gray-300 opacity-60'
+                          : 'bg-sija-light border-sija-primary hover:shadow-hard-sm'
+                        }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 flex-1">
+                          <div
+                            className={`w-10 h-10 border-2 flex items-center justify-center font-bold ${completed
+                              ? 'bg-green-500 border-green-700 text-white'
+                              : !canAccess
+                                ? 'bg-gray-300 border-gray-400 text-gray-600'
+                                : 'bg-sija-primary border-sija-primary text-white'
+                              }`}
+                          >
+                            {completed ? (
+                              <CheckCircle2 className="w-6 h-6" />
+                            ) : !canAccess ? (
+                              <Lock className="w-5 h-5" />
+                            ) : (
+                              <span>{index + 1}</span>
+                            )}
+                          </div>
+
+                          <div className="flex-1">
+                            <h3 className="font-bold text-sija-text mb-1">
+                              {article.title}
+                            </h3>
+                            <p className="text-sm text-sija-text/60 font-medium line-clamp-1">
+                              {article.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {canAccess ? (
+                          <Link
+                            href={
+                              isEnrolled || isCreator
+                                ? `/articles/${article.slug}?course=${course.slug}`
+                                : `/articles/${article.slug}`
+                            }
+                            className="flex items-center gap-2 px-4 py-2 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm whitespace-nowrap"
+                          >
+                            {isCreator ? 'View' : completed ? 'Review' : 'Start'}
+                            <PlayCircle className="w-4 h-4" />
+                          </Link>
                         ) : (
-                          <span>{index + 1}</span>
+                          <div className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-600 font-bold border-2 border-gray-400 uppercase tracking-wider text-sm cursor-not-allowed">
+                            <Lock className="w-4 h-4" />
+                            Locked
+                          </div>
                         )}
                       </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                      <div className="flex-1">
-                        <h3 className="font-bold text-sija-text mb-1">
-                          {article.title}
+          {/* Quiz Status Section */}
+          {isEnrolled && !isCreator && quizStatus && quizStatus.summary.total > 0 && (
+            <div className="mt-6 bg-sija-surface border-2 border-sija-primary shadow-hard p-6 md:p-8">
+              <h2 className="font-display text-2xl font-bold text-sija-text mb-4 uppercase border-b-2 border-dashed border-sija-text/10 pb-4">
+                Quiz Requirements
+              </h2>
+
+              <div className="bg-yellow-100 border-2 border-yellow-500 p-4 mb-6">
+                <p className="text-sm font-bold text-yellow-900">
+                  ⚠️ Anda harus lulus semua quiz untuk menyelesaikan course ini!
+                </p>
+              </div>
+
+              {/* Progress Summary */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-bold text-sija-text uppercase tracking-wider">
+                    Quiz Progress
+                  </span>
+                  <span className="text-2xl font-black text-sija-text">
+                    {quizStatus.summary.passed}/{quizStatus.summary.total}
+                  </span>
+                </div>
+                <div className="w-full bg-sija-light border-2 border-sija-primary h-4 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${quizStatus.summary.allPassed ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}
+                    style={{ width: `${quizStatus.summary.percentage}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs font-bold text-sija-text/60 mt-2">
+                  {quizStatus.summary.percentage}% Complete
+                </p>
+              </div>
+
+              {/* Quiz List */}
+              <div className="space-y-3">
+                {quizStatus.quizzes.map((quiz: any, index: number) => {
+                  const hasPassed = quiz.attempt?.passed;
+                  const hasAttempted = quiz.attempt !== null;
+                  const score = quiz.attempt?.score || 0;
+
+                  return (
+                    <div
+                      key={quiz.quizId}
+                      className={`border-2 p-4 transition-all ${hasPassed
+                        ? 'bg-green-100 border-green-500'
+                        : hasAttempted
+                          ? 'bg-red-100 border-red-500'
+                          : 'bg-gray-100 border-gray-300'
+                        }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 flex-1">
+                          <div
+                            className={`w-10 h-10 border-2 flex items-center justify-center font-bold ${hasPassed
+                              ? 'bg-green-500 border-green-700 text-white'
+                              : hasAttempted
+                                ? 'bg-red-500 border-red-700 text-white'
+                                : 'bg-gray-300 border-gray-400 text-gray-600'
+                              }`}
+                          >
+                            {hasPassed ? (
+                              <CheckCircle2 className="w-6 h-6" />
+                            ) : hasAttempted ? (
+                              <XCircle className="w-6 h-6" />
+                            ) : (
+                              <Clock className="w-5 h-5" />
+                            )}
+                          </div>
+
+                          <div className="flex-1">
+                            <h3 className="font-bold text-sija-text mb-1">
+                              {quiz.title}
+                            </h3>
+                            <div className="flex items-center gap-3 text-sm">
+                              {hasAttempted && (
+                                <span
+                                  className={`font-bold ${hasPassed ? 'text-green-700' : 'text-red-700'
+                                    }`}
+                                >
+                                  Score: {score}% (Passing: {quiz.passingScore}%)
+                                </span>
+                              )}
+                              {!hasAttempted && (
+                                <span className="font-medium text-gray-600">
+                                  Not attempted yet • Passing: {quiz.passingScore}%
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <Link
+                          href={hasPassed ? `/quiz/${quiz.quizId}/review` : `/quiz/${quiz.quizId}`}
+                          className={`flex items-center gap-2 px-4 py-2 font-bold border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm whitespace-nowrap ${hasPassed
+                            ? 'bg-green-500 text-white border-green-700'
+                            : hasAttempted
+                              ? 'bg-red-500 text-white border-red-700'
+                              : 'bg-sija-primary text-white border-sija-primary'
+                            }`}
+                        >
+                          {hasPassed ? 'Review ✓' : hasAttempted ? 'Retake' : 'Take Quiz'}
+                          <PlayCircle className="w-4 h-4" />
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Final Quiz Section */}
+          {course.finalQuizId && (isEnrolled || isCreator) && (() => {
+            // Check if final quiz is passed
+            const finalQuizStatus = quizStatus?.quizzes?.find(
+              (q: any) => q.quizId === course.finalQuizId?.toString()
+            );
+            const finalQuizPassed = finalQuizStatus?.attempt?.passed;
+
+            return (
+              <div className="mt-6 bg-sija-surface border-2 border-sija-primary shadow-hard p-6 md:p-8">
+                <h2 className="font-display text-2xl font-bold text-sija-text mb-4 uppercase border-b-2 border-dashed border-sija-text/10 pb-4">
+                  Final Quiz
+                </h2>
+
+                {finalQuizPassed ? (
+                  // Quiz already passed - show completion status
+                  <div className="bg-green-100 border-2 border-green-500 p-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <CheckCircle2 className="w-8 h-8 text-green-600" />
+                      <div>
+                        <h3 className="font-bold text-green-900 uppercase tracking-wider text-lg">
+                          Final Quiz Completed! ✓
                         </h3>
-                        <p className="text-sm text-sija-text/60 font-medium line-clamp-1">
-                          {article.description}
+                        <p className="text-sm text-green-800 font-medium">
+                          Score: {finalQuizStatus.attempt.score}% (Passing: {finalQuizStatus.passingScore}%)
                         </p>
                       </div>
                     </div>
-
-                    {canAccess ? (
+                    <Link
+                      href={`/quiz/${course.finalQuizId}/review`}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white font-bold border-2 border-green-700 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm mt-3"
+                    >
+                      Review Quiz
+                      <PlayCircle className="w-4 h-4" />
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-sija-text/70 font-medium mb-4">
+                      Complete all modules to unlock the final quiz and test your knowledge!
+                    </p>
+                    {progress.percentage === 100 || isCreator ? (
                       <Link
-                        href={
-                          isEnrolled || isCreator
-                            ? `/articles/${article.slug}?course=${course.slug}`
-                            : `/articles/${article.slug}`
-                        }
-                        className="flex items-center gap-2 px-4 py-2 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm whitespace-nowrap"
+                        href={`/quiz/${course.finalQuizId}`}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                       >
-                        {isCreator ? 'View' : completed ? 'Review' : 'Start'}
-                        <PlayCircle className="w-4 h-4" />
+                        Take Final Quiz
                       </Link>
                     ) : (
-                      <div className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-600 font-bold border-2 border-gray-400 uppercase tracking-wider text-sm cursor-not-allowed">
-                        <Lock className="w-4 h-4" />
-                        Locked
+                      <div className="flex items-center gap-2 px-6 py-3 bg-gray-300 text-gray-600 font-bold border-2 border-gray-400 uppercase tracking-wider cursor-not-allowed inline-flex">
+                        <Lock className="w-5 h-5" />
+                        Complete All Modules First
                       </div>
                     )}
-                  </div>
+                  </>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* Additional Info */}
+          {!isCreator && (
+            <div className="mt-6 bg-blue-100 border-2 border-blue-500 p-6">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-bold text-blue-900 mb-2 uppercase tracking-wider">
+                    Sequential Learning
+                  </h3>
+                  <p className="text-sm text-blue-800 font-medium">
+                    Modules must be completed in order. Complete each module to unlock the next one.
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Additional Info */}
-      {!isCreator && (
-        <div className="mt-6 bg-blue-100 border-2 border-blue-500 p-6">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="font-bold text-blue-900 mb-2 uppercase tracking-wider">
-                Sequential Learning
-              </h3>
-              <p className="text-sm text-blue-800 font-medium">
-                Modules must be completed in order. Complete each module to unlock the next one.
-              </p>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Course Completion Handler - Automatically awards XP when all articles are completed */}
-      {user && isEnrolled && !isCreator && (
-        <CourseCompletionHandler
-          courseId={course._id?.toString() || ''}
-          totalArticles={articles.length}
-          completedArticles={progress.completedArticles}
-          isEnrolled={isEnrolled}
-          isCreator={!!isCreator}
-        />
-      )}
-    </div>
+          {/* Course Completion Handler - Automatically awards XP when all articles are completed */}
+          {user && isEnrolled && !isCreator && (
+            <CourseCompletionHandler
+              courseId={course._id?.toString() || ''}
+              totalArticles={articles.length}
+              completedArticles={progress.completedArticles}
+              isEnrolled={isEnrolled}
+              isCreator={!!isCreator}
+            />
+          )}
+        </div>
+      </div >
+    </div >
   );
 }

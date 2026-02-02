@@ -47,16 +47,22 @@ export default function CourseCompletionHandler({
 
   const handleCourseCompletion = async () => {
     setIsProcessing(true);
-    
+
     try {
       const result = await completeCourse(courseId);
-      
+
       if (result) {
         setHasCompletedCourse(true);
         console.log('Course completed! XP awarded:', result.xpGained);
       }
-    } catch (error) {
-      console.error('Failed to process course completion:', error);
+    } catch (error: any) {
+      // Check if error is due to quiz requirements
+      if (error.message && error.message.includes('quiz')) {
+        console.log('Quiz requirements not met:', error.message);
+        // Don't show error to user here, they'll see it in their progress
+      } else {
+        console.error('Failed to process course completion:', error);
+      }
     } finally {
       setIsProcessing(false);
     }

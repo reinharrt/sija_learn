@@ -109,8 +109,20 @@ export function useGamification() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          errorData = { error: 'Failed to complete course' };
+        }
+
         console.error('Course completion failed:', response.status, errorData);
+
+        // If it's a quiz requirement error, provide helpful message
+        if (errorData.message && errorData.message.includes('quiz')) {
+          throw new Error(errorData.message);
+        }
+
         throw new Error(errorData.error || 'Failed to complete course');
       }
 
@@ -159,7 +171,7 @@ export function useGamification() {
       return result;
     } catch (error) {
       console.error('Failed to complete course:', error);
-      return null;
+      throw error; // Re-throw to let caller handle it
     }
   }, [user, loadProgress]); // ✅ DEPEND ON USER
 

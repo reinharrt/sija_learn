@@ -13,7 +13,7 @@ const COLLECTION_NAME = 'articles';
 export async function createArticle(articleData: Omit<Article, '_id' | 'createdAt' | 'updatedAt' | 'views'>): Promise<ObjectId> {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   const article: Article = {
     ...articleData,
     type: articleData.type || ArticleType.PUBLIC,
@@ -23,12 +23,12 @@ export async function createArticle(articleData: Omit<Article, '_id' | 'createdA
   };
 
   const result = await collection.insertOne(article);
-  
+
   // Increment category usage count
   if (articleData.category) {
     await incrementCategoryUsage(articleData.category);
   }
-  
+
   return result.insertedId;
 }
 
@@ -47,7 +47,7 @@ export async function findArticleBySlug(slug: string): Promise<Article | null> {
 export async function updateArticle(id: string, updates: Partial<Article>): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   // If category is being changed, update usage counts
   if (updates.category) {
     const oldArticle = await findArticleById(id);
@@ -60,14 +60,14 @@ export async function updateArticle(id: string, updates: Partial<Article>): Prom
       await incrementCategoryUsage(updates.category);
     }
   }
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
-    { 
-      $set: { 
-        ...updates, 
-        updatedAt: new Date() 
-      } 
+    {
+      $set: {
+        ...updates,
+        updatedAt: new Date()
+      }
     }
   );
 
@@ -77,24 +77,24 @@ export async function updateArticle(id: string, updates: Partial<Article>): Prom
 export async function deleteArticle(id: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   // Get article before deletion to decrement category usage
   const article = await findArticleById(id);
-  
+
   const result = await collection.deleteOne({ _id: new ObjectId(id) });
-  
+
   // Decrement category usage count
   if (result.deletedCount > 0 && article && article.category) {
     await decrementCategoryUsage(article.category);
   }
-  
+
   return result.deletedCount > 0;
 }
 
 export async function incrementViews(id: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
     { $inc: { views: 1 } }
@@ -116,17 +116,17 @@ export async function getArticles(
 ) {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   const query: any = {};
-  
+
   if (filters.category) {
     query.category = filters.category;
   }
-  
+
   if (filters.author) {
     query.author = new ObjectId(filters.author);
   }
-  
+
   if (filters.published !== undefined) {
     query.published = filters.published;
   }
@@ -134,7 +134,7 @@ export async function getArticles(
   if (filters.type) {
     query.type = filters.type;
   }
-  
+
   if (filters.search) {
     query.$or = [
       { title: { $regex: filters.search, $options: 'i' } },
@@ -158,7 +158,7 @@ export async function getArticles(
 export async function getPopularArticles(limit: number = 10) {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   return collection
     .find({ published: true })
     .sort({ views: -1 })
@@ -169,7 +169,7 @@ export async function getPopularArticles(limit: number = 10) {
 export async function createIndexes() {
   const db = await getDatabase();
   const collection = db.collection<Article>(COLLECTION_NAME);
-  
+
   await collection.createIndex({ slug: 1 }, { unique: true });
   await collection.createIndex({ author: 1 });
   await collection.createIndex({ category: 1 });      // Now indexes slug
@@ -178,4 +178,41 @@ export async function createIndexes() {
   await collection.createIndex({ createdAt: -1 });
   await collection.createIndex({ views: -1 });
   await collection.createIndex({ title: 'text', description: 'text', tags: 'text' });
+}
+
+// ============================================
+// QUIZ HELPER FUNCTIONS
+// ============================================
+export async function setArticleQuiz(articleId: string, quizId: string | null): Promise<boolean> {
+  const db = await getDatabase();
+  const collection = db.collection<Article>(COLLECTION_NAME);
+
+  const updateData: any = { updatedAt: new Date() };
+  let updateOp: any = {};
+
+  if (quizId) {
+    updateOp = {
+      $set: {
+        ...updateData,
+        quizId: new ObjectId(quizId)
+      }
+    };
+  } else {
+    updateOp = {
+      $set: updateData,
+      $unset: { quizId: "" }
+    };
+  }
+
+  const result = await collection.updateOne(
+    { _id: new ObjectId(articleId) },
+    updateOp
+  );
+
+  return result.modifiedCount > 0;
+}
+
+export async function getArticleQuiz(articleId: string): Promise<ObjectId | undefined> {
+  const article = await findArticleById(articleId);
+  return article?.quizId;
 }

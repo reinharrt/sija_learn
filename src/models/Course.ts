@@ -12,7 +12,7 @@ const COLLECTION_NAME = 'courses';
 export async function createCourse(courseData: Omit<Course, '_id' | 'createdAt' | 'updatedAt' | 'enrolledCount'>): Promise<ObjectId> {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const course: Course = {
     ...courseData,
     enrolledCount: 0,
@@ -39,14 +39,14 @@ export async function findCourseBySlug(slug: string): Promise<Course | null> {
 export async function updateCourse(id: string, updates: Partial<Course>): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
-    { 
-      $set: { 
-        ...updates, 
-        updatedAt: new Date() 
-      } 
+    {
+      $set: {
+        ...updates,
+        updatedAt: new Date()
+      }
     }
   );
 
@@ -56,7 +56,7 @@ export async function updateCourse(id: string, updates: Partial<Course>): Promis
 export async function deleteCourse(id: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const result = await collection.deleteOne({ _id: new ObjectId(id) });
   return result.deletedCount > 0;
 }
@@ -64,10 +64,10 @@ export async function deleteCourse(id: string): Promise<boolean> {
 export async function addArticleToCourse(courseId: string, articleId: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(courseId) },
-    { 
+    {
       $addToSet: { articles: new ObjectId(articleId) },
       $set: { updatedAt: new Date() }
     }
@@ -79,10 +79,10 @@ export async function addArticleToCourse(courseId: string, articleId: string): P
 export async function removeArticleFromCourse(courseId: string, articleId: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(courseId) },
-    { 
+    {
       $pull: { articles: new ObjectId(articleId) },
       $set: { updatedAt: new Date() }
     }
@@ -94,7 +94,7 @@ export async function removeArticleFromCourse(courseId: string, articleId: strin
 export async function incrementEnrolled(id: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
     { $inc: { enrolledCount: 1 } }
@@ -114,17 +114,17 @@ export async function getCourses(
 ) {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   const query: any = {};
-  
+
   if (filters.creator) {
     query.creator = new ObjectId(filters.creator);
   }
-  
+
   if (filters.published !== undefined) {
     query.published = filters.published;
   }
-  
+
   if (filters.search) {
     query.$or = [
       { title: { $regex: filters.search, $options: 'i' } },
@@ -147,7 +147,7 @@ export async function getCourses(
 export async function getPopularCourses(limit: number = 10) {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   return collection
     .find({ published: true })
     .sort({ enrolledCount: -1 })
@@ -158,7 +158,7 @@ export async function getPopularCourses(limit: number = 10) {
 export async function createIndexes() {
   const db = await getDatabase();
   const collection = db.collection<Course>(COLLECTION_NAME);
-  
+
   await collection.createIndex({ slug: 1 }, { unique: true });
   await collection.createIndex({ creator: 1 });
   await collection.createIndex({ published: 1 });
@@ -166,3 +166,41 @@ export async function createIndexes() {
   await collection.createIndex({ enrolledCount: -1 });
   await collection.createIndex({ title: 'text', description: 'text' });
 }
+
+// ============================================
+// QUIZ HELPER FUNCTIONS
+// ============================================
+export async function setFinalQuiz(courseId: string, quizId: string | null): Promise<boolean> {
+  const db = await getDatabase();
+  const collection = db.collection<Course>(COLLECTION_NAME);
+
+  const updateData: any = { updatedAt: new Date() };
+  let updateOp: any = {};
+
+  if (quizId) {
+    updateOp = {
+      $set: {
+        ...updateData,
+        finalQuizId: new ObjectId(quizId)
+      }
+    };
+  } else {
+    updateOp = {
+      $set: updateData,
+      $unset: { finalQuizId: "" }
+    };
+  }
+
+  const result = await collection.updateOne(
+    { _id: new ObjectId(courseId) },
+    updateOp
+  );
+
+  return result.modifiedCount > 0;
+}
+
+export async function getFinalQuiz(courseId: string): Promise<ObjectId | undefined> {
+  const course = await findCourseById(courseId);
+  return course?.finalQuizId;
+}
+

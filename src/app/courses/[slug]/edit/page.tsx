@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { UserRole, Article, Course } from '@/types';
 import Input from '@/components/common/Input';
@@ -36,7 +37,8 @@ import {
   Lock,
   Plus,
   Edit,
-  Star
+  Star,
+  FileQuestion
 } from 'lucide-react';
 
 export default function EditCoursePage() {
@@ -406,6 +408,38 @@ export default function EditCoursePage() {
                 </p>
               </div>
             )}
+          </div>
+
+          {/* Quiz Management */}
+          <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
+            <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
+              <div className="p-2 bg-orange-500 border-2 border-orange-700">
+                <FileQuestion className="w-5 h-5 text-white" strokeWidth={2.5} />
+              </div>
+              Quiz Management
+            </h2>
+
+            <div className="bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-500 dark:border-blue-700 p-6 mb-4">
+              <div className="flex items-start gap-3 mb-4">
+                <Lightbulb className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
+                <div>
+                  <p className="font-bold text-blue-900 dark:text-blue-300 uppercase tracking-wider mb-1">
+                    Quiz Feature
+                  </p>
+                  <p className="text-sm text-blue-800 dark:text-blue-400 font-medium">
+                    Buat quiz untuk artikel individual atau final quiz untuk seluruh course. Quiz akan otomatis memberikan XP kepada siswa yang lulus.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Link
+              href={`/admin/courses/${course?._id}/quizzes?slug=${course?.slug}`}
+              className="inline-flex items-center gap-3 px-6 py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold uppercase tracking-wider border-2 border-orange-700 shadow-hard hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+            >
+              <FileQuestion className="w-5 h-5" strokeWidth={2.5} />
+              Kelola Quiz Course
+            </Link>
           </div>
 
           {/* XP & Difficulty Settings */}
