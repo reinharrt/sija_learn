@@ -10,11 +10,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
-import { Tags, ArrowLeft, Plus, BookOpen, FileText, TrendingUp, Hash } from 'lucide-react';
+import { Tags, ArrowLeft, Plus, BookOpen, FileText, TrendingUp, Hash, Shield } from 'lucide-react';
 import StatsCard from '@/components/admin/StatsCard';
 import TagsTable from '@/components/admin/TagsTable';
 import TagsFilter from '@/components/admin/TagsFilter';
 import CreateTagModal from '@/components/admin/CreateTagModal';
+import Breadcrumb from '@/components/common/Breadcrumb';
 
 interface Tag {
   _id: string;
@@ -186,16 +187,16 @@ export default function AdminTagsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Admin', href: '/admin', icon: <Shield size={16} strokeWidth={2.5} /> },
+          { label: 'Tags', icon: <Tags size={16} strokeWidth={2.5} /> },
+        ]}
+      />
+
       {/* Header */}
       <div className="mb-8">
-        <Link
-          href="/admin"
-          className="inline-flex items-center gap-2 text-sija-primary font-bold mb-4 hover:underline uppercase tracking-wider text-sm"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
-        </Link>
-
         <div className="bg-sija-surface border-2 border-sija-primary p-8 shadow-hard">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

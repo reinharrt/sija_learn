@@ -1,6 +1,6 @@
 // ============================================
 // src/app/(auth)/register/page.tsx
-// Register Page - Neobrutalist Split Layout
+// Register Page - Neobrutalist Split Layout with Dark Mode
 // ============================================
 
 'use client';
@@ -84,17 +84,17 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-sija-surface bg-grid-pattern">
-        <div className="max-w-md w-full bg-white p-8 border-2 border-sija-primary shadow-hard text-center">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-sija-surface bg-grid-pattern transition-colors duration-300">
+        <div className="max-w-md w-full bg-sija-background p-8 border-2 border-sija-primary shadow-hard text-center transition-colors duration-300">
           <div className="w-20 h-20 bg-green-500 border-2 border-green-700 flex items-center justify-center mx-auto mb-6 shadow-hard-sm">
             <div className="text-white text-5xl font-black">✓</div>
           </div>
-          <h1 className="text-3xl font-display font-black text-sija-text uppercase mb-4 tracking-tight">
+          <h1 className="text-3xl font-display font-black text-sija-text uppercase mb-4 tracking-tight transition-colors duration-300">
             Registrasi Berhasil!
           </h1>
           {requiresVerification ? (
             <>
-              <p className="text-sija-text/70 font-medium mb-8">
+              <p className="text-sija-text/70 font-medium mb-8 transition-colors duration-300">
                 Silakan cek email Anda untuk verifikasi akun.
               </p>
               <Link
@@ -106,7 +106,7 @@ export default function RegisterPage() {
             </>
           ) : (
             <>
-              <p className="text-sija-text/70 font-medium mb-8">
+              <p className="text-sija-text/70 font-medium mb-8 transition-colors duration-300">
                 Akun Anda sudah aktif. Silakan login untuk melanjutkan.
               </p>
               <Link
@@ -123,20 +123,20 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-white">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-sija-background transition-colors duration-300">
       {/* Left Side - Hero / Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-sija-surface bg-grid-pattern border-r-2 border-sija-primary flex-col justify-between p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-sija-surface bg-grid-pattern border-r-2 border-sija-border flex-col justify-between p-12 relative overflow-hidden transition-colors duration-300">
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 p-32 bg-sija-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 p-24 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 p-32 bg-sija-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
+        <div className="absolute bottom-0 left-0 p-24 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
 
         <div className="z-10 relative">
-          <div className="inline-flex items-center gap-2 bg-white px-4 py-2 border-2 border-sija-primary shadow-hard-sm mb-8">
+          <div className="inline-flex items-center gap-2 bg-sija-background px-4 py-2 border-2 border-sija-primary shadow-hard-sm mb-8 transition-colors duration-300">
             <Sparkles size={18} className="text-sija-primary fill-sija-primary" />
-            <span className="font-bold uppercase tracking-wider text-xs">Sija Learn Platform</span>
+            <span className="font-bold uppercase tracking-wider text-xs text-sija-text">Sija Learn Platform</span>
           </div>
 
-          <h1 className="text-6xl font-display font-black text-sija-text leading-tight mb-6 uppercase">
+          <h1 className="text-6xl font-display font-black text-sija-text leading-tight mb-6 uppercase transition-colors duration-300">
             Start Your <br />
             <span className="text-sija-primary relative">
               Journey
@@ -145,41 +145,41 @@ export default function RegisterPage() {
               </svg>
             </span>
           </h1>
-          <p className="text-xl text-sija-text/70 font-medium max-w-md">
+          <p className="text-xl text-sija-text/70 font-medium max-w-md transition-colors duration-300">
             Bergabunglah dengan komunitas pembelajar SIJA. Tingkatkan skill kodingmu ke level berikutnya.
           </p>
         </div>
 
         <div className="z-10 relative">
           <div className="flex gap-4 mb-4">
-            <div className="p-4 bg-white border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2">
+            <div className="p-4 bg-sija-background border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2 transition-colors duration-300">
               <div className="text-3xl font-black text-sija-primary mb-1">100+</div>
-              <div className="text-xs font-bold uppercase text-sija-text/60">Modul Pembelajaran</div>
+              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Modul Pembelajaran</div>
             </div>
-            <div className="p-4 bg-white border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2">
+            <div className="p-4 bg-sija-background border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2 transition-colors duration-300">
               <div className="text-3xl font-black text-blue-600 mb-1">Active</div>
-              <div className="text-xs font-bold uppercase text-sija-text/60">Community</div>
+              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Community</div>
             </div>
           </div>
-          <p className="text-sm font-medium text-sija-text/50">© 2024 Sija Learn. All rights reserved.</p>
+          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2024 Sija Learn. All rights reserved.</p>
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center p-6 lg:p-24 pt-32 overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex flex-col items-center p-6 lg:p-24 pt-32 overflow-y-auto bg-sija-background transition-colors duration-300">
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden text-center mb-8">
             <h1 className="text-3xl font-display font-black text-sija-primary uppercase tracking-tight">Join Sija</h1>
-            <p className="text-sija-text/60 font-medium text-sm">Create your account to get started.</p>
+            <p className="text-sija-text/60 font-medium text-sm transition-colors duration-300">Create your account to get started.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-sija-text tracking-tight hidden lg:block">Create Account</h2>
-            <p className="text-sija-text/60 font-medium hidden lg:block">Enter your details to register.</p>
+            <h2 className="text-3xl font-bold text-sija-text tracking-tight hidden lg:block transition-colors duration-300">Create Account</h2>
+            <p className="text-sija-text/60 font-medium hidden lg:block transition-colors duration-300">Enter your details to register.</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border-2 border-red-500 text-red-700 px-4 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] flex items-start gap-2">
+            <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-500 text-red-700 dark:text-red-400 px-4 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] flex items-start gap-2 transition-colors duration-300">
               <span>⚠️</span>
               <span>{error}</span>
             </div>
@@ -243,14 +243,14 @@ export default function RegisterPage() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t-2 border-gray-200" />
+              <span className="w-full border-t-2 border-sija-border transition-colors duration-300" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500 font-bold tracking-wider">Atau</span>
+              <span className="bg-sija-background px-2 text-sija-text/50 font-bold tracking-wider transition-colors duration-300">Atau</span>
             </div>
           </div>
 
-          <p className="text-center font-medium text-sija-text">
+          <p className="text-center font-medium text-sija-text transition-colors duration-300">
             Sudah punya akun?{' '}
             <Link href="/login" className="text-sija-primary hover:underline decoration-2 underline-offset-2 font-bold">
               Login disini

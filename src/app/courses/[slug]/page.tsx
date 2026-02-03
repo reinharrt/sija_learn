@@ -10,6 +10,8 @@ import { useParams, useRouter } from 'next/navigation';
 import CourseDetail from '@/components/course/CourseDetail';
 import { Course } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import Breadcrumb from '@/components/common/Breadcrumb';
+import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -67,9 +69,8 @@ export default function CourseDetailPage() {
         console.log('📋 Enrollment check - All enrollments:', data.enrollments);
         console.log('📋 Current course ID:', course._id);
 
-        // Compare courseId (now string from API) with current course ID
         const enrolled = data.enrollments?.some((e: any) => {
-          const enrollmentCourseId = e.courseId; // Already a string from API
+          const enrollmentCourseId = e.courseId;
           const currentCourseId = course._id?.toString();
 
           console.log('🔍 Comparing:', enrollmentCourseId, '===', currentCourseId);
@@ -90,29 +91,40 @@ export default function CourseDetailPage() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading course...</p>
+        <Loader2 className="w-12 h-12 animate-spin text-sija-primary mx-auto mb-4" />
+        <p className="text-sija-text/60 font-bold uppercase tracking-wider">Loading course...</p>
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="text-6xl mb-4">❌</div>
-        <h1 className="text-2xl font-bold mb-4">Course tidak ditemukan</h1>
-        <button
-          onClick={() => router.push('/courses')}
-          className="text-blue-600 hover:text-blue-800"
-        >
-          ← Kembali ke Course
-        </button>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-sija-surface border-2 border-sija-border shadow-hard p-12 text-center">
+          <BookOpen className="w-16 h-16 text-sija-text/30 mx-auto mb-4" />
+          <h1 className="text-2xl font-black text-sija-text uppercase mb-4">Course Tidak Ditemukan</h1>
+          <button
+            onClick={() => router.push('/courses')}
+            className="inline-flex items-center gap-2 text-sija-primary font-bold hover:underline uppercase tracking-wider text-sm transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Courses
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'Courses', href: '/courses', icon: <BookOpen size={16} strokeWidth={2.5} /> },
+          { label: course.title },
+        ]}
+      />
+
       <CourseDetail
         course={course}
         initialIsEnrolled={isEnrolled}

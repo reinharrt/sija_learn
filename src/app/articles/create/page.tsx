@@ -14,14 +14,14 @@ import CategorySelector from '@/components/article/CategorySelector';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import { ContentBlock, ArticleType, UserRole } from '@/types';
-import { 
-  Image, 
-  FileText, 
-  BookOpen, 
-  Lock, 
-  CheckCircle, 
-  Save, 
-  X, 
+import {
+  Image,
+  FileText,
+  BookOpen,
+  Lock,
+  CheckCircle,
+  Save,
+  X,
   Loader2,
   AlertCircle,
   Globe,
@@ -125,8 +125,8 @@ export default function CreateArticlePage() {
   if (authLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-        <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-        <p className="text-gray-900 font-bold uppercase tracking-wider">Loading...</p>
+        <Loader2 className="w-12 h-12 animate-spin text-sija-primary mx-auto mb-4" />
+        <p className="text-sija-text font-bold uppercase tracking-wider">Loading...</p>
       </div>
     );
   }
@@ -138,25 +138,25 @@ export default function CreateArticlePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-8 pb-6 border-b-2 border-gray-900">
-        <h1 className="text-4xl font-black text-gray-900 mb-2 uppercase">Buat Artikel Baru</h1>
-        <p className="text-gray-600 font-medium">Tulis dan bagikan pengetahuan Anda</p>
+      <div className="mb-8 pb-6 border-b-2 border-sija-border">
+        <h1 className="text-4xl font-black text-sija-text mb-2 uppercase">Buat Artikel Baru</h1>
+        <p className="text-sija-text/60 font-medium">Tulis dan bagikan pengetahuan Anda</p>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="bg-red-50 border-2 border-red-600 px-4 py-3 mb-6 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]">
+        <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-600 dark:border-red-500 px-4 py-3 mb-6 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="font-bold text-red-700">{error}</p>
+            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="font-bold text-red-700 dark:text-red-300">{error}</p>
           </div>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Banner Upload */}
-        <div className="bg-white p-6 border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-xl font-black text-gray-900 mb-4 flex items-center gap-2 uppercase">
+        <div className="bg-sija-surface p-6 border-2 border-sija-border shadow-hard transition-colors duration-300">
+          <h2 className="text-xl font-black text-sija-text mb-4 flex items-center gap-2 uppercase">
             <Image className="w-6 h-6" />
             Banner Artikel
           </h2>
@@ -170,12 +170,12 @@ export default function CreateArticlePage() {
         </div>
 
         {/* Basic Info */}
-        <div className="bg-white p-6 border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-xl font-black text-gray-900 mb-4 flex items-center gap-2 uppercase">
+        <div className="bg-sija-surface p-6 border-2 border-sija-border shadow-hard transition-colors duration-300">
+          <h2 className="text-xl font-black text-sija-text mb-4 flex items-center gap-2 uppercase">
             <FileText className="w-6 h-6" />
             Informasi Dasar
           </h2>
-          
+
           <div className="space-y-4">
             <Input
               label="Judul"
@@ -187,14 +187,14 @@ export default function CreateArticlePage() {
             />
 
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2">
-                Deskripsi <span className="text-red-600">*</span>
+              <label className="block text-sm font-bold text-sija-text mb-2">
+                Deskripsi <span className="text-red-600 dark:text-red-400">*</span>
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-medium"
+                className="w-full px-4 py-3 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-medium transition-colors duration-300"
                 rows={3}
                 placeholder="Deskripsi singkat artikel..."
                 required
@@ -210,14 +210,14 @@ export default function CreateArticlePage() {
 
               {/* Article Type */}
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2">
-                  Tipe Artikel <span className="text-red-600">*</span>
+                <label className="block text-sm font-bold text-sija-text mb-2">
+                  Tipe Artikel <span className="text-red-600 dark:text-red-400">*</span>
                 </label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-bold"
+                  className="w-full px-4 py-3 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-bold transition-colors duration-300"
                   required
                 >
                   <option value={ArticleType.PUBLIC}>
@@ -227,23 +227,23 @@ export default function CreateArticlePage() {
                     Course Only - Hanya via enrollment
                   </option>
                 </select>
-                <div className="flex items-start gap-3 mt-2 p-3 bg-gray-50 border-l-4 border-gray-900">
+                <div className="flex items-start gap-3 mt-2 p-3 bg-sija-light border-l-4 border-sija-primary transition-colors duration-300">
                   {formData.type === ArticleType.PUBLIC ? (
                     <>
-                      <Globe className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <Globe className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm font-bold text-gray-900 mb-1">Public Access</p>
-                        <p className="text-xs text-gray-700">
+                        <p className="text-sm font-bold text-sija-text mb-1">Public Access</p>
+                        <p className="text-xs text-sija-text/60">
                           Artikel akan tampil di halaman artikel & bisa ditambah ke course
                         </p>
                       </div>
                     </>
                   ) : (
                     <>
-                      <LockKeyhole className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <LockKeyhole className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm font-bold text-gray-900 mb-1">Course Only</p>
-                        <p className="text-xs text-gray-700">
+                        <p className="text-sm font-bold text-sija-text mb-1">Course Only</p>
+                        <p className="text-xs text-sija-text/60">
                           Artikel hanya bisa diakses via course yang enrolled
                         </p>
                       </div>
@@ -254,7 +254,7 @@ export default function CreateArticlePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <label className="block text-sm font-bold text-sija-text mb-2 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
                 Tags
               </label>
@@ -264,25 +264,25 @@ export default function CreateArticlePage() {
                 value={formData.tags}
                 onChange={handleChange}
                 placeholder="react, javascript, tutorial (pisahkan dengan koma)"
-                className="w-full px-4 py-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-medium"
+                className="w-full px-4 py-3 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-medium transition-colors duration-300"
               />
-              <p className="mt-2 text-xs text-gray-600 flex items-center gap-1">
+              <p className="mt-2 text-xs text-sija-text/60 flex items-center gap-1">
                 <Tag className="w-3 h-3" />
                 Gunakan koma untuk memisahkan tags
               </p>
             </div>
 
-            <div className="flex items-center gap-3 pt-2 p-3 bg-blue-50 border-2 border-blue-600">
+            <div className="flex items-center gap-3 pt-2 p-3 bg-sija-light border-2 border-sija-primary transition-colors duration-300">
               <input
                 type="checkbox"
                 name="published"
                 checked={formData.published}
                 onChange={handleChange}
-                className="w-5 h-5 border-2 border-gray-900"
+                className="w-5 h-5 border-2 border-sija-border accent-sija-primary"
                 id="published"
               />
-              <label htmlFor="published" className="text-sm font-bold text-gray-900 cursor-pointer flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
+              <label htmlFor="published" className="text-sm font-bold text-sija-text cursor-pointer flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-sija-primary" />
                 Publish artikel sekarang
               </label>
             </div>
@@ -290,8 +290,8 @@ export default function CreateArticlePage() {
         </div>
 
         {/* Content */}
-        <div className="bg-white p-6 border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="text-xl font-black text-gray-900 mb-4 flex items-center gap-2 uppercase">
+        <div className="bg-sija-surface p-6 border-2 border-sija-border shadow-hard transition-colors duration-300">
+          <h2 className="text-xl font-black text-sija-text mb-4 flex items-center gap-2 uppercase">
             <FileText className="w-6 h-6" />
             Konten Artikel
           </h2>
@@ -303,7 +303,7 @@ export default function CreateArticlePage() {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-4 border-2 border-blue-600 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
+            className="inline-flex items-center justify-center gap-2 bg-sija-primary text-white px-8 py-4 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
           >
             {submitting ? (
               <>
@@ -320,7 +320,7 @@ export default function CreateArticlePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-gray-900 font-bold hover:bg-gray-100 transition-colors uppercase tracking-wider"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-sija-border text-sija-text font-bold hover:bg-sija-light transition-all uppercase tracking-wider duration-300"
           >
             <X className="w-5 h-5" />
             Batal

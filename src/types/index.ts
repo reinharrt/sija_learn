@@ -280,3 +280,15 @@ export interface QuizResult {
   percentage: number;
   passed: boolean;
 }
+
+// ============================================
+// EMAIL SUBSCRIPTION TYPES
+// ============================================
+
+export interface Subscriber {
+  _id?: ObjectId;
+  email: string;
+  subscribedAt: Date;
+  isActive: boolean;
+  unsubscribeToken: string;
+}

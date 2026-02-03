@@ -1,6 +1,6 @@
 // ============================================
 // src/components/common/Button.tsx
-// Button Component - Neobrutalist Design
+// Button Component - Neobrutalist Design with Dark Mode
 // ============================================
 
 'use client';
@@ -42,7 +42,7 @@ export default function Button({
 
   const variantClasses = {
     primary: 'bg-sija-primary text-white border-sija-primary hover:bg-sija-primary/90',
-    secondary: 'bg-sija-surface text-sija-primary border-sija-primary hover:bg-sija-primary/10',
+    secondary: 'bg-sija-surface text-sija-primary border-sija-primary hover:bg-sija-light dark:hover:bg-sija-dark/50 transition-colors duration-300',
     danger: 'bg-red-500 text-white border-red-500 hover:bg-red-600 hover:border-red-600',
     success: 'bg-green-500 text-white border-green-500 hover:bg-green-600 hover:border-green-600',
     warning: 'bg-yellow-500 text-white border-yellow-500 hover:bg-yellow-600 hover:border-yellow-600',

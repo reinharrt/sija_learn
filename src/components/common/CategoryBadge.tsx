@@ -1,6 +1,6 @@
 // ============================================
 // src/components/common/CategoryBadge.tsx
-// Category Badge with Lucide Icon
+// Category Badge with Lucide Icon and Dark Mode
 // ============================================
 
 'use client';
@@ -70,16 +70,16 @@ export default function CategoryBadge({
 
   return (
     <span 
-      className={`inline-flex items-center ${sizeClasses[size]} rounded font-medium border-2 border-gray-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}
+      className={`inline-flex items-center ${sizeClasses[size]} font-medium border-2 border-sija-border shadow-hard-sm transition-colors duration-300`}
       style={{ 
         backgroundColor: color + '20',
         color: color
       }}
     >
       <IconComponent className={iconSizes[size]} />
-      <span className="text-gray-900 font-bold">{name}</span>
+      <span className="text-sija-text font-bold transition-colors duration-300">{name}</span>
       {showCount !== undefined && (
-        <span className="text-gray-600 text-xs">({showCount})</span>
+        <span className="text-sija-text/60 dark:text-sija-text/50 text-xs transition-colors duration-300">({showCount})</span>
       )}
     </span>
   );

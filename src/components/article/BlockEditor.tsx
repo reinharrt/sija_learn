@@ -1,6 +1,6 @@
 // ============================================
 // src/components/article/BlockEditor.tsx
-// Block Editor Component - Neobrutalist Design
+// Block Editor Component - Neobrutalist Design with Dark Mode
 // ============================================
 
 'use client';
@@ -8,16 +8,16 @@
 import { useState } from 'react';
 import { ContentBlock, BlockType } from '@/types';
 import { generateUniqueId } from '@/lib/utils';
-import { 
-  Type, 
-  Heading1, 
-  Image as ImageIcon, 
-  Code2, 
-  Quote, 
-  List, 
-  ChevronUp, 
-  ChevronDown, 
-  Trash2, 
+import {
+  Type,
+  Heading1,
+  Image as ImageIcon,
+  Code2,
+  Quote,
+  List,
+  ChevronUp,
+  ChevronDown,
+  Trash2,
   Loader2,
   Plus
 } from 'lucide-react';
@@ -68,7 +68,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
     const newBlocks = [...blocks];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
-    
+
     onChange(
       newBlocks.map((block, i) => ({
         ...block,
@@ -124,7 +124,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
           <textarea
             value={block.content}
             onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-600 min-h-24 font-medium"
+            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary min-h-24 font-medium transition-colors duration-300"
             placeholder="Masukkan teks..."
           />
         );
@@ -139,7 +139,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   metadata: { ...block.metadata, level: parseInt(e.target.value) },
                 })
               }
-              className="px-3 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-600 font-bold"
+              className="px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-bold transition-colors duration-300"
             >
               <option value={1}>Heading 1 (Besar)</option>
               <option value={2}>Heading 2 (Sedang)</option>
@@ -149,7 +149,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
               type="text"
               value={block.content}
               onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-600 font-bold text-lg"
+              className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-bold text-lg transition-colors duration-300"
               placeholder="Masukkan heading..."
             />
           </div>
@@ -160,14 +160,14 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
           <div className="space-y-3">
             <div className="flex gap-2">
               <label className="flex-1 cursor-pointer">
-                <div className="px-4 py-2 bg-gray-100 border-2 border-gray-900 font-bold hover:bg-gray-200 transition-colors text-center">
+                <div className="px-4 py-2 bg-sija-light dark:bg-sija-dark/30 border-2 border-sija-border font-bold hover:bg-sija-background transition-all text-center duration-300">
                   {uploadingBlockId === block.id ? (
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-2 text-sija-text">
                       <Loader2 className="w-4 h-4 animate-spin" />
                       Uploading...
                     </span>
                   ) : (
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-2 text-sija-text">
                       <ImageIcon className="w-4 h-4" />
                       Pilih Gambar
                     </span>
@@ -187,7 +187,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                 />
               </label>
             </div>
-            
+
             <input
               type="text"
               value={block.metadata?.alt || ''}
@@ -196,18 +196,18 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   metadata: { ...block.metadata, alt: e.target.value },
                 })
               }
-              className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-600"
+              className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary transition-colors duration-300"
               placeholder="Alt text (deskripsi gambar)..."
             />
-            
+
             {block.content && (
-              <div className="mt-3 p-3 bg-gray-50 border-2 border-gray-300">
-                <img 
-                  src={block.content} 
-                  alt="Preview" 
-                  className="max-w-full h-auto border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" 
+              <div className="mt-3 p-3 bg-sija-light dark:bg-sija-dark/30 border-2 border-sija-border transition-colors duration-300">
+                <img
+                  src={block.content}
+                  alt="Preview"
+                  className="max-w-full h-auto border-2 border-sija-border shadow-hard"
                 />
-                <p className="text-xs text-gray-600 mt-2 font-mono break-all">
+                <p className="text-xs text-sija-text/60 dark:text-sija-text/50 mt-2 font-mono break-all transition-colors duration-300">
                   {block.content}
                 </p>
               </div>
@@ -226,13 +226,13 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   metadata: { ...block.metadata, language: e.target.value },
                 })
               }
-              className="px-3 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-600 font-mono"
+              className="px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-mono transition-colors duration-300"
               placeholder="Bahasa (javascript, python, dll)..."
             />
             <textarea
               value={block.content}
               onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-gray-900 font-mono min-h-32 bg-gray-900 text-green-400 focus:outline-none focus:border-blue-600"
+              className="w-full px-3 py-2 border-2 border-sija-border font-mono min-h-32 bg-gray-900 dark:bg-black text-green-400 dark:text-green-300 focus:outline-none focus:border-sija-primary transition-colors duration-300"
               placeholder="Masukkan kode..."
             />
           </div>
@@ -243,7 +243,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
           <textarea
             value={block.content}
             onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-300 border-l-4 border-l-blue-600 focus:outline-none focus:border-blue-600 min-h-20 italic font-medium"
+            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text border-l-4 border-l-sija-primary focus:outline-none focus:border-sija-primary min-h-20 italic font-medium transition-colors duration-300"
             placeholder="Masukkan kutipan..."
           />
         );
@@ -253,7 +253,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
           <textarea
             value={block.content}
             onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-600 min-h-32 font-medium"
+            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary min-h-32 font-medium transition-colors duration-300"
             placeholder="Satu item per baris..."
           />
         );
@@ -266,8 +266,8 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
   return (
     <div className="space-y-6">
       {/* Add Block Buttons */}
-      <div className="bg-gray-50 p-4 border-2 border-gray-300">
-        <p className="text-xs font-bold text-gray-700 mb-3 uppercase tracking-wider">
+      <div className="bg-sija-light dark:bg-sija-dark/30 p-4 border-2 border-sija-border transition-colors duration-300">
+        <p className="text-xs font-bold text-sija-text/70 dark:text-sija-text/60 mb-3 uppercase tracking-wider transition-colors duration-300">
           Tambah Block Baru
         </p>
         <div className="flex flex-wrap gap-2">
@@ -275,7 +275,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
             <button
               key={type}
               onClick={() => addBlock(type)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-900 font-bold text-sm hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-sija-surface border-2 border-sija-border font-bold text-sm hover:shadow-hard-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all text-sija-text duration-300"
             >
               <Icon className="w-4 h-4" />
               {label}
@@ -287,27 +287,27 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
       {/* Blocks List */}
       <div className="space-y-4">
         {blocks.map((block, index) => (
-          <div 
-            key={block.id} 
-            className="bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          <div
+            key={block.id}
+            className="bg-sija-surface border-2 border-sija-border shadow-hard transition-colors duration-300"
           >
             {/* Block Header */}
-            <div className="flex justify-between items-center px-4 py-3 bg-gray-100 border-b-2 border-gray-900">
+            <div className="flex justify-between items-center px-4 py-3 bg-sija-light dark:bg-sija-dark/30 border-b-2 border-sija-border transition-colors duration-300">
               <div className="flex items-center gap-2">
-                <div className="px-2 py-1 bg-blue-600 text-white text-xs font-bold uppercase">
+                <div className="px-2 py-1 bg-sija-primary text-white text-xs font-bold uppercase">
                   {block.type}
                 </div>
-                <span className="text-xs text-gray-600 font-mono">
+                <span className="text-xs text-sija-text/60 dark:text-sija-text/50 font-mono transition-colors duration-300">
                   Block #{index + 1}
                 </span>
               </div>
-              
+
               {/* Block Actions */}
               <div className="flex gap-1">
                 <button
                   onClick={() => moveBlock(block.id, 'up')}
                   disabled={index === 0}
-                  className="p-1.5 border-2 border-gray-900 bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="p-1.5 border-2 border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sija-text duration-300"
                   title="Pindah ke atas"
                 >
                   <ChevronUp className="w-4 h-4" />
@@ -315,17 +315,17 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                 <button
                   onClick={() => moveBlock(block.id, 'down')}
                   disabled={index === blocks.length - 1}
-                  className="p-1.5 border-2 border-gray-900 bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="p-1.5 border-2 border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sija-text duration-300"
                   title="Pindah ke bawah"
                 >
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => deleteBlock(block.id)}
-                  className="p-1.5 border-2 border-gray-900 bg-red-50 hover:bg-red-100 transition-colors"
+                  className="p-1.5 border-2 border-sija-border bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 transition-all duration-300"
                   title="Hapus block"
                 >
-                  <Trash2 className="w-4 h-4 text-red-600" />
+                  <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                 </button>
               </div>
             </div>
@@ -340,10 +340,10 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
 
       {/* Empty State */}
       {blocks.length === 0 && (
-        <div className="text-center py-12 border-2 border-dashed border-gray-300 bg-gray-50">
-          <Plus className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600 font-bold mb-1">Belum Ada Block</p>
-          <p className="text-sm text-gray-500">
+        <div className="text-center py-12 border-2 border-dashed border-sija-border bg-sija-light dark:bg-sija-dark/30 transition-colors duration-300">
+          <Plus className="w-12 h-12 text-sija-text/40 dark:text-sija-text/30 mx-auto mb-3" />
+          <p className="text-sija-text font-bold mb-1 transition-colors duration-300">Belum Ada Block</p>
+          <p className="text-sm text-sija-text/60 dark:text-sija-text/50 transition-colors duration-300">
             Klik tombol di atas untuk menambahkan block konten
           </p>
         </div>

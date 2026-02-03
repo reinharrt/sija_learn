@@ -1,6 +1,6 @@
 // ============================================
 // src/components/common/DataTable.tsx
-// Data Table Component - Neobrutalist Design with Pagination
+// Data Table Component - Neobrutalist Design with Pagination and Dark Mode
 // ============================================
 
 'use client';
@@ -21,14 +21,12 @@ interface DataTableProps<T> {
   loading?: boolean;
   emptyMessage?: string;
   emptyIcon?: ReactNode;
-  // Pagination
   pagination?: {
     currentPage: number;
     totalPages: number;
     totalItems: number;
     onPageChange: (page: number) => void;
   };
-  // Mobile card view
   mobileCardRender?: (item: T, index: number) => ReactNode;
 }
 
@@ -41,23 +39,22 @@ export default function DataTable<T extends { _id?: any }>({
   pagination,
   mobileCardRender,
 }: DataTableProps<T>) {
-  // Ensure data is always an array
   const safeData = Array.isArray(data) ? data : [];
 
   if (loading) {
     return (
-      <div className="bg-sija-surface border-2 border-sija-primary p-12 text-center shadow-hard">
+      <div className="bg-sija-surface border-2 border-sija-border p-12 text-center shadow-hard transition-colors duration-300">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-sija-primary border-t-transparent"></div>
-        <p className="text-sija-text font-bold mt-4">Loading...</p>
+        <p className="text-sija-text font-bold mt-4 transition-colors duration-300">Loading...</p>
       </div>
     );
   }
 
   if (safeData.length === 0) {
     return (
-      <div className="bg-sija-surface border-2 border-sija-primary p-12 text-center shadow-hard">
+      <div className="bg-sija-surface border-2 border-sija-border p-12 text-center shadow-hard transition-colors duration-300">
         {emptyIcon && <div className="mb-4">{emptyIcon}</div>}
-        <p className="text-sija-text font-bold text-lg">{emptyMessage}</p>
+        <p className="text-sija-text font-bold text-lg transition-colors duration-300">{emptyMessage}</p>
       </div>
     );
   }
@@ -68,15 +65,15 @@ export default function DataTable<T extends { _id?: any }>({
     const { currentPage, totalPages, totalItems, onPageChange } = pagination;
 
     return (
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-sija-surface border-2 border-sija-primary p-4 shadow-hard">
-        <p className="text-sm font-bold text-sija-text">
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-sija-surface border-2 border-sija-border p-4 shadow-hard transition-colors duration-300">
+        <p className="text-sm font-bold text-sija-text transition-colors duration-300">
           Halaman {currentPage} dari {totalPages} • Total {totalItems} items
         </p>
         <div className="flex items-center gap-2">
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 font-display font-bold text-xs bg-sija-surface text-sija-primary border-2 border-sija-primary shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+            className="px-4 py-2 font-display font-bold text-xs bg-sija-surface text-sija-primary border-2 border-sija-border shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 duration-300"
           >
             Previous
           </button>
@@ -99,10 +96,10 @@ export default function DataTable<T extends { _id?: any }>({
                 <button
                   key={pageNum}
                   onClick={() => onPageChange(pageNum)}
-                  className={`w-10 h-10 font-display font-bold text-xs border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${
+                  className={`w-10 h-10 font-display font-bold text-xs border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase duration-300 ${
                     currentPage === pageNum
                       ? 'bg-sija-primary text-white border-sija-primary'
-                      : 'bg-sija-surface text-sija-primary border-sija-primary hover:bg-sija-primary/10'
+                      : 'bg-sija-surface text-sija-primary border-sija-border hover:bg-sija-light dark:hover:bg-sija-dark/50'
                   }`}
                 >
                   {pageNum}
@@ -114,7 +111,7 @@ export default function DataTable<T extends { _id?: any }>({
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 font-display font-bold text-xs bg-sija-surface text-sija-primary border-2 border-sija-primary shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+            className="px-4 py-2 font-display font-bold text-xs bg-sija-surface text-sija-primary border-2 border-sija-border shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 duration-300"
           >
             Next
           </button>
@@ -125,14 +122,14 @@ export default function DataTable<T extends { _id?: any }>({
 
   return (
     <>
-      <div className="bg-sija-surface border-2 border-sija-primary shadow-hard overflow-hidden">
+      <div className="bg-sija-surface border-2 border-sija-border shadow-hard overflow-hidden transition-colors duration-300">
         {/* Mobile View - Card Style */}
         {mobileCardRender && (
           <div className="block lg:hidden">
             {safeData.map((item, index) => (
               <div
                 key={item._id?.toString() || index}
-                className={`${index !== safeData.length - 1 ? 'border-b-2 border-sija-primary' : ''}`}
+                className={`${index !== safeData.length - 1 ? 'border-b-2 border-sija-border' : ''} transition-colors duration-300`}
               >
                 {mobileCardRender(item, index)}
               </div>
@@ -144,11 +141,11 @@ export default function DataTable<T extends { _id?: any }>({
         <div className={`${mobileCardRender ? 'hidden lg:block' : 'block'} overflow-x-auto`}>
           <table className="w-full">
             <thead>
-              <tr className="border-b-2 border-sija-primary bg-sija-primary/5">
+              <tr className="border-b-2 border-sija-border bg-sija-light dark:bg-sija-dark/30 transition-colors duration-300">
                 {columns.map((column) => (
                   <th
                     key={column.key}
-                    className={`px-6 py-4 text-left font-display text-xs font-black text-sija-primary uppercase tracking-wider ${column.width || ''} ${column.className || ''}`}
+                    className={`px-6 py-4 text-left font-display text-xs font-black text-sija-primary uppercase tracking-wider transition-colors duration-300 ${column.width || ''} ${column.className || ''}`}
                   >
                     {column.label}
                   </th>
@@ -160,8 +157,8 @@ export default function DataTable<T extends { _id?: any }>({
                 <tr
                   key={item._id?.toString() || index}
                   className={`${
-                    index !== safeData.length - 1 ? 'border-b-2 border-sija-primary/20' : ''
-                  } hover:bg-sija-primary/5 transition-colors`}
+                    index !== safeData.length - 1 ? 'border-b-2 border-sija-border/20' : ''
+                  } hover:bg-sija-light dark:hover:bg-sija-dark/20 transition-colors duration-300`}
                 >
                   {columns.map((column) => (
                     <td key={column.key} className={`px-6 py-4 ${column.width || ''} ${column.className || ''}`}>

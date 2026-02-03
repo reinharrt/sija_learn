@@ -1,22 +1,22 @@
 // ============================================
 // src/components/article/CategoryFilter.tsx
-// Category Filter with Lucide Icons
+// Category Filter with Lucide Icons and Dark Mode
 // ============================================
 
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Folder, 
-  BookOpen, 
-  Code, 
-  Laptop, 
-  Palette, 
-  Wrench, 
-  FileText, 
-  Rocket, 
-  Zap, 
-  Target, 
+import {
+  Folder,
+  BookOpen,
+  Code,
+  Laptop,
+  Palette,
+  Wrench,
+  FileText,
+  Rocket,
+  Zap,
+  Target,
   Star,
   Lightbulb,
   Coffee,
@@ -79,7 +79,7 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
       <div className="flex gap-2 overflow-x-auto pb-2">
         {[1, 2, 3, 4].map(i => (
           <div key={i} className="animate-pulse">
-            <div className="h-10 w-32 bg-gray-200 rounded"></div>
+            <div className="h-10 w-32 bg-sija-light dark:bg-sija-dark/50 border-2 border-sija-border transition-colors duration-300"></div>
           </div>
         ))}
       </div>
@@ -91,11 +91,10 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
       {/* All Articles */}
       <button
         onClick={() => onSelectCategory(null)}
-        className={`inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-900 font-bold whitespace-nowrap transition-all ${
-          selectedCategory === null
-            ? 'bg-gray-900 text-white shadow-none translate-x-[2px] translate-y-[2px]'
-            : 'bg-white text-gray-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
-        }`}
+        className={`inline-flex items-center gap-2 px-4 py-2 border-2 border-sija-border font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === null
+            ? 'bg-sija-primary text-white shadow-none translate-x-[2px] translate-y-[2px]'
+            : 'bg-sija-surface text-sija-text shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+          }`}
       >
         <Grid className="w-4 h-4" />
         Semua
@@ -110,11 +109,10 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
           <button
             key={cat.slug}
             onClick={() => onSelectCategory(cat.slug)}
-            className={`inline-flex items-center gap-2 px-4 py-2 border-2 font-bold whitespace-nowrap transition-all ${
-              isSelected
-                ? 'border-gray-900 shadow-none translate-x-[2px] translate-y-[2px]'
-                : 'border-gray-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
-            }`}
+            className={`inline-flex items-center gap-2 px-4 py-2 border-2 border-sija-border font-bold whitespace-nowrap transition-all duration-300 ${isSelected
+                ? 'shadow-none translate-x-[2px] translate-y-[2px]'
+                : 'shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+              }`}
             style={{
               backgroundColor: isSelected ? cat.color : cat.color + '20',
               color: isSelected ? 'white' : cat.color,
@@ -122,7 +120,7 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
           >
             <IconComponent className="w-4 h-4" />
             <span>{cat.name}</span>
-            <span className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-600'}`}>
+            <span className={`text-xs ${isSelected ? 'text-white/80' : 'opacity-60'}`}>
               ({cat.usageCount})
             </span>
           </button>

@@ -313,7 +313,7 @@ export default function AdminAnalyticsPage() {
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="w-full border-2 border-sija-primary px-4 py-2 font-bold text-sm uppercase shadow-hard-sm focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
+              className="w-full bg-sija-background text-sija-text border-2 border-sija-border px-4 py-2 font-bold text-sm uppercase shadow-hard-sm focus:outline-none focus:border-sija-primary transition-all duration-300"
             >
               <option value="all">All Categories</option>
               <option value="published">Published Only</option>
@@ -331,7 +331,7 @@ export default function AdminAnalyticsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="w-full border-2 border-sija-primary px-4 py-2 font-bold text-sm uppercase shadow-hard-sm focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
+              className="w-full bg-sija-background text-sija-text border-2 border-sija-border px-4 py-2 font-bold text-sm uppercase shadow-hard-sm focus:outline-none focus:border-sija-primary transition-all duration-300"
             >
               <option value="views">Most Views</option>
               <option value="comments">Most Comments</option>

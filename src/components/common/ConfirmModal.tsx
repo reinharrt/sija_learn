@@ -1,6 +1,6 @@
 // ============================================
 // src/components/common/ConfirmModal.tsx
-// Confirmation Modal - Neobrutalist Design
+// Confirmation Modal - Neobrutalist Design with Dark Mode
 // ============================================
 
 'use client';
@@ -71,22 +71,22 @@ export default function ConfirmModal({
 
   const colorClasses = {
     danger: {
-      bg: 'bg-red-500',
-      border: 'border-red-500',
-      icon: 'text-red-500',
-      hover: 'hover:bg-red-600 hover:border-red-600',
+      bg: 'bg-red-500 dark:bg-red-600',
+      border: 'border-red-500 dark:border-red-600',
+      icon: 'text-red-500 dark:text-red-400',
+      hover: 'hover:bg-red-600 dark:hover:bg-red-700 hover:border-red-600 dark:hover:border-red-700',
     },
     warning: {
-      bg: 'bg-yellow-500',
-      border: 'border-yellow-500',
-      icon: 'text-yellow-500',
-      hover: 'hover:bg-yellow-600 hover:border-yellow-600',
+      bg: 'bg-yellow-500 dark:bg-yellow-600',
+      border: 'border-yellow-500 dark:border-yellow-600',
+      icon: 'text-yellow-500 dark:text-yellow-400',
+      hover: 'hover:bg-yellow-600 dark:hover:bg-yellow-700 hover:border-yellow-600 dark:hover:border-yellow-700',
     },
     info: {
-      bg: 'bg-blue-500',
-      border: 'border-blue-500',
-      icon: 'text-blue-500',
-      hover: 'hover:bg-blue-600 hover:border-blue-600',
+      bg: 'bg-blue-500 dark:bg-blue-600',
+      border: 'border-blue-500 dark:border-blue-600',
+      icon: 'text-blue-500 dark:text-blue-400',
+      hover: 'hover:bg-blue-600 dark:hover:bg-blue-700 hover:border-blue-600 dark:hover:border-blue-700',
     },
   };
 
@@ -100,23 +100,23 @@ export default function ConfirmModal({
       onClick={handleCancel}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm transition-colors duration-300" />
 
       {/* Modal */}
       <div
-        className={`relative bg-sija-surface border-4 border-sija-primary shadow-hard-lg max-w-md w-full transform transition-all duration-300 ${
+        className={`relative bg-sija-surface border-4 border-sija-border shadow-hard-lg max-w-md w-full transform transition-all duration-300 ${
           isAnimating ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative border-b-4 border-sija-primary p-6">
+        <div className="relative border-b-4 border-sija-border p-6 transition-colors duration-300">
           <div className="flex items-start gap-4">
-            <div className={`w-12 h-12 ${colors.bg} border-2 ${colors.border} flex items-center justify-center flex-shrink-0`}>
+            <div className={`w-12 h-12 ${colors.bg} border-2 ${colors.border} flex items-center justify-center flex-shrink-0 transition-colors duration-300`}>
               <AlertTriangle className="w-7 h-7 text-white" strokeWidth={2.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-display text-2xl font-black text-sija-primary uppercase break-words">
+              <h3 className="font-display text-2xl font-black text-sija-primary uppercase break-words transition-colors duration-300">
                 {title}
               </h3>
             </div>
@@ -126,7 +126,7 @@ export default function ConfirmModal({
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="absolute top-4 right-4 p-2 text-sija-text hover:text-sija-primary border-2 border-transparent hover:border-sija-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute top-4 right-4 p-2 text-sija-text hover:text-sija-primary border-2 border-transparent hover:border-sija-border transition-all disabled:opacity-50 disabled:cursor-not-allowed duration-300"
             aria-label="Close"
           >
             <X size={24} strokeWidth={2.5} />
@@ -135,24 +135,24 @@ export default function ConfirmModal({
 
         {/* Body */}
         <div className="p-6">
-          <p className="text-sija-text font-bold text-base leading-relaxed">
+          <p className="text-sija-text font-bold text-base leading-relaxed transition-colors duration-300">
             {message}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="border-t-4 border-sija-primary p-6 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end">
+        <div className="border-t-4 border-sija-border p-6 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end transition-colors duration-300">
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-3 font-display font-bold text-sm bg-sija-surface text-sija-primary border-2 border-sija-primary shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+            className="w-full sm:w-auto px-6 py-3 font-display font-bold text-sm bg-sija-surface text-sija-primary border-2 border-sija-border shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 duration-300"
           >
             {cancelText}
           </button>
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className={`w-full sm:w-auto px-6 py-3 font-display font-bold text-sm ${colors.bg} text-white border-2 ${colors.border} shadow-hard-sm ${colors.hover} hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center justify-center gap-2`}
+            className={`w-full sm:w-auto px-6 py-3 font-display font-bold text-sm ${colors.bg} text-white border-2 ${colors.border} shadow-hard-sm ${colors.hover} hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center justify-center gap-2 duration-300`}
           >
             {isLoading ? (
               <>

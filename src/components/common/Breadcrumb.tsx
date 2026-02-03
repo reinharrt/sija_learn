@@ -1,6 +1,6 @@
 // ============================================
 // src/components/common/Breadcrumb.tsx
-// Breadcrumb Component - Neobrutalist Design
+// Breadcrumb Component - Neobrutalist Design with Dark Mode
 // ============================================
 
 'use client';
@@ -31,7 +31,7 @@ export default function Breadcrumb({
 
   return (
     <nav 
-      className={`mb-6 bg-sija-surface border-2 border-sija-primary px-4 py-3 shadow-hard ${className}`}
+      className={`mb-6 bg-sija-surface border-2 border-sija-border px-4 py-3 shadow-hard transition-colors duration-300 ${className}`}
       aria-label="Breadcrumb"
     >
       <ol className="flex flex-wrap items-center gap-2 text-sm">
@@ -44,10 +44,10 @@ export default function Breadcrumb({
               {item.href && !isLast ? (
                 <Link
                   href={item.href}
-                  className="inline-flex items-center gap-1.5 font-bold text-sija-text hover:text-sija-primary transition-colors uppercase tracking-wide group"
+                  className="inline-flex items-center gap-1.5 font-bold text-sija-text hover:text-sija-primary transition-colors uppercase tracking-wide group duration-300"
                 >
                   {item.icon && (
-                    <span className="flex-shrink-0 transition-transform group-hover:scale-110">
+                    <span className="flex-shrink-0 transition-transform group-hover:scale-110 duration-300">
                       {item.icon}
                     </span>
                   )}
@@ -57,7 +57,7 @@ export default function Breadcrumb({
                 </Link>
               ) : (
                 <span 
-                  className="inline-flex items-center gap-1.5 font-black text-sija-primary uppercase tracking-wide"
+                  className="inline-flex items-center gap-1.5 font-black text-sija-primary uppercase tracking-wide transition-colors duration-300"
                   aria-current={isLast ? 'page' : undefined}
                 >
                   {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
@@ -71,7 +71,7 @@ export default function Breadcrumb({
                 <ChevronRight 
                   size={16} 
                   strokeWidth={2.5} 
-                  className="text-sija-text/40 flex-shrink-0" 
+                  className="text-sija-text/40 dark:text-sija-text/30 flex-shrink-0 transition-colors duration-300" 
                 />
               )}
             </li>

@@ -16,7 +16,7 @@ import { UserRole } from '@/types';
 function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIP = request.headers.get('x-real-ip');
-  
+
   if (forwarded) return forwarded.split(',')[0].trim();
   if (realIP) return realIP;
   return 'unknown';
@@ -51,7 +51,7 @@ export async function GET(
 
     // View tracking
     const shouldTrackView = request.nextUrl.searchParams.get('view') === 'true';
-    
+
     if (shouldTrackView && article._id) {
       const articleId = article._id.toString();
       const ipAddress = getClientIP(request);
@@ -60,8 +60,8 @@ export async function GET(
       const userId = user?.id;
 
       const shouldCount = await shouldCountView(
-        articleId, 
-        ipAddress, 
+        articleId,
+        ipAddress,
         userId,
         24 * 60 * 60 * 1000
       );
@@ -99,7 +99,7 @@ export async function PUT(
 
     const { id } = await params;
     let article;
-    
+
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       article = await findArticleById(id);
     } else {
@@ -125,7 +125,7 @@ export async function PUT(
     }
 
     const updates = await request.json();
-    
+
     // Generate new slug if title changed
     if (updates.title) {
       updates.slug = generateSlug(updates.title);
@@ -134,6 +134,9 @@ export async function PUT(
     // ✨ NEW: Handle tags separately
     const newTags = updates.tags;
     delete updates.tags; // Remove from updates object
+
+    // Check if article is being published (status changing from false to true)
+    const isBeingPublished = !article.published && updates.published === true;
 
     // Update article
     const success = await updateArticle(article._id!.toString(), updates);
@@ -148,6 +151,37 @@ export async function PUT(
     // ✨ NEW: Update tags via tag system
     if (newTags && Array.isArray(newTags)) {
       await updateEntityTags('article', article._id!.toString(), newTags, user.id);
+    }
+
+    // Send notification emails if article was just published
+    if (isBeingPublished) {
+      // Import email functions
+      const { getAllActiveSubscribers } = await import('@/models/Subscriber');
+      const { sendNewArticleEmail } = await import('@/lib/email');
+
+      try {
+        const subscribers = await getAllActiveSubscribers();
+
+        // Send emails to all subscribers (don't wait for completion)
+        subscribers.forEach(async (subscriber) => {
+          try {
+            await sendNewArticleEmail(
+              subscriber.email,
+              article.title,
+              article.description,
+              article.slug,
+              subscriber.unsubscribeToken
+            );
+          } catch (emailError) {
+            console.error(`Failed to send article notification to ${subscriber.email}:`, emailError);
+          }
+        });
+
+        console.log(`Article published: Sending notifications to ${subscribers.length} subscribers`);
+      } catch (notificationError) {
+        console.error('Error sending article notifications:', notificationError);
+        // Don't fail the update if notifications fail
+      }
     }
 
     return NextResponse.json(
@@ -179,7 +213,7 @@ export async function DELETE(
 
     const { id } = await params;
     let article;
-    
+
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       article = await findArticleById(id);
     } else {
@@ -206,7 +240,7 @@ export async function DELETE(
     // Delete comments and article
     const articleId = article._id!.toString();
     await deleteCommentsByArticle(articleId);
-    
+
     // Note: Tag usage will be automatically cleaned up
     // because we're deleting the article
     const success = await deleteArticle(articleId);

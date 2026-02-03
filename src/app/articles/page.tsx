@@ -1,8 +1,15 @@
+// ============================================
+// src/app/articles/page.tsx
+// Articles List Page - Neobrutalist Design
+// ============================================
+
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ArticleCard from '@/components/article/ArticleCard';
+import PageHeader from '@/components/common/PageHeader';
+import TagFilter, { FilterItem } from '@/components/common/TagFilter';
 import { Article, ArticleCategory } from '@/types';
 import {
   FileText,
@@ -11,8 +18,15 @@ import {
   Lightbulb,
   ChevronLeft,
   ChevronRight,
-  Search as SearchIcon
+  Search as SearchIcon,
 } from 'lucide-react';
+
+const CATEGORY_FILTERS: FilterItem[] = [
+  { value: null, label: 'All Articles', icon: FileText },
+  { value: 'pelajaran', label: 'Pelajaran', icon: BookOpen },
+  { value: 'tech', label: 'Tech', icon: Code },
+  { value: 'tutorial', label: 'Tutorial', icon: Lightbulb },
+];
 
 function ArticlesContent() {
   const searchParams = useSearchParams();
@@ -20,81 +34,64 @@ function ArticlesContent() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const category = searchParams.get('category') as ArticleCategory | null;
   const search = searchParams.get('search');
+
+  // Sync initial category dari URL params
+  useEffect(() => {
+    const categoryParam = searchParams.get('category') as ArticleCategory | null;
+    if (categoryParam) setSelectedCategory(categoryParam);
+  }, [searchParams]);
 
   useEffect(() => {
     setLoading(true);
     const params = new URLSearchParams();
     params.append('published', 'true');
-    params.append('type', 'public'); // Only show PUBLIC articles in articles page
+    params.append('type', 'public');
     params.append('page', page.toString());
-    if (category) params.append('category', category);
+    if (selectedCategory) params.append('category', selectedCategory);
     if (search) params.append('search', search);
 
     fetch(`/api/articles?${params}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setArticles(data.articles || []);
         setTotalPages(data.pagination?.totalPages || 1);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [category, search, page]);
+  }, [selectedCategory, search, page]);
 
-  const categories = [
-    { value: null, label: 'All Articles', icon: FileText },
-    { value: 'pelajaran', label: 'Pelajaran', icon: BookOpen },
-    { value: 'tech', label: 'Tech', icon: Code },
-    { value: 'tutorial', label: 'Tutorial', icon: Lightbulb },
-  ];
+  const handleCategoryChange = (value: string | null) => {
+    setSelectedCategory(value);
+    setPage(1);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header - Neobrutalist */}
-      <div className="mb-8 bg-sija-surface border-2 border-sija-primary p-8 shadow-hard">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center">
-            <FileText className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h1 className="font-display text-4xl md:text-5xl font-black text-sija-primary uppercase">
-              Articles
-            </h1>
-            <p className="text-sija-text/70 font-bold mt-1">
-              Jelajahi artikel yang bisa diakses publik
-            </p>
-          </div>
-        </div>
+      {/* Header */}
+      <PageHeader
+        title="Articles"
+        subtitle="Jelajahi artikel yang bisa diakses publik"
+        icon={FileText}
+      />
 
-        {/* Category Filter - Neobrutalist */}
-        <div className="flex flex-wrap gap-3 mt-6">
-          {categories.map((cat) => {
-            const isActive = category === cat.value;
-            const Icon = cat.icon;
+      {/* Category Filter */}
+      <TagFilter
+        title="Filter by Category"
+        items={CATEGORY_FILTERS}
+        selectedValue={selectedCategory}
+        onChange={handleCategoryChange}
+      />
 
-            return (
-              <a
-                key={cat.value || 'all'}
-                href={cat.value ? `/articles?category=${cat.value}` : '/articles'}
-                className={`px-6 py-3 text-sm font-bold border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider flex items-center gap-2 ${isActive
-                  ? 'bg-sija-primary text-white border-sija-primary'
-                  : 'bg-sija-light text-sija-text border-sija-primary'
-                  }`}
-              >
-                <Icon className="w-4 h-4" />
-                {cat.label}
-              </a>
-            );
-          })}
-        </div>
-      </div>
-
+      {/* Content */}
       {loading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sija-primary border-t-transparent"></div>
-          <p className="text-sija-text font-bold uppercase tracking-wider mt-4">Loading Articles...</p>
+          <p className="text-sija-text font-bold uppercase tracking-wider mt-4">
+            Loading Articles...
+          </p>
         </div>
       ) : articles.length === 0 ? (
         <div className="bg-sija-surface border-2 border-sija-primary p-12 text-center shadow-hard">
@@ -107,8 +104,8 @@ function ArticlesContent() {
           <p className="text-sija-text/60 font-medium">
             {search
               ? `Tidak ada artikel yang cocok dengan pencarian "${search}"`
-              : category
-                ? `Tidak ada artikel dalam kategori "${category}"`
+              : selectedCategory
+                ? `Tidak ada artikel dalam kategori "${selectedCategory}"`
                 : 'Belum ada artikel tersedia'}
           </p>
         </div>
@@ -121,11 +118,11 @@ function ArticlesContent() {
             ))}
           </div>
 
-          {/* Pagination - Neobrutalist */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="px-6 py-3 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-hard disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center gap-2 uppercase tracking-wider"
               >
@@ -135,12 +132,16 @@ function ArticlesContent() {
 
               <div className="bg-sija-surface border-2 border-sija-primary px-6 py-3 shadow-hard-sm">
                 <span className="font-bold text-sija-text uppercase tracking-wider">
-                  Page <span className="text-sija-primary font-black">{page}</span> of <span className="text-sija-primary font-black">{totalPages}</span>
+                  Page{' '}
+                  <span className="text-sija-primary font-black">{page}</span> of{' '}
+                  <span className="text-sija-primary font-black">
+                    {totalPages}
+                  </span>
                 </span>
               </div>
 
               <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 className="px-6 py-3 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-hard disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center gap-2 uppercase tracking-wider"
               >
@@ -157,12 +158,16 @@ function ArticlesContent() {
 
 export default function ArticlesPage() {
   return (
-    <Suspense fallback={
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sija-primary border-t-transparent"></div>
-        <p className="text-sija-text font-bold uppercase tracking-wider mt-4">Loading Articles...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sija-primary border-t-transparent"></div>
+          <p className="text-sija-text font-bold uppercase tracking-wider mt-4">
+            Loading Articles...
+          </p>
+        </div>
+      }
+    >
       <ArticlesContent />
     </Suspense>
   );

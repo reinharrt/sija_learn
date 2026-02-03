@@ -1,6 +1,6 @@
 // ============================================
 // src/components/common/ImageUpload.tsx
-// Image Upload Component - Neobrutalist Design
+// Image Upload Component - Neobrutalist Design with Dark Mode
 // ============================================
 
 'use client';
@@ -33,13 +33,11 @@ export default function ImageUpload({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('File harus berupa gambar');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError('Ukuran file maksimal 5MB');
       return;
@@ -48,14 +46,12 @@ export default function ImageUpload({
     setError('');
     setUploading(true);
 
-    // Show preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
 
-    // Upload to server
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -79,7 +75,6 @@ export default function ImageUpload({
       setPreview(data.url);
       onUploadSuccess(data.url);
 
-      // Show compression info
       if (data.originalSize && data.size) {
         const reduction = ((data.originalSize - data.size) / data.originalSize * 100).toFixed(1);
         console.log(`Image compressed: ${reduction}% smaller`);
@@ -103,14 +98,14 @@ export default function ImageUpload({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-bold text-gray-900 uppercase tracking-wider">
+      <label className="block text-sm font-bold text-sija-text uppercase tracking-wider transition-colors duration-300">
         {label}
       </label>
 
       {preview ? (
         <div className="space-y-3">
           <div 
-            className="relative overflow-hidden border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="relative overflow-hidden border-2 border-sija-border shadow-hard transition-colors duration-300"
             style={{ aspectRatio }}
           >
             <img 
@@ -123,7 +118,7 @@ export default function ImageUpload({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 border-2 border-blue-600 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="inline-flex items-center gap-2 bg-sija-primary text-white px-4 py-2 border-2 border-sija-primary font-bold text-sm shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
             >
               <RefreshCw className="w-4 h-4" />
               Ganti Gambar
@@ -131,7 +126,7 @@ export default function ImageUpload({
             <button
               type="button"
               onClick={handleRemove}
-              className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 border-2 border-red-600 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              className="inline-flex items-center gap-2 bg-red-600 dark:bg-red-700 text-white px-4 py-2 border-2 border-red-600 dark:border-red-700 font-bold text-sm shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-300"
             >
               <Trash2 className="w-4 h-4" />
               Hapus
@@ -141,27 +136,27 @@ export default function ImageUpload({
       ) : (
         <div 
           onClick={() => !uploading && fileInputRef.current?.click()}
-          className={`border-2 border-dashed border-gray-900 p-8 text-center transition-all ${
-            uploading ? 'cursor-wait bg-gray-100' : 'cursor-pointer hover:border-blue-600 hover:bg-blue-50'
+          className={`border-2 border-dashed border-sija-border p-8 text-center transition-all duration-300 ${
+            uploading ? 'cursor-wait bg-sija-light dark:bg-sija-dark/30' : 'cursor-pointer hover:border-sija-primary hover:bg-blue-50 dark:hover:bg-blue-950/30'
           }`}
           style={{ aspectRatio }}
         >
           <div className="flex flex-col items-center justify-center h-full">
             {uploading ? (
               <>
-                <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-3" />
-                <p className="text-sm font-bold text-gray-900">Uploading & Compressing...</p>
-                <p className="text-xs text-gray-600 mt-1">Mohon tunggu sebentar</p>
+                <Loader2 className="w-12 h-12 text-sija-primary animate-spin mb-3" />
+                <p className="text-sm font-bold text-sija-text transition-colors duration-300">Uploading & Compressing...</p>
+                <p className="text-xs text-sija-text/60 dark:text-sija-text/50 mt-1 transition-colors duration-300">Mohon tunggu sebentar</p>
               </>
             ) : (
               <>
-                <div className="w-16 h-16 bg-gray-100 border-2 border-gray-900 flex items-center justify-center mb-3">
-                  <Upload className="w-8 h-8 text-gray-900" />
+                <div className="w-16 h-16 bg-sija-light dark:bg-sija-dark/50 border-2 border-sija-border flex items-center justify-center mb-3 transition-colors duration-300">
+                  <Upload className="w-8 h-8 text-sija-text" />
                 </div>
-                <p className="text-sm font-bold text-gray-900 mb-1">
+                <p className="text-sm font-bold text-sija-text mb-1 transition-colors duration-300">
                   Klik untuk upload gambar
                 </p>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-sija-text/60 dark:text-sija-text/50 transition-colors duration-300">
                   Max 5MB • Auto-compress • JPG, PNG, WebP
                 </p>
               </>
@@ -180,8 +175,8 @@ export default function ImageUpload({
       />
 
       {error && (
-        <div className="bg-red-50 border-2 border-red-500 px-3 py-2">
-          <p className="text-red-700 text-sm font-bold">⚠️ {error}</p>
+        <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-500 dark:border-red-400 px-3 py-2 transition-colors duration-300">
+          <p className="text-red-700 dark:text-red-300 text-sm font-bold transition-colors duration-300">⚠️ {error}</p>
         </div>
       )}
     </div>

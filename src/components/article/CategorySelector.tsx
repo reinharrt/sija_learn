@@ -1,26 +1,26 @@
 // ============================================
 // src/components/article/CategorySelector.tsx
-// Category Selector - FULL LUCIDE ICONS + Neobrutalist
+// Category Selector - FULL LUCIDE ICONS + Neobrutalist + Dark Mode
 // ============================================
 
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Plus, 
-  X, 
-  Folder, 
-  BookOpen, 
-  Code, 
-  Laptop, 
-  Palette, 
-  Wrench, 
-  FileText, 
-  Rocket, 
-  Zap, 
-  Target, 
-  Star, 
-  Lightbulb, 
+import {
+  Plus,
+  X,
+  Folder,
+  BookOpen,
+  Code,
+  Laptop,
+  Palette,
+  Wrench,
+  FileText,
+  Rocket,
+  Zap,
+  Target,
+  Star,
+  Lightbulb,
   Coffee,
   Loader2,
   AlertCircle,
@@ -150,11 +150,11 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
   if (loading) {
     return (
       <div>
-        <label className="block text-sm font-bold text-gray-900 mb-2">
-          Kategori <span className="text-red-600">*</span>
+        <label className="block text-sm font-bold text-sija-text mb-2 transition-colors duration-300">
+          Kategori <span className="text-red-600 dark:text-red-400">*</span>
         </label>
         <div className="animate-pulse">
-          <div className="h-12 bg-gray-200 border-2 border-gray-300"></div>
+          <div className="h-12 bg-sija-light dark:bg-sija-dark/50 border-2 border-sija-border transition-colors duration-300"></div>
         </div>
       </div>
     );
@@ -162,15 +162,15 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
 
   return (
     <div>
-      <label className="block text-sm font-bold text-gray-900 mb-2">
-        Kategori <span className="text-red-600">*</span>
+      <label className="block text-sm font-bold text-sija-text mb-2 transition-colors duration-300">
+        Kategori <span className="text-red-600 dark:text-red-400">*</span>
       </label>
 
       <div className="flex gap-2">
         <select
           value={selectedCategory}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 px-4 py-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-bold"
+          className="flex-1 px-4 py-3 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-bold transition-colors duration-300"
           required
         >
           <option value="">Pilih Kategori</option>
@@ -184,34 +184,34 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 border-2 border-blue-600 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          className="inline-flex items-center justify-center gap-2 bg-sija-primary text-white px-4 py-3 border-2 border-sija-primary font-bold shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           title="Buat Kategori Baru"
         >
           <Plus className="w-5 h-5" />
         </button>
       </div>
 
-      <p className="text-xs text-gray-600 mt-2 flex items-center gap-1">
+      <p className="text-xs text-sija-text/60 dark:text-sija-text/50 mt-2 flex items-center gap-1 transition-colors duration-300">
         <Folder className="w-3 h-3" />
         Pilih kategori yang sesuai atau buat yang baru
       </p>
 
       {/* Create Category Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border-2 border-gray-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4 transition-colors duration-300">
+          <div className="bg-sija-surface border-2 border-sija-border shadow-hard max-w-md w-full max-h-[90vh] overflow-y-auto transition-colors duration-300">
             {/* Modal Header */}
-            <div className="p-6 border-b-2 border-gray-900 bg-gray-50">
+            <div className="p-6 border-b-2 border-sija-border bg-sija-light dark:bg-sija-dark/30 transition-colors duration-300">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2 uppercase">
+                <h2 className="text-2xl font-black text-sija-text flex items-center gap-2 uppercase transition-colors duration-300">
                   <Folder className="w-6 h-6" />
                   Buat Kategori
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-gray-200 transition-colors border-2 border-transparent hover:border-gray-900"
+                  className="p-2 hover:bg-sija-background transition-colors border-2 border-transparent hover:border-sija-border duration-300"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-6 h-6 text-sija-text" />
                 </button>
               </div>
             </div>
@@ -219,10 +219,10 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
             {/* Modal Body */}
             <div className="p-6">
               {error && (
-                <div className="bg-red-50 border-2 border-red-600 px-4 py-3 mb-4 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]">
+                <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-600 dark:border-red-500 px-4 py-3 mb-4 shadow-hard-sm transition-colors duration-300">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    <p className="font-bold text-red-700">{error}</p>
+                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    <p className="font-bold text-red-700 dark:text-red-300">{error}</p>
                   </div>
                 </div>
               )}
@@ -230,8 +230,8 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
               <div className="space-y-5">
                 {/* Category Name */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
-                    Nama Kategori <span className="text-red-600">*</span>
+                  <label className="block text-sm font-bold text-sija-text mb-2 transition-colors duration-300">
+                    Nama Kategori <span className="text-red-600 dark:text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -239,7 +239,7 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                     onChange={(e) =>
                       setNewCategory({ ...newCategory, name: e.target.value })
                     }
-                    className="w-full px-4 py-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-medium"
+                    className="w-full px-4 py-3 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-medium transition-colors duration-300"
                     placeholder="e.g., Web Development"
                     minLength={2}
                     maxLength={50}
@@ -248,7 +248,7 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
 
                 {/* Icon Selector */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
+                  <label className="block text-sm font-bold text-sija-text mb-2 transition-colors duration-300">
                     Icon
                   </label>
                   <div className="grid grid-cols-5 gap-2">
@@ -259,14 +259,13 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                           key={iconOpt.name}
                           type="button"
                           onClick={() => setNewCategory({ ...newCategory, icon: iconOpt.name })}
-                          className={`p-3 border-2 transition-all flex items-center justify-center ${
-                            newCategory.icon === iconOpt.name
-                              ? 'border-blue-600 bg-blue-50 shadow-[2px_2px_0px_0px_rgba(59,130,246,1)]'
-                              : 'border-gray-900 hover:bg-gray-50'
-                          }`}
+                          className={`p-3 border-2 transition-all flex items-center justify-center ${newCategory.icon === iconOpt.name
+                              ? 'border-sija-primary bg-blue-50 dark:bg-blue-950/30 shadow-hard-sm'
+                              : 'border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50'
+                            } duration-300`}
                           title={iconOpt.name}
                         >
-                          <IconComponent className="w-5 h-5" />
+                          <IconComponent className="w-5 h-5 text-sija-text" />
                         </button>
                       );
                     })}
@@ -275,7 +274,7 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
 
                 {/* Color Selector */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
+                  <label className="block text-sm font-bold text-sija-text mb-2 transition-colors duration-300">
                     Warna
                   </label>
                   <div className="flex gap-2 flex-wrap">
@@ -286,11 +285,10 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                         onClick={() =>
                           setNewCategory({ ...newCategory, color: color.value })
                         }
-                        className={`w-12 h-12 border-2 transition-all ${
-                          newCategory.color === color.value
-                            ? 'border-gray-900 scale-110 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                            : 'border-gray-900 opacity-60 hover:opacity-100'
-                        }`}
+                        className={`w-12 h-12 border-2 transition-all ${newCategory.color === color.value
+                            ? 'border-sija-border scale-110 shadow-hard-sm'
+                            : 'border-sija-border opacity-60 hover:opacity-100'
+                          } duration-300`}
                         style={{ backgroundColor: color.value }}
                         title={color.name}
                       />
@@ -300,7 +298,7 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
+                  <label className="block text-sm font-bold text-sija-text mb-2 transition-colors duration-300">
                     Deskripsi (Opsional)
                   </label>
                   <textarea
@@ -308,7 +306,7 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                     onChange={(e) =>
                       setNewCategory({ ...newCategory, description: e.target.value })
                     }
-                    className="w-full px-4 py-3 border-2 border-gray-900 focus:outline-none focus:border-blue-600 font-medium"
+                    className="w-full px-4 py-3 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-medium transition-colors duration-300"
                     rows={3}
                     placeholder="Deskripsi singkat kategori..."
                     maxLength={200}
@@ -316,22 +314,22 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                 </div>
 
                 {/* Preview */}
-                <div className="bg-gray-50 border-2 border-gray-900 p-4">
+                <div className="bg-sija-light dark:bg-sija-dark/30 border-2 border-sija-border p-4 transition-colors duration-300">
                   <div className="flex items-center gap-2 mb-3">
-                    <Eye className="w-4 h-4 text-gray-600" />
-                    <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">Preview</p>
+                    <Eye className="w-4 h-4 text-sija-text/60" />
+                    <p className="text-xs font-bold text-sija-text/60 uppercase tracking-wider">Preview</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div 
-                      className="p-3 border-2 border-gray-900"
+                    <div
+                      className="p-3 border-2 border-sija-border"
                       style={{ backgroundColor: newCategory.color + '30' }}
                     >
                       {renderIcon(newCategory.icon, 'w-6 h-6')}
                     </div>
                     <div>
-                      <p className="font-black text-gray-900">{newCategory.name || 'Nama Kategori'}</p>
+                      <p className="font-black text-sija-text transition-colors duration-300">{newCategory.name || 'Nama Kategori'}</p>
                       {newCategory.description && (
-                        <p className="text-sm text-gray-600 font-medium">{newCategory.description}</p>
+                        <p className="text-sm text-sija-text/60 dark:text-sija-text/50 font-medium transition-colors duration-300">{newCategory.description}</p>
                       )}
                     </div>
                   </div>
@@ -340,13 +338,13 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t-2 border-gray-900 bg-gray-50">
+            <div className="p-6 border-t-2 border-sija-border bg-sija-light dark:bg-sija-dark/30 transition-colors duration-300">
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={handleCreateCategory}
                   disabled={creating || !newCategory.name.trim()}
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 border-2 border-blue-600 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-sija-primary text-white px-6 py-3 border-2 border-sija-primary font-bold shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
                 >
                   {creating ? (
                     <>
@@ -364,7 +362,7 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                   type="button"
                   onClick={() => setShowModal(false)}
                   disabled={creating}
-                  className="px-6 py-3 border-2 border-gray-900 font-bold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wider"
+                  className="px-6 py-3 border-2 border-sija-border bg-sija-surface text-sija-text font-bold hover:bg-sija-light dark:hover:bg-sija-dark/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider duration-300"
                 >
                   <X className="w-5 h-5" />
                 </button>

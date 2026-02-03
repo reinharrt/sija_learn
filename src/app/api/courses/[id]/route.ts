@@ -102,6 +102,12 @@ export async function PUT(
       updates.articles = updates.articles.map((aid: string) => new ObjectId(aid));
     }
 
+    // Check if course is being published (status changing from false to true)
+    const existingCourse = await findCourseById(id);
+    const isBeingPublished = existingCourse &&
+      !existingCourse.published &&
+      updates.published === true;
+
     const success = await updateCourse(id, updates);
 
     if (!success) {
@@ -109,6 +115,37 @@ export async function PUT(
         { error: 'Course tidak ditemukan atau gagal diubah' },
         { status: 400 }
       );
+    }
+
+    // Send notification emails if course was just published
+    if (isBeingPublished && existingCourse) {
+      // Import email functions
+      const { getAllActiveSubscribers } = await import('@/models/Subscriber');
+      const { sendNewCourseEmail } = await import('@/lib/email');
+
+      try {
+        const subscribers = await getAllActiveSubscribers();
+
+        // Send emails to all subscribers (don't wait for completion)
+        subscribers.forEach(async (subscriber) => {
+          try {
+            await sendNewCourseEmail(
+              subscriber.email,
+              existingCourse.title,
+              existingCourse.description,
+              existingCourse.slug,
+              subscriber.unsubscribeToken
+            );
+          } catch (emailError) {
+            console.error(`Failed to send course notification to ${subscriber.email}:`, emailError);
+          }
+        });
+
+        console.log(`Course published: Sending notifications to ${subscribers.length} subscribers`);
+      } catch (notificationError) {
+        console.error('Error sending course notifications:', notificationError);
+        // Don't fail the update if notifications fail
+      }
     }
 
     return NextResponse.json(
