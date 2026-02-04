@@ -21,10 +21,12 @@ services:
     networks:
       - sija-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      # Fix: Gunakan mongo command (bukan mongosh) untuk mongo 4.4
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 40s
 
   app:
     build:
@@ -51,7 +53,6 @@ services:
     networks:
       - sija-network
     volumes:
-      # Mount uploads folder agar persist
       - ./uploads:/app/public/uploads
 
 volumes:
