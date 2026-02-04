@@ -257,13 +257,21 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
       <div className="bg-sija-surface border-2 border-sija-primary shadow-hard mb-6 overflow-hidden">
         {course.thumbnail && (
           <div className="relative w-full h-64 md:h-80 border-b-2 border-sija-primary">
-            <Image
-              src={course.thumbnail}
-              alt={course.title}
-              fill
-              className="object-cover"
-              priority
-            />
+            {course.thumbnail && course.thumbnail.startsWith('/uploads') ? (
+              <img
+                src={`/api/serve-upload${course.thumbnail.replace('/uploads', '')}`}
+                alt={course.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={course.thumbnail || '/images/placeholder-course.jpg'}
+                alt={course.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
             {/* ✅ CREATOR BADGE ON THUMBNAIL */}
             {isCreator && (
               <div className="absolute top-4 right-4 bg-yellow-400 text-sija-primary px-4 py-2 border-2 border-sija-primary shadow-hard font-bold uppercase tracking-wider flex items-center gap-2">

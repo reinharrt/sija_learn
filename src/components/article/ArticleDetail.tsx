@@ -62,9 +62,11 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
         return (
           <div className="my-6 border-4 border-sija-border shadow-hard overflow-hidden transition-colors duration-300">
             <img
-              src={block.content}
+              src={block.content.startsWith('/uploads')
+                ? `/api/serve-upload${block.content.replace('/uploads', '')}`
+                : block.content}
               alt={block.metadata?.alt || 'Image'}
-              className="w-full h-auto"
+              className="w-full h-full object-cover"
             />
             {block.metadata?.alt && (
               <div className="bg-sija-light dark:bg-sija-dark/30 border-t-4 border-sija-border p-3 transition-colors duration-300">
@@ -120,13 +122,21 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
       {article.banner && (
         <div className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 border-4 border-sija-border shadow-hard overflow-hidden transition-colors duration-300">
           <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
-            <Image
-              src={article.banner}
-              alt={article.title}
-              fill
-              className="object-cover"
-              priority
-            />
+            {article.banner.startsWith('/uploads') ? (
+              <img
+                src={`/api/serve-upload${article.banner.replace('/uploads', '')}`}
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={article.banner}
+                alt={article.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
           </div>
         </div>
       )}

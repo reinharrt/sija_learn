@@ -31,10 +31,10 @@ interface EnhancedCourseCardProps {
   showProgress?: boolean;
 }
 
-export default function EnhancedCourseCard({ 
-  course, 
+export default function EnhancedCourseCard({
+  course,
   enrollment,
-  showProgress = false 
+  showProgress = false
 }: EnhancedCourseCardProps) {
   const articleCount = course.articles?.length || 0;
   const xpReward = course.xpReward || calculateCourseXP(course.difficulty, articleCount);
@@ -47,11 +47,13 @@ export default function EnhancedCourseCard({
         {course.thumbnail ? (
           <div className="relative h-48 border-b-2 border-sija-primary overflow-hidden">
             <img
-              src={course.thumbnail}
+              src={course.thumbnail.startsWith('/uploads')
+                ? `/api/serve-upload${course.thumbnail.replace('/uploads', '')}`
+                : course.thumbnail}
               alt={course.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
-            
+
             {/* Completion Badge */}
             {isCompleted && (
               <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 border-2 border-white shadow-lg flex items-center gap-1 font-bold text-sm">
@@ -59,7 +61,7 @@ export default function EnhancedCourseCard({
                 COMPLETED
               </div>
             )}
-            
+
             {/* XP Badge */}
             <div className="absolute bottom-3 left-3">
               <XPRewardBadge xp={xpReward} size="md" />
@@ -102,12 +104,12 @@ export default function EnhancedCourseCard({
                 <Book className="w-4 h-4" />
                 <span className="font-medium">{articleCount} articles</span>
               </div>
-              
+
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
                 <span className="font-medium">{estimateCourseTime(articleCount, course.difficulty)}</span>
               </div>
-              
+
               {course.enrolledCount !== undefined && course.enrolledCount > 0 && (
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
