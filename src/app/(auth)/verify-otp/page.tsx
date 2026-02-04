@@ -54,7 +54,7 @@ function VerifyOTPContent() {
     const handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').slice(0, 6);
-        
+
         if (!/^\d+$/.test(pastedData)) return;
 
         const newOtp = [...otp];
@@ -62,7 +62,7 @@ function VerifyOTPContent() {
             newOtp[i] = pastedData[i];
         }
         setOtp(newOtp);
-        
+
         // Focus the next empty input or the last one
         const nextIndex = Math.min(pastedData.length, 5);
         inputRefs.current[nextIndex]?.focus();
@@ -71,7 +71,7 @@ function VerifyOTPContent() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const otpString = otp.join('');
-        
+
         if (otpString.length !== 6) {
             setError('Masukkan kode OTP 6 digit');
             return;
@@ -172,7 +172,7 @@ function VerifyOTPContent() {
                                 {otp.map((digit, index) => (
                                     <input
                                         key={index}
-                                        ref={(el) => (inputRefs.current[index] = el)}
+                                        ref={(el) => { inputRefs.current[index] = el; }}
                                         type="text"
                                         inputMode="numeric"
                                         maxLength={1}

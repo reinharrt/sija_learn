@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function UnsubscribePage() {
+function UnsubscribeContent() {
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
 
@@ -115,5 +115,20 @@ export default function UnsubscribePage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function UnsubscribePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-grid-pattern flex items-center justify-center p-6">
+                <div className="max-w-md w-full bg-white dark:bg-gray-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-8 text-center">
+                    <div className="inline-block h-12 w-12 border-4 border-black dark:border-white border-t-transparent dark:border-t-transparent animate-spin mb-4"></div>
+                    <p className="font-bold text-lg">Memuat...</p>
+                </div>
+            </div>
+        }>
+            <UnsubscribeContent />
+        </Suspense>
     );
 }
