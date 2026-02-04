@@ -1,5 +1,4 @@
 services:
-  # MongoDB Database (versi 4.4 - tanpa AVX requirement)
   mongodb:
     image: mongo:4.4
     container_name: sija-learn-mongodb
@@ -21,8 +20,12 @@ services:
       - mongodb_config:/data/configdb
     networks:
       - sija-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # Next.js Application
   app:
     build:
       context: .
@@ -43,12 +46,13 @@ services:
     env_file:
       - .env.local
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - sija-network
     volumes:
-      - ./public:/app/public
-      - ./uploads:/app/uploads
+      # Mount uploads folder agar persist
+      - ./uploads:/app/public/uploads
 
 volumes:
   mongodb_data:

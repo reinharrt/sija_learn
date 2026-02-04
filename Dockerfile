@@ -4,7 +4,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies (SEMUA dependencies termasuk devDependencies)
+# Install dependencies
 COPY package.json package-lock.json* ./
 RUN npm ci
 
@@ -16,8 +16,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set DUMMY env untuk build (tidak akan dipakai di runtime)
-ENV MONGODB_URI=mongodb://dummy:27017/dummy
+# Set env untuk build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
@@ -29,8 +28,9 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Create user untuk security (jangan pake root)
+# Create user untuk security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -39,7 +39,12 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Set ownership
+# Create uploads directory dengan permission yang benar
+RUN mkdir -p ./public/uploads && \
+    chown -R nextjs:nodejs ./public/uploads && \
+    chmod -R 755 ./public/uploads
+
+# Set ownership untuk semua files
 RUN chown -R nextjs:nodejs /app
 
 USER nextjs
@@ -49,5 +54,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start aplikasi
 CMD ["node", "server.js"]

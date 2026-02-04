@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,700&display=swap');
+
+        /* Pola Catur Halus */
+        .checker-pattern {
+            background-image: linear-gradient(45deg, #000 25%, transparent 25%), 
+                              linear-gradient(-45deg, #000 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #000 75%), 
+                              linear-gradient(-45deg, transparent 75%, #000 75%);
+            background-size: 30px 30px;
+            background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-8">
+
+    <div class="relative w-80 h-80">
+        
+        <div class="w-full h-full bg-yellow-400 rounded-full relative overflow-hidden flex items-center justify-center shadow-lg">
+            
+            <div class="absolute inset-0 opacity-[0.15] checker-pattern rotate-12 scale-125 pointer-events-none"></div>
+
+            <div class="absolute inset-2 rounded-full border-2 border-dashed border-black/20 pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col items-center justify-center text-center scale-110">
+                
+                <div class="mb-2 bg-black text-white px-4 py-1 border-[3px] border-white transform -rotate-2 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]">
+                    <span class="font-['Space_Mono'] text-[10px] font-bold uppercase tracking-[0.15em]">Premium Dessert</span>
+                </div>
+
+                <h1 class="font-['Archivo_Black'] text-6xl leading-[0.85] tracking-tighter text-black drop-shadow-[3px_3px_0px_white]">
+                    CHESS<br>CUIT
+                </h1>
+
+                <div class="mt-4 flex items-center gap-3">
+                    <div class="bg-white border-[3px] border-black px-3 py-1 flex flex-col items-center shadow-[3px_3px_0px_black]">
+                        <span class="font-['Archivo_Black'] text-2xl leading-none">120</span>
+                        <span class="font-['Space_Mono'] text-[10px] font-bold leading-none mt-1">ML</span>
+                    </div>
+                    
+                    <div class="bg-black text-yellow-400 border-[3px] border-yellow-400 px-3 py-2 transform rotate-3 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+                        <span class="font-['Space_Mono'] text-xs font-bold uppercase tracking-wider">#ORIGINAL</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

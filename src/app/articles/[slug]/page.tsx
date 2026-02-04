@@ -162,9 +162,9 @@ function ArticleDetailContent() {
       });
 
       // Check if current article is completed
-      if (article) {
+      if (pageState.article) {
         const isCompleted = completedIds.some(
-          (id: string) => id.toString() === article._id?.toString()
+          (id: string) => id.toString() === pageState.article!._id?.toString()
         );
 
         // If not completed, show access loader to track progress
@@ -336,7 +336,7 @@ function ArticleDetailContent() {
   if (authLoading || loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-sija-primary mx-auto mb-4"></div>
+        <Loader2 className="w-12 h-12 animate-spin text-sija-primary mx-auto mb-4" />
         <p className="text-sija-text font-bold uppercase tracking-wider">Loading...</p>
       </div>
     );
@@ -345,9 +345,9 @@ function ArticleDetailContent() {
   if (!article) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center bg-sija-surface border-4 border-sija-primary shadow-hard p-12">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-red-100 border-4 border-red-500 shadow-hard-sm mb-6">
-            <AlertCircle className="w-16 h-16 text-red-500" />
+        <div className="text-center bg-sija-surface border-4 border-sija-primary shadow-hard p-12 transition-colors duration-300">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-red-100 dark:bg-red-950/30 border-4 border-red-500 dark:border-red-400 shadow-hard-sm mb-6 transition-colors duration-300">
+            <AlertCircle className="w-16 h-16 text-red-500 dark:text-red-400" />
           </div>
           <h1 className="font-display text-3xl font-black text-sija-text mb-6 uppercase">
             Artikel Tidak Ditemukan
@@ -367,7 +367,7 @@ function ArticleDetailContent() {
   if (accessDenied) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-sija-light border-4 border-sija-primary shadow-hard p-8">
+        <div className="bg-sija-light border-4 border-sija-primary shadow-hard p-8 transition-colors duration-300">
           <div className="text-center mb-8">
             <div className="inline-block bg-sija-primary p-6 border-4 border-sija-primary shadow-hard mb-6">
               <Lock className="w-16 h-16 text-white" />
@@ -378,24 +378,25 @@ function ArticleDetailContent() {
             <p className="text-sija-text font-bold text-xl mb-2">
               {article.title}
             </p>
-            <p className="text-sija-text font-medium">
+            <p className="text-sija-text/70 font-medium">
               Artikel ini hanya bisa diakses melalui course yang sudah Anda daftar.
             </p>
           </div>
 
-          <div className="bg-white border-4 border-sija-text shadow-hard p-6 mb-8">
+          {/* Cara Mengakses */}
+          <div className="bg-sija-surface border-4 border-sija-border shadow-hard p-6 mb-8 transition-colors duration-300">
             <h3 className="font-display font-black text-sija-text mb-4 uppercase text-lg">Cara Mengakses:</h3>
             <ol className="space-y-3">
               <li className="flex items-start gap-3">
-                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm">1</span>
+                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm flex-shrink-0">1</span>
                 <span className="text-sija-text font-medium flex-1 pt-1">Cari course yang berisi artikel ini</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm">2</span>
+                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm flex-shrink-0">2</span>
                 <span className="text-sija-text font-medium flex-1 pt-1">Daftar course tersebut</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm">3</span>
+                <span className="bg-sija-primary text-white font-black px-3 py-1 border-2 border-sija-primary shadow-hard-sm flex-shrink-0">3</span>
                 <span className="text-sija-text font-medium flex-1 pt-1">Akses artikel melalui materi course</span>
               </li>
             </ol>
@@ -413,7 +414,7 @@ function ArticleDetailContent() {
                 </button>
                 <button
                   onClick={() => router.push('/my-courses')}
-                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-4 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-4 border-sija-border font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
                   <BookOpen className="w-5 h-5" />
                   Course Saya
@@ -430,7 +431,7 @@ function ArticleDetailContent() {
                 </button>
                 <button
                   onClick={() => router.push('/courses')}
-                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-4 border-sija-text font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
+                  className="inline-flex items-center gap-2 bg-sija-surface text-sija-text px-6 py-3 border-4 border-sija-border font-bold shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider"
                 >
                   <Search className="w-5 h-5" />
                   Lihat Course
@@ -484,7 +485,7 @@ function ArticleDetailContent() {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="w-full p-4 border-4 border-sija-primary shadow-hard focus:outline-none focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] transition-all font-medium"
+              className="w-full p-4 border-4 border-sija-border bg-sija-background text-sija-text shadow-hard focus:outline-none focus:shadow-none focus:border-sija-primary focus:translate-x-[2px] focus:translate-y-[2px] transition-all font-medium duration-300"
               rows={4}
               placeholder="Tulis komentar..."
               required
@@ -499,7 +500,7 @@ function ArticleDetailContent() {
             </button>
           </form>
         ) : (
-          <div className="mb-8 p-6 bg-sija-light border-4 border-sija-primary shadow-hard text-center">
+          <div className="mb-8 p-6 bg-sija-light border-4 border-sija-primary shadow-hard text-center transition-colors duration-300">
             <p className="text-sija-text font-bold mb-4 uppercase tracking-wider">
               Login untuk memberikan komentar
             </p>
@@ -515,7 +516,7 @@ function ArticleDetailContent() {
 
         <div className="space-y-4">
           {comments.length === 0 ? (
-            <div className="text-center py-12 bg-sija-light border-4 border-sija-primary shadow-hard">
+            <div className="text-center py-12 bg-sija-light border-4 border-sija-primary shadow-hard transition-colors duration-300">
               <p className="text-sija-text font-bold uppercase tracking-wider">
                 Belum ada komentar. Jadilah yang pertama!
               </p>
@@ -540,9 +541,7 @@ export default function ArticleDetailPage() {
   return (
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-100 border-2 border-blue-500 rounded-full mb-8 animate-pulse">
-          <Loader2 size={48} className="text-blue-600 animate-spin" />
-        </div>
+        <Loader2 className="w-16 h-16 animate-spin text-sija-primary mx-auto mb-4" />
         <p className="text-sija-text font-bold uppercase tracking-wider">Loading Article...</p>
       </div>
     }>
