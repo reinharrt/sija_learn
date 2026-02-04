@@ -169,13 +169,13 @@ export default function ArticleAnalytics() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-black text-sija-text transition-colors duration-300">
-                      👁️ {(article.views || 0).toLocaleString()}
+                      {(article.views || 0).toLocaleString()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider border-2 transition-colors duration-300 ${article.published
-                        ? 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600'
+                      ? 'bg-green-100 dark:bg-green-950/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-600'
+                      : 'bg-yellow-100 dark:bg-yellow-950/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600'
                       }`}>
                       {article.published ? 'Published' : 'Draft'}
                     </span>
@@ -194,7 +194,7 @@ export default function ArticleAnalytics() {
       <div className="bg-sija-surface border-2 border-sija-border p-6 shadow-hard transition-colors duration-300">
         <h3 className="text-lg font-bold text-sija-text mb-4 uppercase tracking-wider transition-colors duration-300">View Trends</h3>
         <div className="text-sija-text/60 dark:text-sija-text/50 text-center py-8 transition-colors duration-300">
-          📊 Chart visualization coming soon...
+          Chart visualization coming soon...
           <br />
           <span className="text-sm">Track daily/weekly/monthly trends</span>
         </div>

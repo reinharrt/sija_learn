@@ -55,6 +55,20 @@ services:
     volumes:
       - ./public/uploads:/app/public/uploads 
 
+  nginx:
+    image: nginx:alpine
+    container_name: sija-learn-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./public/uploads:/usr/share/nginx/html/uploads:ro
+    depends_on:
+      - app
+    networks:
+      - sija-network
+
 volumes:
   mongodb_data:
     driver: local

@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const type = formData.get('type') as string; // 'banner' or 'content'
-    const entityType = formData.get('entityType') as string; // 'post' or 'course'
-    const entityId = formData.get('entityId') as string; // post ID or course ID
+    const type = formData.get('type') as string;
+    const entityType = formData.get('entityType') as string;
+    const entityId = formData.get('entityId') as string;
 
     if (!file) {
       return NextResponse.json(
@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       return NextResponse.json(
         { error: 'File harus berupa gambar' },
@@ -42,7 +41,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json(
         { error: 'Ukuran file maksimal 5MB' },
@@ -50,30 +48,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate MD5 hash for unique filename
     const hash = createHash('md5')
       .update(buffer)
       .update(Date.now().toString())
       .digest('hex');
 
-    // Create organized folder structure based on entity
-    // Structure: uploads/{entityType}/{entityId}/{type}/
-    // Example: uploads/posts/post-123/banner/
-    //          uploads/courses/course-456/content/
-
     let relativePath: string;
 
     if (entityType && entityId) {
-      // Organized by entity
       const entityFolder = entityType === 'post' ? 'posts' :
         entityType === 'course' ? 'courses' : 'general';
       relativePath = path.join(entityFolder, entityId, type || 'images');
     } else {
-      // Fallback to date-based organization if no entity info
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -82,20 +71,16 @@ export async function POST(request: NextRequest) {
 
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', relativePath);
 
-    // Create directory if it doesn't exist
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
 
-    // Filename: {md5hash}.jpg (always jpg after compression)
     const filename = `${hash}.jpg`;
     const filepath = path.join(uploadDir, filename);
 
-    // Compress image based on type
     let processedBuffer: Buffer;
 
     if (type === 'banner') {
-      // Banner: max width 1200px, quality 80
       processedBuffer = await sharp(buffer)
         .resize(1200, null, {
           fit: 'inside',
@@ -104,7 +89,6 @@ export async function POST(request: NextRequest) {
         .jpeg({ quality: 80, progressive: true })
         .toBuffer();
     } else {
-      // Content images: max width 800px, quality 85
       processedBuffer = await sharp(buffer)
         .resize(800, null, {
           fit: 'inside',
@@ -114,10 +98,8 @@ export async function POST(request: NextRequest) {
         .toBuffer();
     }
 
-    // Save compressed image
     await writeFile(filepath, processedBuffer);
 
-    // Return URL with organized path
     const url = `/uploads/${relativePath}/${filename}`.replace(/\\/g, '/');
 
     return NextResponse.json(
@@ -139,5 +121,4 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Disable body parser for file uploads
 export const dynamic = 'force-dynamic';
