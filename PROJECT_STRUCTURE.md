@@ -1,4 +1,4 @@
-# 📂 Project File Structure
+# Project File Structure
 
 This document provides a complete visual tree of the `src` directory to help you locate files.
 
