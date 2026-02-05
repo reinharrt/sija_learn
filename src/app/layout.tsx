@@ -22,6 +22,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: 'SIJA Learn - Digital Learning Hub',
   description: 'Platform repositori materi digital dan pusat informasi untuk siswa jurusan Sistem Informatika, Jaringan dan Aplikasi - SMKN 1 Cimahi',
+  icons: {
+    icon: '/assets/logo/logo.ico',
+  },
 };
 
 export default function RootLayout({

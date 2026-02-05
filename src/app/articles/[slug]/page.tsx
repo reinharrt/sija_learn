@@ -9,6 +9,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ArticleDetail from '@/components/article/ArticleDetail';
+import Breadcrumb from '@/components/common/Breadcrumb';
 import CourseArticleReader from '@/components/course/CourseArticleReader';
 import CommentItem from '@/components/comment/CommentItem';
 import ArticleAccessLoader from '@/components/article/ArticleAccessLoader';
@@ -473,6 +474,15 @@ function ArticleDetailContent() {
   // STANDALONE MODE: Show normal article with comments
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto">
+        <Breadcrumb
+          className="-mx-4 sm:-mx-6 lg:-mx-8"
+          items={[
+            { label: 'Articles', href: '/articles' },
+            { label: article.title }
+          ]}
+        />
+      </div>
       <ArticleDetail article={article} />
 
       <div className="max-w-4xl mx-auto mt-12 border-t-4 border-sija-primary pt-8">

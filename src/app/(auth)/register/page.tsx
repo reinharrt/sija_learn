@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/common/Input';
+import PasswordInput from '@/components/common/PasswordInput';
 import Button from '@/components/common/Button';
 import { UserPlus, Sparkles, ArrowRight } from 'lucide-react';
 
@@ -161,7 +162,7 @@ export default function RegisterPage() {
               <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Community</div>
             </div>
           </div>
-          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2024 Sija Learn. All rights reserved.</p>
+          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2026 Sija Learn. All rights reserved.</p>
         </div>
       </div>
 
@@ -205,18 +206,16 @@ export default function RegisterPage() {
                 placeholder="email@example.com"
                 required
               />
-              <Input
+              <PasswordInput
                 label="Password"
-                type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Minimal 8 karakter"
                 required
               />
-              <Input
+              <PasswordInput
                 label="Konfirmasi Password"
-                type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}

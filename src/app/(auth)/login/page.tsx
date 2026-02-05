@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/common/Input';
+import PasswordInput from '@/components/common/PasswordInput';
 import Button from '@/components/common/Button';
 import { SquareAsterisk, Sparkles, ArrowRight } from 'lucide-react';
 
@@ -95,7 +96,7 @@ export default function LoginPage() {
               <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Access</div>
             </div>
           </div>
-          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2024 Sija Learn. All rights reserved.</p>
+          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2026 Sija Learn. All rights reserved.</p>
         </div>
       </div>
 
@@ -131,9 +132,8 @@ export default function LoginPage() {
                 required
               />
               <div>
-                <Input
+                <PasswordInput
                   label="Password"
-                  type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}

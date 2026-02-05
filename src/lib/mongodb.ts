@@ -13,6 +13,12 @@ if (!process.env.MONGODB_URI && !isBuildTime) {
 }
 
 const uri: string = process.env.MONGODB_URI || 'mongodb://localhost:27017/sija-learn';
+
+// DEBUG - tambahkan ini
+console.log('===== MONGODB DEBUG =====');
+console.log('MONGODB_URI exists?', !!process.env.MONGODB_URI);
+console.log('URI value:', uri.substring(0, 50));
+console.log('========================');
 const options = {};
 
 let client: MongoClient;
