@@ -93,7 +93,7 @@ export default function Footer() {
             <ul className="space-y-3 font-bold text-gray-700 dark:text-gray-300">
               <li><Link href="/courses" className="hover:text-black dark:hover:text-white hover:underline decoration-2">Semua Kursus</Link></li>
               <li><Link href="/articles" className="hover:text-black dark:hover:text-white hover:underline decoration-2">Artikel Terbaru</Link></li>
-              <li><Link href="/handbook" className="hover:text-black dark:hover:text-white hover:underline decoration-2">Buku Saku</Link></li>
+
             </ul>
           </div>
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/app/(auth)/register/page.tsx
-// Register Page - Neobrutalist Split Layout with Dark Mode
-// ============================================
 
 'use client';
 
@@ -12,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/common/Input';
 import PasswordInput from '@/components/common/PasswordInput';
 import Button from '@/components/common/Button';
-import { UserPlus, Sparkles, ArrowRight } from 'lucide-react';
+import { UserPlus, Sparkles, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,7 +25,6 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [requiresVerification, setRequiresVerification] = useState(false);
 
-  // Redirect if user is already logged in
   useEffect(() => {
     if (!authLoading && user) {
       router.push('/');
@@ -88,7 +84,7 @@ export default function RegisterPage() {
       <div className="min-h-screen flex items-center justify-center px-4 bg-sija-surface bg-grid-pattern transition-colors duration-300">
         <div className="max-w-md w-full bg-sija-background p-8 border-2 border-sija-primary shadow-hard text-center transition-colors duration-300">
           <div className="w-20 h-20 bg-green-500 border-2 border-green-700 flex items-center justify-center mx-auto mb-6 shadow-hard-sm">
-            <div className="text-white text-5xl font-black">✓</div>
+            <CheckCircle2 size={48} className="text-white" strokeWidth={3} />
           </div>
           <h1 className="text-3xl font-display font-black text-sija-text uppercase mb-4 tracking-tight transition-colors duration-300">
             Registrasi Berhasil!
@@ -125,22 +121,20 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-sija-background transition-colors duration-300">
-      {/* Left Side - Hero / Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-sija-surface bg-grid-pattern border-r-2 border-sija-border flex-col justify-between p-12 relative overflow-hidden transition-colors duration-300">
-        {/* Decorative elements */}
         <div className="absolute top-0 right-0 p-32 bg-sija-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 p-24 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
 
         <div className="z-10 relative">
           <div className="inline-flex items-center gap-2 bg-sija-background px-4 py-2 border-2 border-sija-primary shadow-hard-sm mb-8 transition-colors duration-300">
             <Sparkles size={18} className="text-sija-primary fill-sija-primary" />
-            <span className="font-bold uppercase tracking-wider text-xs text-sija-text">Sija Learn Platform</span>
+            <span className="font-bold uppercase tracking-wider text-xs text-sija-text">Platform Belajar Sija</span>
           </div>
 
           <h1 className="text-6xl font-display font-black text-sija-text leading-tight mb-6 uppercase transition-colors duration-300">
-            Start Your <br />
+            Mulai <br />
             <span className="text-sija-primary relative">
-              Journey
+              Perjalananmu
               <svg className="absolute w-full h-3 -bottom-1 left-0 text-yellow-400 opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
               </svg>
@@ -158,30 +152,29 @@ export default function RegisterPage() {
               <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Modul Pembelajaran</div>
             </div>
             <div className="p-4 bg-sija-background border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2 transition-colors duration-300">
-              <div className="text-3xl font-black text-blue-600 mb-1">Active</div>
-              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Community</div>
+              <div className="text-3xl font-black text-blue-600 mb-1">Aktif</div>
+              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Komunitas</div>
             </div>
           </div>
-          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2026 Sija Learn. All rights reserved.</p>
+          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2026 Sija Learn. Hak cipta dilindungi.</p>
         </div>
       </div>
 
-      {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col items-center p-6 lg:p-24 pt-32 overflow-y-auto bg-sija-background transition-colors duration-300">
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-display font-black text-sija-primary uppercase tracking-tight">Join Sija</h1>
-            <p className="text-sija-text/60 font-medium text-sm transition-colors duration-300">Create your account to get started.</p>
+            <h1 className="text-3xl font-display font-black text-sija-primary uppercase tracking-tight">Gabung Sija</h1>
+            <p className="text-sija-text/60 font-medium text-sm transition-colors duration-300">Buat akunmu untuk memulai.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-sija-text tracking-tight hidden lg:block transition-colors duration-300">Create Account</h2>
-            <p className="text-sija-text/60 font-medium hidden lg:block transition-colors duration-300">Enter your details to register.</p>
+            <h2 className="text-3xl font-bold text-sija-text tracking-tight hidden lg:block transition-colors duration-300">Buat Akun</h2>
+            <p className="text-sija-text/60 font-medium hidden lg:block transition-colors duration-300">Masukkan detailmu untuk mendaftar.</p>
           </div>
 
           {error && (
             <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-500 text-red-700 dark:text-red-400 px-4 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] flex items-start gap-2 transition-colors duration-300">
-              <span>⚠️</span>
+              <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
@@ -231,7 +224,7 @@ export default function RegisterPage() {
               size="lg"
             >
               {loading ? (
-                <span className="flex items-center gap-2 justify-center">Loading...</span>
+                <span className="flex items-center gap-2 justify-center">Memuat...</span>
               ) : (
                 <span className="flex items-center gap-2 justify-center">
                   Daftar Sekarang <ArrowRight size={18} />

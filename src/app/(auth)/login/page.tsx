@@ -1,7 +1,4 @@
-// ============================================
 // src/app/(auth)/login/page.tsx
-// Login Page - Neobrutalist Split Layout with Dark Mode
-// ============================================
 
 'use client';
 
@@ -24,7 +21,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Redirect if user is already logged in
   useEffect(() => {
     if (!authLoading && user) {
       router.push('/');
@@ -59,22 +55,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-sija-background transition-colors duration-300">
-      {/* Left Side - Hero / Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-sija-surface bg-grid-pattern border-r-2 border-sija-border flex-col justify-between p-12 relative overflow-hidden transition-colors duration-300">
-        {/* Decorative elements */}
         <div className="absolute top-0 right-0 p-32 bg-sija-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 p-24 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
 
         <div className="z-10 relative">
           <div className="inline-flex items-center gap-2 bg-sija-background px-4 py-2 border-2 border-sija-primary shadow-hard-sm mb-8 transition-colors duration-300">
             <Sparkles size={18} className="text-sija-primary fill-sija-primary" />
-            <span className="font-bold uppercase tracking-wider text-xs text-sija-text">Sija Learn Platform</span>
+            <span className="font-bold uppercase tracking-wider text-xs text-sija-text">Platform Belajar Sija</span>
           </div>
 
           <h1 className="text-6xl font-display font-black text-sija-text leading-tight mb-6 uppercase transition-colors duration-300">
-            Welcome <br />
+            Selamat <br />
             <span className="text-sija-primary relative">
-              Back
+              Datang
               <svg className="absolute w-full h-3 -bottom-1 left-0 text-yellow-400 opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
               </svg>
@@ -89,33 +83,32 @@ export default function LoginPage() {
           <div className="flex gap-4 mb-4">
             <div className="p-4 bg-sija-background border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2 transition-colors duration-300">
               <div className="text-3xl font-black text-sija-primary mb-1">5k+</div>
-              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Students</div>
+              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Siswa</div>
             </div>
             <div className="p-4 bg-sija-background border-2 border-sija-primary shadow-hard-sm rounded-none w-1/2 transition-colors duration-300">
               <div className="text-3xl font-black text-blue-600 mb-1">24/7</div>
-              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Access</div>
+              <div className="text-xs font-bold uppercase text-sija-text/60 transition-colors duration-300">Akses</div>
             </div>
           </div>
-          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2026 Sija Learn. All rights reserved.</p>
+          <p className="text-sm font-medium text-sija-text/50 transition-colors duration-300">© 2026 Sija Learn. Hak cipta dilindungi.</p>
         </div>
       </div>
 
-      {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col items-center p-6 lg:p-24 pt-32 overflow-y-auto bg-sija-background transition-colors duration-300">
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-display font-black text-sija-primary uppercase tracking-tight">Login</h1>
-            <p className="text-sija-text/60 font-medium text-sm transition-colors duration-300">Sign in to your account.</p>
+            <h1 className="text-3xl font-display font-black text-sija-primary uppercase tracking-tight">Masuk</h1>
+            <p className="text-sija-text/60 font-medium text-sm transition-colors duration-300">Masuk ke akunmu.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-sija-text tracking-tight hidden lg:block transition-colors duration-300">Login Account</h2>
-            <p className="text-sija-text/60 font-medium hidden lg:block transition-colors duration-300">Enter your credentials to access your account.</p>
+            <h2 className="text-3xl font-bold text-sija-text tracking-tight hidden lg:block transition-colors duration-300">Masuk Akun</h2>
+            <p className="text-sija-text/60 font-medium hidden lg:block transition-colors duration-300">Masukkan kredensial untuk mengakses akunmu.</p>
           </div>
 
           {error && (
             <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-500 text-red-700 dark:text-red-400 px-4 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] flex items-start gap-2 transition-colors duration-300">
-              <span>⚠️</span>
+              <span></span>
               <span>{error}</span>
             </div>
           )}
@@ -155,10 +148,10 @@ export default function LoginPage() {
               size="lg"
             >
               {loading ? (
-                <span className="flex items-center gap-2 justify-center">Authenticating...</span>
+                <span className="flex items-center gap-2 justify-center">Mengautentikasi...</span>
               ) : (
                 <span className="flex items-center gap-2 justify-center">
-                  Login <ArrowRight size={18} />
+                  Masuk <ArrowRight size={18} />
                 </span>
               )}
             </Button>

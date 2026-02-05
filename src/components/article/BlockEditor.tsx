@@ -274,6 +274,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
           {blockTypes.map(({ type, label, icon: Icon }) => (
             <button
               key={type}
+              type="button"
               onClick={() => addBlock(type)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-sija-surface border-2 border-sija-border font-bold text-sm hover:shadow-hard-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all text-sija-text duration-300"
             >
@@ -305,6 +306,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
               {/* Block Actions */}
               <div className="flex gap-1">
                 <button
+                  type="button"
                   onClick={() => moveBlock(block.id, 'up')}
                   disabled={index === 0}
                   className="p-1.5 border-2 border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sija-text duration-300"
@@ -313,6 +315,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   <ChevronUp className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => moveBlock(block.id, 'down')}
                   disabled={index === blocks.length - 1}
                   className="p-1.5 border-2 border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sija-text duration-300"
@@ -321,6 +324,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => deleteBlock(block.id)}
                   className="p-1.5 border-2 border-sija-border bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 transition-all duration-300"
                   title="Hapus block"
