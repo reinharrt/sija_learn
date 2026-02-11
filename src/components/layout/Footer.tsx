@@ -1,13 +1,61 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+
+  // Check subscription status when email changes
+  const checkSubscriptionStatus = useCallback(async (emailToCheck: string) => {
+    if (!emailToCheck.trim()) {
+      setIsSubscribed(false);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailToCheck)) {
+      setIsSubscribed(false);
+      return;
+    }
+
+    setCheckingStatus(true);
+    try {
+      const response = await fetch('/api/subscribe/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailToCheck }),
+      });
+
+      const data = await response.json();
+      setIsSubscribed(data.subscribed || false);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      setIsSubscribed(false);
+    } finally {
+      setCheckingStatus(false);
+    }
+  }, []);
+
+  // Debounce email checking
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (email) {
+        checkSubscriptionStatus(email);
+      } else {
+        setIsSubscribed(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [email, checkSubscriptionStatus]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +73,12 @@ export default function Footer() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError('Format email tidak valid');
+      return;
+    }
+
+    // Don't allow subscribing if already subscribed
+    if (isSubscribed) {
+      setError('Email sudah terdaftar');
       return;
     }
 
@@ -47,6 +101,7 @@ export default function Footer() {
 
       setSuccess(true);
       setEmail('');
+      setIsSubscribed(false);
 
       // Reset success message after 5 seconds
       setTimeout(() => setSuccess(false), 5000);
@@ -107,6 +162,15 @@ export default function Footer() {
                   ✓ Berhasil! Cek email kamu.
                 </p>
               </div>
+            ) : isSubscribed ? (
+              <div className="border-2 border-black dark:border-white bg-blue-400 p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                <p className="font-black text-black text-sm">
+                  ✓ Kamu sudah berlangganan newsletter!
+                </p>
+                <p className="font-bold text-black text-xs mt-2">
+                  Kamu akan mendapat notifikasi setiap ada artikel atau kursus baru.
+                </p>
+              </div>
             ) : (
               <form onSubmit={handleSubscribe}>
                 <div className="flex border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
@@ -115,15 +179,15 @@ export default function Footer() {
                     placeholder="Email kamu..."
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
+                    disabled={loading || checkingStatus}
                     className="w-full p-2 font-bold outline-none bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 disabled:opacity-50"
                   />
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || checkingStatus || isSubscribed}
                     className="bg-yellow-400 border-l-2 border-black dark:border-white px-4 font-black uppercase text-xs text-black hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? '...' : 'Sub'}
+                    {loading || checkingStatus ? '...' : 'Sub'}
                   </button>
                 </div>
                 {error && (

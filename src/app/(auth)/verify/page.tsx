@@ -1,7 +1,4 @@
-// ============================================
 // src/app/(auth)/verify/page.tsx
-// Verify Page - Neobrutalist Split Layout with Dark Mode
-// ============================================
 
 'use client';
 
@@ -46,9 +43,7 @@ function VerifyContent() {
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-sija-background transition-colors duration-300">
-      {/* Left Side - Hero / Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-sija-surface bg-grid-pattern border-r-2 border-sija-border flex-col justify-between p-12 relative overflow-hidden transition-colors duration-300">
-        {/* Decorative elements */}
         <div className="absolute top-0 right-0 p-32 bg-sija-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 p-24 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
 
@@ -77,7 +72,6 @@ function VerifyContent() {
         </div>
       </div>
 
-      {/* Right Side - Content */}
       <div className="w-full lg:w-1/2 flex flex-col items-center p-6 lg:p-24 pt-32 overflow-y-auto bg-sija-background transition-colors duration-300">
         <div className="w-full max-w-md text-center">
 

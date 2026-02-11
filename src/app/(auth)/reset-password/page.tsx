@@ -1,7 +1,4 @@
-// ============================================
 // src/app/(auth)/reset-password/page.tsx
-// Reset Password - Neobrutalist Split Layout with Dark Mode
-// ============================================
 
 'use client';
 
@@ -10,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import { Lock, Sparkles, ArrowRight } from 'lucide-react';
+import { Lock, Sparkles, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 
 function ResetPasswordContent() {
     const router = useRouter();
@@ -41,7 +38,6 @@ function ResetPasswordContent() {
         setError('');
         setSuccess('');
 
-        // Validate passwords match
         if (newPassword !== confirmPassword) {
             setError('Password baru dan konfirmasi password tidak cocok');
             setLoading(false);
@@ -49,7 +45,7 @@ function ResetPasswordContent() {
         }
 
         try {
-            const response = await fetch('/api/auth/change-password/verify-otp', {
+            const response = await fetch('/api/auth/change-password/verify', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,7 +65,6 @@ function ResetPasswordContent() {
 
             setSuccess(data.message);
 
-            // Redirect to login after 2 seconds
             setTimeout(() => {
                 router.push('/login');
             }, 2000);
@@ -82,9 +77,7 @@ function ResetPasswordContent() {
 
     return (
         <div className="min-h-screen w-full flex flex-col lg:flex-row bg-sija-background transition-colors duration-300">
-            {/* Left Side - Hero / Branding */}
             <div className="hidden lg:flex lg:w-1/2 bg-sija-surface bg-grid-pattern border-r-2 border-sija-border flex-col justify-between p-12 relative overflow-hidden transition-colors duration-300">
-                {/* Decorative elements */}
                 <div className="absolute top-0 right-0 p-32 bg-sija-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
                 <div className="absolute bottom-0 left-0 p-24 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-300"></div>
 
@@ -113,7 +106,6 @@ function ResetPasswordContent() {
                 </div>
             </div>
 
-            {/* Right Side - Form */}
             <div className="w-full lg:w-1/2 flex flex-col items-center p-6 lg:p-24 pt-32 overflow-y-auto bg-sija-background transition-colors duration-300">
                 <div className="w-full max-w-md space-y-8">
                     <div className="lg:hidden text-center mb-8">
@@ -128,14 +120,14 @@ function ResetPasswordContent() {
 
                     {error && (
                         <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-500 text-red-700 dark:text-red-400 px-4 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] flex items-start gap-2 transition-colors duration-300">
-                            <span>⚠️</span>
+                            <AlertCircle size={20} className="flex-shrink-0" />
                             <span>{error}</span>
                         </div>
                     )}
 
                     {success && (
                         <div className="bg-green-50 dark:bg-green-950/30 border-2 border-green-500 text-green-700 dark:text-green-400 px-4 py-3 font-bold shadow-[4px_4px_0px_0px_rgba(34,197,94,1)] flex items-start gap-2 transition-colors duration-300">
-                            <span>✓</span>
+                            <CheckCircle size={20} className="flex-shrink-0" />
                             <span>{success}</span>
                         </div>
                     )}

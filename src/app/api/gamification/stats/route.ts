@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/gamification/stats/route.ts
-// API Route - Get global gamification stats
-// ============================================
 
 import { NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
@@ -11,10 +8,8 @@ export async function GET() {
         const db = await getDatabase();
         const collection = db.collection('user_progress');
 
-        // Get all user progress records
         const allProgress = await collection.find({}).toArray();
 
-        // Calculate global stats
         const totalUsers = allProgress.length;
         const totalXP = allProgress.reduce((sum, p) => sum + (p.totalXP || 0), 0);
         const averageLevel = totalUsers > 0

@@ -1,38 +1,70 @@
-// ============================================
-// src/app/api/gamification/progress/route.ts
-// API Route - Get current user's progress
-// FIXED: Using getUserFromRequest instead of getUserFromSession
-// ============================================
+//src/app/api/gamification/progress/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserProgress, initializeUserProgress } from '@/models/UserProgress';
 import { getUserFromRequest } from '@/lib/auth';
+import { getDatabase } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export async function GET(request: NextRequest) {
-  try {
-    const user = getUserFromRequest(request);
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    try {
+        const { searchParams } = new URL(request.url);
+        const requestedUserId = searchParams.get('userId');
 
-    let progress = await getUserProgress(user.id);
-    
-    // Initialize if doesn't exist
-    if (!progress) {
-      await initializeUserProgress(user.id);
-      progress = await getUserProgress(user.id);
-    }
+        const authenticatedUser = getUserFromRequest(request);
 
-    return NextResponse.json({ progress });
-  } catch (error) {
-    console.error('Error fetching progress:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch progress' },
-      { status: 500 }
-    );
-  }
+        if (!authenticatedUser) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        const targetUserId = requestedUserId || authenticatedUser.id;
+        const db = await getDatabase();
+        const userId = new ObjectId(targetUserId);
+
+        let progress = await db.collection('user_progress').findOne({ userId });
+
+        if (!progress) {
+            const newProgress = {
+                userId,
+                totalXP: 0,
+                currentLevel: 1,
+                badges: [],
+                stats: {
+                    coursesCompleted: 0,
+                    articlesRead: 0,
+                    commentsPosted: 0,
+                    currentStreak: 0,
+                    longestStreak: 0,
+                    lastActivityDate: new Date()
+                },
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+
+            const result = await db.collection('user_progress').insertOne(newProgress);
+            progress = { ...newProgress, _id: result.insertedId };
+        }
+
+        if (requestedUserId) {
+            const user = await db.collection('users').findOne({ _id: userId });
+            return NextResponse.json({
+                progress,
+                user: user ? {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email
+                } : null
+            });
+        }
+
+        return NextResponse.json({ progress });
+    } catch (error) {
+        console.error('Failed to fetch progress:', error);
+        return NextResponse.json(
+            { error: 'Failed to fetch progress' },
+            { status: 500 }
+        );
+    }
 }

@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import BlockEditor from '@/components/article/BlockEditor';
@@ -51,29 +51,47 @@ export default function CreateArticlePage() {
     }
   }, [user, authLoading, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  // Debug: Log when formData changes
+  useEffect(() => {
+    console.log('📝 FormData changed:', formData);
+  }, [formData]);
+
+  // Debug: Log when blocks change
+  useEffect(() => {
+    console.log('🧱 Blocks changed:', blocks.length, 'blocks');
+  }, [blocks]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
+    console.log('🔄 handleChange called:', name, value);
+    setFormData(prev => ({
+      ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    });
+    }));
     setError('');
-  };
+  }, []);
 
-  const handleBannerUpload = (url: string) => {
-    setFormData({
-      ...formData,
+  const handleBannerUpload = useCallback((url: string) => {
+    console.log('🖼️ Banner uploaded:', url);
+    setFormData(prev => ({
+      ...prev,
       banner: url,
-    });
-  };
+    }));
+  }, []);
 
-  const handleCategoryChange = (categorySlug: string) => {
-    setFormData({
-      ...formData,
+  const handleCategoryChange = useCallback((categorySlug: string) => {
+    console.log('📂 Category changed:', categorySlug);
+    setFormData(prev => ({
+      ...prev,
       category: categorySlug,
-    });
+    }));
     setError('');
-  };
+  }, []);
+
+  const handleBlocksChange = useCallback((newBlocks: ContentBlock[]) => {
+    console.log('🧱 handleBlocksChange called, new blocks count:', newBlocks.length);
+    setBlocks(newBlocks);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -295,7 +313,7 @@ export default function CreateArticlePage() {
             <FileText className="w-6 h-6" />
             Konten Artikel
           </h2>
-          <BlockEditor blocks={blocks} onChange={setBlocks} />
+          <BlockEditor blocks={blocks} onChange={handleBlocksChange} />
         </div>
 
         {/* Submit Buttons */}

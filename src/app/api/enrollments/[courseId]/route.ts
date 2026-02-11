@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/enrollments/[courseId]/route.ts
-// Enrollment Detail API - Get progress and unenroll
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
@@ -9,7 +6,6 @@ import { getUserFromRequest } from '@/lib/auth';
 import { Course, Enrollment } from '@/types';
 import { ObjectId } from 'mongodb';
 
-// GET /api/enrollments/[courseId] - Get enrollment progress
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -25,11 +21,10 @@ export async function GET(
 
     const { courseId } = await params;
     const db = await getDatabase();
-    
+
     const enrollmentCollection = db.collection<Enrollment>('enrollments');
     const coursesCollection = db.collection<Course>('courses');
 
-    // Get course first to check if user is creator
     const course = await coursesCollection.findOne({
       _id: new ObjectId(courseId)
     });
@@ -41,18 +36,16 @@ export async function GET(
       );
     }
 
-    // ✅ CHECK IF USER IS CREATOR - They shouldn't have enrollment
     if (course.creator?.toString() === user.id) {
       return NextResponse.json(
-        { 
+        {
           error: 'Anda adalah pembuat course ini',
-          isCreator: true 
+          isCreator: true
         },
         { status: 403 }
       );
     }
 
-    // Get enrollment
     const enrollment = await enrollmentCollection.findOne({
       userId: new ObjectId(user.id),
       courseId: new ObjectId(courseId)
@@ -67,11 +60,11 @@ export async function GET(
 
     const totalArticles = course?.articles?.length || 0;
     const completedCount = enrollment.progress?.completedArticles?.length || 0;
-    const progressPercentage = totalArticles > 0 
-      ? Math.round((completedCount / totalArticles) * 100) 
+    const progressPercentage = totalArticles > 0
+      ? Math.round((completedCount / totalArticles) * 100)
       : 0;
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       progress: {
         completed: completedCount,
         total: totalArticles,
@@ -90,7 +83,6 @@ export async function GET(
   }
 }
 
-// DELETE /api/enrollments/[courseId] - Unenroll from course
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -106,7 +98,7 @@ export async function DELETE(
 
     const { courseId } = await params;
     const db = await getDatabase();
-    
+
     const enrollmentCollection = db.collection<Enrollment>('enrollments');
     const coursesCollection = db.collection<Course>('courses');
 
@@ -119,7 +111,6 @@ export async function DELETE(
       );
     }
 
-    // ✅ CHECK IF USER IS CREATOR - They shouldn't be able to unenroll
     if (course.creator?.toString() === user.id) {
       return NextResponse.json(
         { error: 'Anda adalah pembuat course ini, tidak dapat keluar dari course sendiri' },
@@ -127,7 +118,6 @@ export async function DELETE(
       );
     }
 
-    // Delete enrollment
     const result = await enrollmentCollection.deleteOne({
       userId: new ObjectId(user.id),
       courseId: new ObjectId(courseId)
@@ -140,7 +130,6 @@ export async function DELETE(
       );
     }
 
-    // Decrement enrolled count
     await coursesCollection.updateOne(
       { _id: new ObjectId(courseId) },
       { $inc: { enrolledCount: -1 } }

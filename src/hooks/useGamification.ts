@@ -1,7 +1,4 @@
-// ============================================
-// src/hooks/useGamification.ts
-// Custom Hook - Gamification with AUTH CHECK
-// ============================================
+//src/hooks/useGamification.ts
 
 'use client';
 
@@ -37,15 +34,13 @@ interface CompletionResult {
 }
 
 export function useGamification() {
-  const { user } = useAuth(); // ✅ GET USER FROM AUTH CONTEXT
+  const { user } = useAuth();
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Toast states
   const [showXPToast, setShowXPToast] = useState(false);
   const [xpGained, setXpGained] = useState(0);
 
-  // Level up modal states
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [levelUpData, setLevelUpData] = useState<{
     newLevel: number;
@@ -53,13 +48,10 @@ export function useGamification() {
     xpGained: number;
   } | null>(null);
 
-  // Badge toast states
   const [showBadgeToast, setShowBadgeToast] = useState(false);
   const [newBadge, setNewBadge] = useState<BadgeDefinition | null>(null);
 
-  // Load user progress
   const loadProgress = useCallback(async () => {
-    // ✅ ONLY LOAD IF USER IS LOGGED IN
     if (!user) {
       setProgress(null);
       setLoading(false);
@@ -76,7 +68,6 @@ export function useGamification() {
         const data = await response.json();
         setProgress(data.progress);
       } else if (response.status === 401) {
-        // User not authenticated, just set progress to null
         setProgress(null);
       }
     } catch (error) {
@@ -84,28 +75,26 @@ export function useGamification() {
     } finally {
       setLoading(false);
     }
-  }, [user]); // ✅ DEPEND ON USER
+  }, [user]);
 
   useEffect(() => {
     loadProgress();
   }, [loadProgress]);
 
-  // Complete course and award XP
   const completeCourse = useCallback(async (courseId: string): Promise<CompletionResult | null> => {
-    // ✅ CHECK IF USER IS LOGGED IN
     if (!user) {
       console.warn('Cannot complete course: user not logged in');
       return null;
     }
 
     try {
-      const response = await fetch('/api/gamification/complete-course', {
+      const response = await fetch('/api/gamification/action', {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ courseId })
+        body: JSON.stringify({ action: 'complete-course', courseId })
       });
 
       if (!response.ok) {
@@ -118,7 +107,6 @@ export function useGamification() {
 
         console.error('Course completion failed:', response.status, errorData);
 
-        // If it's a quiz requirement error, provide helpful message
         if (errorData.message && errorData.message.includes('quiz')) {
           throw new Error(errorData.message);
         }
@@ -128,17 +116,14 @@ export function useGamification() {
 
       const result: CompletionResult = await response.json();
 
-      // IF ALREADY COMPLETED, DO NOT SHOW TOASTS
       if (result.alreadyCompleted) {
         console.log('Course already completed. No new rewards.');
         return result;
       }
 
-      // Show XP toast
       setXpGained(result.xpGained);
       setShowXPToast(true);
 
-      // Show level up modal if leveled up
       if (result.leveledUp) {
         setLevelUpData({
           newLevel: result.newLevel,
@@ -148,15 +133,12 @@ export function useGamification() {
         setShowLevelUpModal(true);
       }
 
-      // Show badge toasts for new badges (one at a time)
       if (result.newBadges && result.newBadges.length > 0) {
-        // Show first badge after a delay
         setTimeout(() => {
           setNewBadge(result.newBadges[0]);
           setShowBadgeToast(true);
         }, result.leveledUp ? 1000 : 500);
 
-        // Show subsequent badges with delays
         result.newBadges.slice(1).forEach((badge, index) => {
           setTimeout(() => {
             setNewBadge(badge);
@@ -165,32 +147,29 @@ export function useGamification() {
         });
       }
 
-      // Reload progress
       await loadProgress();
 
       return result;
     } catch (error) {
       console.error('Failed to complete course:', error);
-      throw error; // Re-throw to let caller handle it
+      throw error;
     }
-  }, [user, loadProgress]); // ✅ DEPEND ON USER
+  }, [user, loadProgress]);
 
-  // Read article and award XP
   const readArticle = useCallback(async (articleId: string, wordCount?: number) => {
-    // ✅ CHECK IF USER IS LOGGED IN
     if (!user) {
       console.warn('Cannot record article read: user not logged in');
       return null;
     }
 
     try {
-      const response = await fetch('/api/gamification/read-article', {
+      const response = await fetch('/api/gamification/action', {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ articleId, wordCount })
+        body: JSON.stringify({ action: 'read-article', articleId, wordCount })
       });
 
       if (!response.ok) {
@@ -199,11 +178,9 @@ export function useGamification() {
 
       const result = await response.json();
 
-      // Show XP toast
       setXpGained(result.xpGained);
       setShowXPToast(true);
 
-      // Reload progress
       await loadProgress();
 
       return result;
@@ -211,20 +188,22 @@ export function useGamification() {
       console.error('Failed to read article:', error);
       return null;
     }
-  }, [user, loadProgress]); // ✅ DEPEND ON USER
+  }, [user, loadProgress]);
 
-  // Post comment and award XP
   const postComment = useCallback(async () => {
-    // ✅ CHECK IF USER IS LOGGED IN
     if (!user) {
       console.warn('Cannot record comment: user not logged in');
       return null;
     }
 
     try {
-      const response = await fetch('/api/gamification/post-comment', {
+      const response = await fetch('/api/gamification/action', {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'post-comment' })
       });
 
       if (!response.ok) {
@@ -233,13 +212,11 @@ export function useGamification() {
 
       const result = await response.json();
 
-      // Check for new badges
       if (result.newBadges && result.newBadges.length > 0) {
         setNewBadge(result.newBadges[0]);
         setShowBadgeToast(true);
       }
 
-      // Reload progress
       await loadProgress();
 
       return result;
@@ -247,21 +224,18 @@ export function useGamification() {
       console.error('Failed to post comment:', error);
       return null;
     }
-  }, [user, loadProgress]); // ✅ DEPEND ON USER
+  }, [user, loadProgress]);
 
   return {
-    // State
     progress,
     loading,
-    user, // ✅ EXPOSE USER STATE
+    user,
 
-    // Actions
     completeCourse,
     readArticle,
     postComment,
     loadProgress,
 
-    // Toast controls
     showXPToast,
     setShowXPToast,
     xpGained,

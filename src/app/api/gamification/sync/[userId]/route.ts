@@ -10,10 +10,8 @@ export async function POST(
     try {
         const { userId } = await params;
 
-        // Recount comments
         const { total: commentCount } = await getCommentsByUser(userId, 0, 1);
 
-        // Update stats
         await updateStats(userId, {
             commentsPosted: commentCount
         });

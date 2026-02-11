@@ -154,34 +154,54 @@ export async function PUT(
     }
 
     // Send notification emails if article was just published
+    console.log('🔍 DEBUG: Checking if article is being published...');
+    console.log('🔍 DEBUG: article.published =', article.published);
+    console.log('🔍 DEBUG: updates.published =', updates.published);
+    console.log('🔍 DEBUG: isBeingPublished =', isBeingPublished);
+
     if (isBeingPublished) {
+      console.log('✅ Article is being published! Starting email notification process...');
+
       // Import email functions
       const { getAllActiveSubscribers } = await import('@/models/Subscriber');
       const { sendNewArticleEmail } = await import('@/lib/email');
 
       try {
         const subscribers = await getAllActiveSubscribers();
+        console.log(`📧 Found ${subscribers.length} active subscribers`);
 
-        // Send emails to all subscribers (don't wait for completion)
-        subscribers.forEach(async (subscriber) => {
-          try {
-            await sendNewArticleEmail(
-              subscriber.email,
-              article.title,
-              article.description,
-              article.slug,
-              subscriber.unsubscribeToken
-            );
-          } catch (emailError) {
-            console.error(`Failed to send article notification to ${subscriber.email}:`, emailError);
-          }
-        });
+        if (subscribers.length === 0) {
+          console.log('⚠️ No active subscribers found. No emails will be sent.');
+        } else {
+          console.log('📤 Sending emails to all subscribers...');
 
-        console.log(`Article published: Sending notifications to ${subscribers.length} subscribers`);
+          // Send emails to all subscribers with proper async handling
+          await Promise.all(
+            subscribers.map(async (subscriber, index) => {
+              try {
+                console.log(`📨 Sending email ${index + 1}/${subscribers.length} to ${subscriber.email}...`);
+                const result = await sendNewArticleEmail(
+                  subscriber.email,
+                  article.title,
+                  article.description,
+                  article.slug,
+                  subscriber.unsubscribeToken
+                );
+                console.log(`✅ Email sent successfully to ${subscriber.email}`, result);
+              } catch (emailError) {
+                console.error(`❌ Failed to send article notification to ${subscriber.email}:`, emailError);
+              }
+            })
+          );
+
+          console.log(`✅ Article published: Sent notifications to ${subscribers.length} subscribers`);
+        }
       } catch (notificationError) {
-        console.error('Error sending article notifications:', notificationError);
+        console.error('❌ Error sending article notifications:', notificationError);
         // Don't fail the update if notifications fail
       }
+    } else {
+      console.log('ℹ️ Article update does not trigger email notifications (not a new publication)');
     }
 
     return NextResponse.json(

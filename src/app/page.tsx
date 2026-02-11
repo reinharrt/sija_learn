@@ -34,7 +34,7 @@ export default function Home() {
           <div className="lg:col-span-7 flex flex-col items-start">
             <div className="inline-block bg-sija-light border-2 border-sija-primary px-4 py-2 mb-6 shadow-hard-sm">
               <span className="font-display font-bold text-sija-primary uppercase tracking-wider text-sm">
-                Pendaftaran Dibuka • Angkatan 14
+                SIAPKAH MENJADI YANG TERBAIK?
               </span>
             </div>
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-black text-sija-primary leading-[0.9] mb-6">
@@ -43,8 +43,8 @@ export default function Home() {
               COMPILE
             </h1>
             <p className="max-w-xl text-base md:text-lg text-sija-text font-medium mb-8 leading-relaxed border-l-4 border-sija-primary pl-6">
-              Markas digital untuk <span className="font-bold text-sija-primary">SIJA SMKN 1 Cimahi</span>.
-              Di mana kode bertemu kreativitas dan siswa menjadi insinyur.
+              Platform digital resmi <span className="font-bold text-sija-primary">SIJA SMKN 1 Cimahi</span>.
+              Wadah pengembangan kreativitas pemrograman untuk mencetak IT Enggineer masa depan.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Link href="/courses" className="flex items-center justify-center gap-2 px-8 py-4 bg-sija-primary text-white font-bold border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase tracking-wider text-sm">
@@ -52,7 +52,7 @@ export default function Home() {
                 <ArrowRight size={20} strokeWidth={3} />
               </Link>
               <Link href="/articles" className="flex items-center justify-center gap-2 px-8 py-4 bg-sija-surface text-sija-primary font-bold border-2 border-sija-primary shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider text-sm">
-                Jelajahi Artikel
+                Lihat Artikel
               </Link>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function Home() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-sija-surface border-2 border-sija-primary p-6 shadow-hard rotate-3 hover:rotate-0 transition-transform duration-300">
                     <MousePointer2 size={48} className="text-sija-primary mx-auto mb-2" />
-                    <div className="font-display font-bold text-xl text-sija-text">Pembelajaran<br />Interaktif</div>
+                    <div className="font-display font-bold text-xl text-sija-text">Interactive<br />Learning</div>
                   </div>
                 </div>
               </div>
@@ -84,7 +84,7 @@ export default function Home() {
                 Kurikulum
               </h2>
               <p className="text-base md:text-lg text-sija-text/60 font-medium max-w-lg">
-                Modul standar industri yang dirancang untuk membangun keterampilan teknik dunia nyata.
+                Modul yang dirancang untuk membangun hardskill yang siap kemudian bisa terus berkembang kedepannya.
               </p>
             </div>
             <Link href="/courses" className="group flex items-center gap-2 px-6 py-3 border-2 border-sija-text font-bold text-sija-text hover:bg-sija-text hover:text-sija-surface transition-all uppercase tracking-wider text-sm">
@@ -95,11 +95,11 @@ export default function Home() {
           {loading ? (
             <div className="text-center py-12">
               <Loader2 className="w-12 h-12 animate-spin text-sija-primary mx-auto mb-3" />
-              <p className="text-sija-text font-bold uppercase tracking-wider">Memuat kursus...</p>
+              <p className="text-sija-text font-bold uppercase tracking-wider">Memuat materi...</p>
             </div>
           ) : courses.length === 0 ? (
             <div className="text-center py-12 bg-sija-surface border-2 border-sija-primary">
-              <p className="text-sija-text font-bold uppercase tracking-wider">Belum ada kursus</p>
+              <p className="text-sija-text font-bold uppercase tracking-wider">Materi belum tersedia</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -117,10 +117,10 @@ export default function Home() {
             <div>
               <div className="inline-flex items-center gap-2 mb-3 text-sija-primary">
                 <Box size={20} strokeWidth={2.5} />
-                <span className="font-mono font-bold uppercase tracking-wider text-sm">Basis Pengetahuan</span>
+                <span className="font-mono font-bold uppercase tracking-wider text-sm">Pusat Informasi</span>
               </div>
               <h2 className="font-display text-3xl md:text-4xl font-black text-sija-text uppercase">
-                Wawasan Terbaru
+                Artikel Terbaru
               </h2>
             </div>
           </div>
@@ -154,17 +154,17 @@ export default function Home() {
         <div className="max-w-5xl mx-auto text-center border-2 border-white/20 p-8 md:p-12 bg-sija-primary relative overflow-hidden">
           <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <h2 className="relative font-display text-3xl md:text-5xl font-black mb-6 leading-tight uppercase">
-            Siap untuk Debug <br /> Masa Depanmu?
+            Siap Merancang <br /> Masa Depan?
           </h2>
           <p className="relative text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto font-medium">
-            Bergabunglah dengan ekosistem SIJA SMKN 1 Cimahi. Akses sumber daya, terhubung dengan alumni, dan deploy kode.
+            Bergabunglah dengan ekosistem digital SIJA SMKN 1 Cimahi. Akses materi pembelajaran, terhubung dengan alumni, dan kembangkan potensimu.
           </p>
           <div className="relative flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register" className="px-8 py-4 bg-white text-sija-primary font-bold text-base border-2 border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider">
-              Daftar Akses
+              Daftar Sekarang
             </Link>
             <Link href="/login" className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold text-base hover:bg-white/10 transition-colors uppercase tracking-wider">
-              Portal Siswa
+              Masuk Portal
             </Link>
           </div>
         </div>

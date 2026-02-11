@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/analytics/page.tsx
-// Admin Analytics Dashboard - Article Statistics with Charts
-// ============================================
 
 'use client';
 
@@ -15,7 +12,7 @@ import Breadcrumb from '@/components/common/Breadcrumb';
 import PageHeader from '@/components/common/PageHeader';
 import Button from '@/components/common/Button';
 import StatsCard from '@/components/admin/StatsCard';
-import { 
+import {
   BarChart3,
   Shield,
   FileText,
@@ -73,23 +70,20 @@ export default function AdminAnalyticsPage() {
     setLoading(true);
     setRefreshing(true);
     try {
-      // Load all articles
       const articlesRes = await fetch('/api/articles?limit=1000', {
         headers: getAuthHeaders(),
       });
       const articlesData = await articlesRes.json();
       const articles = articlesData.articles || [];
 
-      // Load comments count for each article
       const statsPromises = articles.map(async (article: Article) => {
         try {
           const commentsRes = await fetch(`/api/comments?articleId=${article._id}`);
           const commentsData = await commentsRes.json();
           const totalComments = commentsData.comments?.length || 0;
 
-          // Calculate engagement rate (comments per 100 views)
-          const engagementRate = article.views > 0 
-            ? (totalComments / article.views) * 100 
+          const engagementRate = article.views > 0
+            ? (totalComments / article.views) * 100
             : 0;
 
           return {
@@ -109,7 +103,6 @@ export default function AdminAnalyticsPage() {
       const stats = await Promise.all(statsPromises);
       setArticleStats(stats);
 
-      // Calculate overall stats
       const totalViews = stats.reduce((sum, s) => sum + (s.article.views || 0), 0);
       const totalComments = stats.reduce((sum, s) => sum + s.totalComments, 0);
       const published = stats.filter(s => s.article.published).length;
@@ -168,13 +161,12 @@ export default function AdminAnalyticsPage() {
     return null;
   }
 
-  const engagementRate = overallStats?.totalViews 
+  const engagementRate = overallStats?.totalViews
     ? ((overallStats.totalComments / overallStats.totalViews) * 100).toFixed(1)
     : '0';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: 'Admin', href: '/admin', icon: <Shield size={16} strokeWidth={2.5} /> },
@@ -182,7 +174,6 @@ export default function AdminAnalyticsPage() {
         ]}
       />
 
-      {/* Page Header */}
       <PageHeader
         title="Analytics Dashboard"
         subtitle="Comprehensive article performance insights"
@@ -201,7 +192,6 @@ export default function AdminAnalyticsPage() {
         }
       />
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard
           label="Total Articles"
@@ -229,7 +219,6 @@ export default function AdminAnalyticsPage() {
         />
       </div>
 
-      {/* Top 5 Articles by Views */}
       <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6 mb-8">
         <h2 className="font-display text-2xl font-black text-sija-primary uppercase mb-6 flex items-center gap-2">
           <TrendingUp size={24} strokeWidth={2.5} />
@@ -239,7 +228,7 @@ export default function AdminAnalyticsPage() {
           {topArticles.map((stat, index) => {
             const maxViews = topArticles[0]?.article.views || 1;
             const percentage = ((stat.article.views || 0) / maxViews) * 100;
-            
+
             return (
               <div key={stat.article._id?.toString()} className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -266,7 +255,6 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Top Articles by Comments */}
       <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6 mb-8">
         <h2 className="font-display text-2xl font-black text-sija-primary uppercase mb-6 flex items-center gap-2">
           <MessageCircle size={24} strokeWidth={2.5} />
@@ -276,7 +264,7 @@ export default function AdminAnalyticsPage() {
           {[...sortedStats].sort((a, b) => b.totalComments - a.totalComments).slice(0, 5).map((stat, index) => {
             const maxComments = Math.max(...sortedStats.map(s => s.totalComments));
             const percentage = maxComments > 0 ? (stat.totalComments / maxComments) * 100 : 0;
-            
+
             return (
               <div key={stat.article._id?.toString()} className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -303,7 +291,6 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Filters & Sort */}
       <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -342,7 +329,6 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Detailed Table */}
       <div className="bg-sija-surface border-2 border-sija-primary shadow-hard overflow-hidden">
         <div className="px-6 py-4 border-b-2 border-sija-primary bg-sija-primary/5">
           <h2 className="font-display text-xl font-black text-sija-primary uppercase flex items-center gap-2">
@@ -350,7 +336,7 @@ export default function AdminAnalyticsPage() {
             All Articles ({sortedStats.length})
           </h2>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -380,8 +366,8 @@ export default function AdminAnalyticsPage() {
             </thead>
             <tbody>
               {sortedStats.map((stat, index) => (
-                <tr 
-                  key={stat.article._id?.toString()} 
+                <tr
+                  key={stat.article._id?.toString()}
                   className={`${index !== sortedStats.length - 1 ? 'border-b-2 border-sija-primary/20' : ''} hover:bg-sija-primary/5 transition-colors`}
                 >
                   <td className="px-6 py-4">
@@ -411,11 +397,10 @@ export default function AdminAnalyticsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${
-                      stat.article.published 
-                        ? 'bg-green-100 text-green-800 border-green-800' 
+                    <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${stat.article.published
+                        ? 'bg-green-100 text-green-800 border-green-800'
                         : 'bg-gray-100 text-gray-800 border-gray-800'
-                    }`}>
+                      }`}>
                       {stat.article.published ? (
                         <>
                           <CheckCircle size={12} strokeWidth={2.5} />
@@ -442,11 +427,10 @@ export default function AdminAnalyticsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`text-sm font-black ${
-                      (stat.engagementRate || 0) > 5 ? 'text-green-600' :
-                      (stat.engagementRate || 0) > 2 ? 'text-yellow-600' :
-                      'text-gray-600'
-                    }`}>
+                    <span className={`text-sm font-black ${(stat.engagementRate || 0) > 5 ? 'text-green-600' :
+                        (stat.engagementRate || 0) > 2 ? 'text-yellow-600' :
+                          'text-gray-600'
+                      }`}>
                       {stat.engagementRate?.toFixed(1)}%
                     </span>
                   </td>

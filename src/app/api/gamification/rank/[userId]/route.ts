@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/gamification/rank/[userId]/route.ts
-// API Route - Get user's rank position
-// ============================================
 
 import { NextResponse } from 'next/server';
 import { getUserRank } from '@/models/UserProgress';

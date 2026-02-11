@@ -118,34 +118,54 @@ export async function PUT(
     }
 
     // Send notification emails if course was just published
+    console.log('🔍 DEBUG: Checking if course is being published...');
+    console.log('🔍 DEBUG: existingCourse.published =', existingCourse?.published);
+    console.log('🔍 DEBUG: updates.published =', updates.published);
+    console.log('🔍 DEBUG: isBeingPublished =', isBeingPublished);
+
     if (isBeingPublished && existingCourse) {
+      console.log('✅ Course is being published! Starting email notification process...');
+
       // Import email functions
       const { getAllActiveSubscribers } = await import('@/models/Subscriber');
       const { sendNewCourseEmail } = await import('@/lib/email');
 
       try {
         const subscribers = await getAllActiveSubscribers();
+        console.log(`📧 Found ${subscribers.length} active subscribers`);
 
-        // Send emails to all subscribers (don't wait for completion)
-        subscribers.forEach(async (subscriber) => {
-          try {
-            await sendNewCourseEmail(
-              subscriber.email,
-              existingCourse.title,
-              existingCourse.description,
-              existingCourse.slug,
-              subscriber.unsubscribeToken
-            );
-          } catch (emailError) {
-            console.error(`Failed to send course notification to ${subscriber.email}:`, emailError);
-          }
-        });
+        if (subscribers.length === 0) {
+          console.log('⚠️ No active subscribers found. No emails will be sent.');
+        } else {
+          console.log('📤 Sending emails to all subscribers...');
 
-        console.log(`Course published: Sending notifications to ${subscribers.length} subscribers`);
+          // Send emails to all subscribers with proper async handling
+          await Promise.all(
+            subscribers.map(async (subscriber, index) => {
+              try {
+                console.log(`📨 Sending email ${index + 1}/${subscribers.length} to ${subscriber.email}...`);
+                const result = await sendNewCourseEmail(
+                  subscriber.email,
+                  existingCourse.title,
+                  existingCourse.description,
+                  existingCourse.slug,
+                  subscriber.unsubscribeToken
+                );
+                console.log(`✅ Email sent successfully to ${subscriber.email}`, result);
+              } catch (emailError) {
+                console.error(`❌ Failed to send course notification to ${subscriber.email}:`, emailError);
+              }
+            })
+          );
+
+          console.log(`✅ Course published: Sent notifications to ${subscribers.length} subscribers`);
+        }
       } catch (notificationError) {
-        console.error('Error sending course notifications:', notificationError);
+        console.error('❌ Error sending course notifications:', notificationError);
         // Don't fail the update if notifications fail
       }
+    } else {
+      console.log('ℹ️ Course update does not trigger email notifications (not a new publication)');
     }
 
     return NextResponse.json(

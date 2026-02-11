@@ -18,7 +18,6 @@ export async function GET(
             );
         }
 
-        // Fetch user details to display name/avatar
         const db = await getDatabase();
         const user = await db.collection('users').findOne(
             { _id: new ObjectId(userId) },
