@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/tags/page.tsx
-// Admin Tags Management - Refactored with Components
-// ============================================
 
 'use client';
 
@@ -40,7 +37,6 @@ export default function AdminTagsPage() {
   const [sortBy, setSortBy] = useState<'usage' | 'name' | 'date'>('usage');
   const [filterCategory, setFilterCategory] = useState<string>('all');
 
-  // Create tag modal
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTag, setNewTag] = useState({
     name: '',
@@ -161,7 +157,6 @@ export default function AdminTagsPage() {
     }
   });
 
-  // Calculate stats
   const activeTags = tags.filter((t) => t.usageCount > 0).length;
   const unusedTags = tags.filter((t) => t.usageCount === 0).length;
   const totalUsage = tags.reduce((sum, t) => sum + t.usageCount, 0);
@@ -187,7 +182,6 @@ export default function AdminTagsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: 'Admin', href: '/admin', icon: <Shield size={16} strokeWidth={2.5} /> },
@@ -195,7 +189,6 @@ export default function AdminTagsPage() {
         ]}
       />
 
-      {/* Header */}
       <div className="mb-8">
         <div className="bg-sija-surface border-2 border-sija-primary p-8 shadow-hard">
           <div className="flex items-center justify-between">
@@ -223,14 +216,12 @@ export default function AdminTagsPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statCards.map((stat) => (
           <StatsCard key={stat.label} {...stat} />
         ))}
       </div>
 
-      {/* Filters */}
       <div className="mb-6">
         <TagsFilter
           filterCategory={filterCategory}
@@ -241,10 +232,8 @@ export default function AdminTagsPage() {
         />
       </div>
 
-      {/* Tags Table */}
       <TagsTable tags={sortedTags} onDelete={handleDeleteTag} />
 
-      {/* Create Tag Modal */}
       <CreateTagModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}

@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/quizzes/[id]/attempts/route.ts
-// Student API - Get Quiz Attempt History
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';

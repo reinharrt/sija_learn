@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/categories/route.ts
-// Categories API - Fixed Authentication
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -15,45 +12,40 @@ import {
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-// ✅ GET /api/categories - Public access, NO AUTH REQUIRED
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     const action = searchParams.get('action');
     const query = searchParams.get('query') || searchParams.get('q');
     const populate = searchParams.get('populate');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
-    
-    // Action: search (autocomplete)
+
     if (action === 'search' && query) {
       const categories = await searchCategories(query, limit);
       return NextResponse.json({ categories });
     }
-    
-    // Action: popular
+
     if (action === 'popular') {
       const categories = await getPopularCategories(limit);
       return NextResponse.json({ categories });
     }
-    
-    // Default: Get all categories with filters
+
     const skip = (page - 1) * limit;
     const filters: any = {};
-    
+
     if (query) {
       filters.search = query;
     }
-    
+
     const minUsage = searchParams.get('minUsage');
     if (minUsage) {
       filters.minUsage = parseInt(minUsage);
     }
-    
+
     const { categories, total } = await getCategories(filters, skip, limit);
-    
-    // Populate creator information if requested
+
     if (populate === 'creator' && categories.length > 0) {
       const db = await getDatabase();
       const usersCollection = db.collection('users');
@@ -66,8 +58,8 @@ export async function GET(request: NextRequest) {
 
       if (creatorIds.length > 0) {
         const creators = await usersCollection
-          .find({ 
-            _id: { $in: creatorIds.map(id => new ObjectId(id)) } 
+          .find({
+            _id: { $in: creatorIds.map(id => new ObjectId(id)) }
           })
           .project({ name: 1, email: 1 })
           .toArray();
@@ -78,7 +70,7 @@ export async function GET(request: NextRequest) {
 
         const categoriesWithCreators = categories.map(cat => ({
           ...cat,
-          createdBy: cat.createdBy 
+          createdBy: cat.createdBy
             ? creatorMap.get(cat.createdBy.toString()) || null
             : null
         }));
@@ -94,7 +86,7 @@ export async function GET(request: NextRequest) {
         });
       }
     }
-    
+
     return NextResponse.json({
       categories,
       pagination: {
@@ -113,37 +105,33 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// ✅ POST /api/categories - AUTH REQUIRED (Writers and above)
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
     const user = getUserFromRequest(request);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized - Login required' },
         { status: 401 }
       );
     }
-    
-    // Only writers and above can create categories
+
     if (!hasPermission(user.role, UserRole.WRITER)) {
       return NextResponse.json(
         { error: 'Forbidden - Writers only' },
         { status: 403 }
       );
     }
-    
+
     const { name, description, icon, color } = await request.json();
-    
+
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json(
         { error: 'Category name wajib diisi' },
         { status: 400 }
       );
     }
-    
-    // Validate category name
+
     const trimmedName = name.trim();
     if (trimmedName.length < 2) {
       return NextResponse.json(
@@ -151,27 +139,26 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     if (trimmedName.length > 50) {
       return NextResponse.json(
         { error: 'Category name maksimal 50 karakter' },
         { status: 400 }
       );
     }
-    
-    // Create category
-    const categoryId = await createCategory(name, user.id, { 
-      description, 
-      icon, 
-      color 
+
+    const categoryId = await createCategory(name, user.id, {
+      description,
+      icon,
+      color
     });
-    
+
     return NextResponse.json({
       message: 'Category berhasil dibuat',
       categoryId: categoryId.toString(),
       slug: trimmedName.toLowerCase().replace(/\s+/g, '-')
     }, { status: 201 });
-    
+
   } catch (error: any) {
     console.error('Create category error:', error);
     return NextResponse.json(

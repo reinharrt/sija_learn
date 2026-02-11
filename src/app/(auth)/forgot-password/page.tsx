@@ -1,7 +1,4 @@
-// ============================================
 // src/app/(auth)/forgot-password/page.tsx
-// Forgot Password
-// ============================================
 
 'use client';
 

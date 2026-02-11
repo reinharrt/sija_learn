@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/subscribe/route.ts
-// Email Subscription API - Subscribe to newsletter
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createSubscriber, findSubscriberByEmail, reactivateSubscriber } from '@/models/Subscriber';
@@ -11,7 +8,6 @@ export async function POST(request: NextRequest) {
     try {
         const { email } = await request.json();
 
-        // Validate email
         if (!email || !email.trim()) {
             return NextResponse.json(
                 { error: 'Email wajib diisi' },
@@ -19,7 +15,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Basic email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return NextResponse.json(
@@ -28,7 +23,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if subscriber already exists
         const existingSubscriber = await findSubscriberByEmail(email);
 
         if (existingSubscriber) {
@@ -38,10 +32,8 @@ export async function POST(request: NextRequest) {
                     { status: 409 }
                 );
             } else {
-                // Reactivate inactive subscriber
                 await reactivateSubscriber(email);
 
-                // Send welcome email again
                 await sendWelcomeSubscriptionEmail(email, existingSubscriber.unsubscribeToken);
 
                 return NextResponse.json(
@@ -51,22 +43,18 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Create new subscriber
         const subscriberId = await createSubscriber(email);
 
-        // Get the created subscriber to get the unsubscribe token
         const newSubscriber = await findSubscriberByEmail(email);
 
         if (!newSubscriber) {
             throw new Error('Failed to retrieve subscriber after creation');
         }
 
-        // Send welcome email
         const emailResult = await sendWelcomeSubscriptionEmail(email, newSubscriber.unsubscribeToken);
 
         if (!emailResult.success) {
             console.error('Failed to send welcome email:', emailResult.error);
-            // Don't fail the subscription if email fails
         }
 
         return NextResponse.json(

@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/gamification/badges/[userId]/route.ts
-// API Route - Get user's badges with details
-// ============================================
 
 import { NextResponse } from 'next/server';
 import { getUserBadgesWithDetails } from '@/lib/gamification';

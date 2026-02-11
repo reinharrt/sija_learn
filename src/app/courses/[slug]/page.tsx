@@ -1,7 +1,4 @@
-// ============================================
-// src/app/courses/[slug]/page.tsx
-// Course Detail Page - WITH PROPER ENROLLMENT STATE
-// ============================================
+
 
 'use client';
 
@@ -117,7 +114,6 @@ export default function CourseDetailPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: 'Courses', href: '/courses', icon: <BookOpen size={16} strokeWidth={2.5} /> },

@@ -102,7 +102,6 @@ export async function DELETE(
     const enrollmentCollection = db.collection<Enrollment>('enrollments');
     const coursesCollection = db.collection<Course>('courses');
 
-    // Check if course exists
     const course = await coursesCollection.findOne({ _id: new ObjectId(courseId) });
     if (!course) {
       return NextResponse.json(

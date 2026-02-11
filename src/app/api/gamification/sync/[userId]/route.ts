@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getCommentsByUser } from '@/models/Comment';
 import { updateStats } from '@/models/UserProgress';

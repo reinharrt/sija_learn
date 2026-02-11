@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/unsubscribe/route.ts
-// Email Unsubscribe API - Unsubscribe from newsletter
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { unsubscribeByToken, findSubscriberByToken } from '@/models/Subscriber';
@@ -17,7 +14,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if subscriber exists
         const subscriber = await findSubscriberByToken(token);
 
         if (!subscriber) {
@@ -34,7 +30,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Unsubscribe
         const success = await unsubscribeByToken(token);
 
         if (!success) {

@@ -1,3 +1,4 @@
+// src/app/api/profile/update/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, generateVerificationToken } from '@/lib/auth';
@@ -6,15 +7,10 @@ import { sendVerificationEmail } from '@/lib/email';
 import { validateEmail } from '@/lib/utils';
 import { ObjectId } from 'mongodb';
 
-// ============================================
-// PROFILE UPDATE API
-// ============================================
-
 const ENABLE_EMAIL_VERIFICATION = process.env.ENABLE_EMAIL_VERIFICATION === 'true';
 
 export async function PUT(request: NextRequest) {
     try {
-        // 1. Authenticate User
         const authUser = getUserFromRequest(request);
         if (!authUser) {
             return NextResponse.json(
@@ -25,7 +21,6 @@ export async function PUT(request: NextRequest) {
 
         const { name, email } = await request.json();
 
-        // 2. Validate Input
         if (!name || !name.trim()) {
             return NextResponse.json(
                 { error: 'Name is required' },
@@ -40,7 +35,6 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        // 3. Get Current User Data
         const currentUser = await findUserById(authUser.id);
         if (!currentUser) {
             return NextResponse.json(
@@ -56,9 +50,7 @@ export async function PUT(request: NextRequest) {
         let requiresReLogin = false;
         let emailVerificationSent = false;
 
-        // 4. Handle Email Change
         if (email && email !== currentUser.email) {
-            // Check if email is taken
             const existingUser = await findUserByEmail(email);
             if (existingUser) {
                 return NextResponse.json(
@@ -68,7 +60,6 @@ export async function PUT(request: NextRequest) {
             }
 
             if (ENABLE_EMAIL_VERIFICATION) {
-                // Generate token
                 const verificationToken = generateVerificationToken();
                 const verificationTokenExpiry = new Date();
                 verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + 24);
@@ -78,7 +69,6 @@ export async function PUT(request: NextRequest) {
                 updates.verificationToken = verificationToken;
                 updates.verificationTokenExpiry = verificationTokenExpiry;
 
-                // Send Email
                 try {
                     await sendVerificationEmail(email, name, verificationToken);
                     emailVerificationSent = true;
@@ -92,15 +82,11 @@ export async function PUT(request: NextRequest) {
                 }
 
             } else {
-                // Direct update
                 updates.email = email;
-                // No need to change isVerified or re-login necessarily, but usually safer to re-login if email changes for session consistency.
-                // For now let's just update it.
-                requiresReLogin = true; // Email change usually invalidates JWT claims if email is in token
+                requiresReLogin = true;
             }
         }
 
-        // 5. Apply Updates
         const success = await updateUser(authUser.id, updates);
 
         if (!success) {

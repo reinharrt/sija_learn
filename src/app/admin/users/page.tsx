@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/users/page.tsx
-// Admin Users - Manage users
-// ============================================
 
 'use client';
 
@@ -14,9 +11,9 @@ import Breadcrumb from '@/components/common/Breadcrumb';
 import PageHeader from '@/components/common/PageHeader';
 import DataTable, { Column } from '@/components/common/DataTable';
 import ConfirmModal from '@/components/common/ConfirmModal';
-import { 
-  Users, 
-  Shield, 
+import {
+  Users,
+  Shield,
   Trash2,
   Mail,
   Calendar,
@@ -158,7 +155,6 @@ export default function AdminUsersPage() {
     );
   }
 
-  // Define table columns
   const columns: Column<User>[] = [
     {
       key: 'name',
@@ -209,11 +205,10 @@ export default function AdminUsersPage() {
       key: 'isVerified',
       label: 'Status',
       render: (u) => (
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${
-          u.isVerified 
-            ? 'bg-green-100 text-green-800 border-green-800' 
+        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${u.isVerified
+            ? 'bg-green-100 text-green-800 border-green-800'
             : 'bg-yellow-100 text-yellow-800 border-yellow-800'
-        }`}>
+          }`}>
           {u.isVerified ? (
             <>
               <UserCheck size={12} strokeWidth={2.5} />
@@ -254,7 +249,6 @@ export default function AdminUsersPage() {
     },
   ];
 
-  // Mobile card render function
   const renderMobileCard = (u: User, index: number) => (
     <div className="p-4 space-y-3">
       <div className="flex items-center justify-between">
@@ -282,12 +276,11 @@ export default function AdminUsersPage() {
           <option value={UserRole.COURSE_ADMIN}>Course Admin</option>
           <option value={UserRole.ADMIN}>Admin</option>
         </select>
-        
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${
-          u.isVerified 
-            ? 'bg-green-100 text-green-800 border-green-800' 
+
+        <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${u.isVerified
+            ? 'bg-green-100 text-green-800 border-green-800'
             : 'bg-yellow-100 text-yellow-800 border-yellow-800'
-        }`}>
+          }`}>
           {u.isVerified ? (
             <>
               <UserCheck size={12} strokeWidth={2.5} />
@@ -326,7 +319,6 @@ export default function AdminUsersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: 'Admin', href: '/admin', icon: <Shield size={16} strokeWidth={2.5} /> },
@@ -334,7 +326,6 @@ export default function AdminUsersPage() {
         ]}
       />
 
-      {/* Page Header */}
       <PageHeader
         title="Manage Users"
         subtitle={`${totalUsers} pengguna terdaftar`}
@@ -342,7 +333,6 @@ export default function AdminUsersPage() {
         iconBgColor="bg-blue-500 border-blue-500"
       />
 
-      {/* Data Table */}
       <DataTable
         data={users}
         columns={columns}
@@ -358,7 +348,6 @@ export default function AdminUsersPage() {
         mobileCardRender={renderMobileCard}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={closeDeleteModal}

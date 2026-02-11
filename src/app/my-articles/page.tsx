@@ -1,7 +1,4 @@
-// ============================================
-// src/app/my-articles/page.tsx
-// My Articles Page - Neobrutalist Design
-// ============================================
+
 
 'use client';
 
@@ -116,8 +113,6 @@ export default function MyArticlesPage() {
             Buat Artikel Baru
           </Link>
         </div>
-
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-sija-surface p-6 border-2 border-sija-primary shadow-hard hover:translate-x-[2px] hover:translate-y-[2px] transition-transform">
             <div className="flex justify-between items-start mb-4">
@@ -149,8 +144,6 @@ export default function MyArticlesPage() {
             <div className="text-sija-text font-bold uppercase tracking-wider text-sm">Draft</div>
           </div>
         </div>
-
-        {/* Articles List */}
         <div className="bg-sija-surface border-2 border-sija-primary shadow-hard overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y-2 divide-sija-primary">
@@ -195,8 +188,8 @@ export default function MyArticlesPage() {
                       <button
                         onClick={() => togglePublish(article._id!.toString(), article.published)}
                         className={`text-xs font-bold px-3 py-1.5 border-2 shadow-hard-sm transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none uppercase tracking-wider flex items-center gap-1 ${article.published
-                            ? 'bg-green-100 text-green-800 border-green-600 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-800 border-gray-600 hover:bg-gray-200'
+                          ? 'bg-green-100 text-green-800 border-green-600 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-800 border-gray-600 hover:bg-gray-200'
                           }`}
                       >
                         {article.published ? <CheckCircle size={12} /> : <Circle size={12} />}

@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/quiz/[id]/review/route.ts
-// API Route - Get quiz attempt results for review
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -25,7 +22,6 @@ export async function GET(
 
         const { id: quizId } = await params;
 
-        // Get quiz details
         const quiz = await findQuizById(quizId);
         if (!quiz) {
             return NextResponse.json(
@@ -34,11 +30,9 @@ export async function GET(
             );
         }
 
-        // Get course slug
         const course = await findCourseById(quiz.courseId.toString());
         const courseSlug = course?.slug;
 
-        // Get user's best attempt
         const bestAttempt = await getBestAttempt(user.id, quizId);
 
         if (!bestAttempt) {
@@ -48,7 +42,6 @@ export async function GET(
             );
         }
 
-        // Build question results with correct answers
         const questionResults = quiz.questions.map((question) => {
             const userAnswer = bestAttempt.answers.find(
                 (a) => a.questionId === question.id
@@ -67,7 +60,7 @@ export async function GET(
                 questionId: question.id,
                 question: question.question,
                 type: question.type,
-                options: question.options, // Include all options with correct answers
+                options: question.options,
                 studentAnswer: studentAnswer,
                 correctAnswer: correctOptions,
                 isCorrect,
@@ -77,7 +70,6 @@ export async function GET(
             };
         });
 
-        // Calculate totals
         const totalPoints = quiz.questions.reduce((sum, q) => sum + q.points, 0);
         const earnedPoints = questionResults.reduce((sum, qr) => sum + qr.earnedPoints, 0);
         const percentage = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;

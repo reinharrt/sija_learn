@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/admin/courses/[id]/quizzes/route.ts
-// Admin API - Get all quizzes for a course
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';

@@ -1,7 +1,4 @@
-// ============================================
-// src/app/courses/create/page.tsx
-// Create Course Page - Neobrutalist Design with Article Selection
-// ============================================
+
 
 'use client';
 
@@ -15,12 +12,12 @@ import ImageUpload from '@/components/common/ImageUpload';
 import TagInput from '@/components/common/TagInput';
 import CategorySelector from '@/components/article/CategorySelector';
 import ArticleSelector from '@/components/course/ArticleSelector';
-import { 
+import {
   BookOpen,
-  Image as ImageIcon, 
-  FileText, 
-  Save, 
-  X, 
+  Image as ImageIcon,
+  FileText,
+  Save,
+  X,
   Loader2,
   AlertCircle,
   CheckCircle,
@@ -55,7 +52,7 @@ export default function CreateCoursePage() {
     }
   }, [user, authLoading, router]);
 
-  // Load articles for display
+
   useEffect(() => {
     fetch('/api/articles?published=true&limit=500')
       .then(res => res.json())
@@ -143,7 +140,6 @@ export default function CreateCoursePage() {
 
   return (
     <div className="min-h-screen bg-sija-light dark:bg-gray-950 transition-colors duration-300">
-      {/* Header Section */}
       <section className="relative pt-8 pb-12 px-6 border-b-2 border-sija-primary dark:border-white bg-sija-surface dark:bg-gray-900 transition-colors">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-start gap-6">
@@ -163,7 +159,6 @@ export default function CreateCoursePage() {
       </section>
 
       <div className="max-w-4xl mx-auto px-6 py-12">
-        {/* Error Alert */}
         {error && (
           <div className="bg-red-100 border-2 border-red-500 p-6 mb-8 shadow-hard">
             <div className="flex items-start gap-3">
@@ -177,7 +172,6 @@ export default function CreateCoursePage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Thumbnail Section */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-sija-primary border-2 border-sija-primary">
@@ -193,8 +187,6 @@ export default function CreateCoursePage() {
               aspectRatio="16/9"
             />
           </div>
-
-          {/* Basic Information Section */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-green-500 border-2 border-green-700">
@@ -202,9 +194,8 @@ export default function CreateCoursePage() {
               </div>
               Informasi Course
             </h2>
-            
+
             <div className="space-y-6">
-              {/* Title */}
               <Input
                 label="Judul Course"
                 name="title"
@@ -213,8 +204,6 @@ export default function CreateCoursePage() {
                 placeholder="Contoh: Belajar Linux Debian untuk Pemula"
                 required
               />
-
-              {/* Description */}
               <div>
                 <label className="block text-sm font-bold text-sija-text dark:text-white mb-2 uppercase tracking-wider">
                   Deskripsi <span className="text-red-600">*</span>
@@ -232,8 +221,6 @@ export default function CreateCoursePage() {
                   Deskripsi yang jelas membantu siswa memahami isi course
                 </p>
               </div>
-
-              {/* Category Selector */}
               <CategorySelector
                 selectedCategory={formData.category}
                 onChange={handleCategoryChange}
@@ -241,7 +228,6 @@ export default function CreateCoursePage() {
             </div>
           </div>
 
-          {/* Articles Selection */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-purple-500 border-2 border-purple-700">
@@ -249,21 +235,17 @@ export default function CreateCoursePage() {
               </div>
               Artikel Course
             </h2>
-
-            {/* Open Selector Button */}
             <button
               type="button"
               onClick={() => setShowArticleSelector(true)}
               className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-500 text-white font-bold border-2 border-blue-700 shadow-hard hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase tracking-wider mb-6"
             >
               <Plus className="w-5 h-5" strokeWidth={2.5} />
-              {selectedArticles.length > 0 
-                ? `Edit Artikel (${selectedArticles.length} dipilih)` 
+              {selectedArticles.length > 0
+                ? `Edit Artikel (${selectedArticles.length} dipilih)`
                 : 'Pilih Artikel untuk Course'
               }
             </button>
-
-            {/* Selected Articles Display */}
             {selectedArticles.length > 0 ? (
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -293,17 +275,16 @@ export default function CreateCoursePage() {
                         <div className="w-8 h-8 bg-sija-primary border-2 border-sija-primary flex items-center justify-center text-white font-bold text-sm">
                           {index + 1}
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-sija-text dark:text-white text-sm truncate">
                             {article.title}
                           </h3>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 font-bold border ${
-                              article.type === 'public' 
-                                ? 'bg-green-100 text-green-900 border-green-500' 
-                                : 'bg-purple-100 text-purple-900 border-purple-500'
-                            }`}>
+                            <span className={`text-xs px-2 py-0.5 font-bold border ${article.type === 'public'
+                              ? 'bg-green-100 text-green-900 border-green-500'
+                              : 'bg-purple-100 text-purple-900 border-purple-500'
+                              }`}>
                               {article.type === 'public' ? (
                                 <><Globe className="w-2 h-2 inline mr-1" /> Public</>
                               ) : (
@@ -337,8 +318,6 @@ export default function CreateCoursePage() {
               </div>
             )}
           </div>
-
-          {/* Tags Section */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-blue-500 border-2 border-blue-700">
@@ -346,7 +325,7 @@ export default function CreateCoursePage() {
               </div>
               Tags & Metadata
             </h2>
-            
+
             <div className="space-y-4">
               <TagInput
                 tags={tags}
@@ -360,8 +339,6 @@ export default function CreateCoursePage() {
               </p>
             </div>
           </div>
-
-          {/* Publish Settings */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <div className="flex items-start gap-4 p-4 bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-500 dark:border-blue-700">
               <input
@@ -385,8 +362,6 @@ export default function CreateCoursePage() {
               </label>
             </div>
           </div>
-
-          {/* Info Box */}
           <div className="bg-yellow-100 dark:bg-yellow-900/20 border-2 border-yellow-500 dark:border-yellow-700 p-6 shadow-hard">
             <div className="flex items-start gap-4">
               <div className="p-2 bg-yellow-400 border-2 border-yellow-600">
@@ -397,14 +372,12 @@ export default function CreateCoursePage() {
                   💡 Tips
                 </p>
                 <p className="text-sm text-yellow-800 dark:text-yellow-400 font-medium leading-relaxed">
-                  Artikel bisa ditambahkan sekarang atau nanti dari halaman edit course. 
+                  Artikel bisa ditambahkan sekarang atau nanti dari halaman edit course.
                   Course dengan artikel yang terstruktur lebih menarik bagi siswa.
                 </p>
               </div>
             </div>
           </div>
-
-          {/* Submit Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button
               type="submit"
@@ -429,8 +402,6 @@ export default function CreateCoursePage() {
           </div>
         </form>
       </div>
-
-      {/* Article Selector Modal */}
       {showArticleSelector && (
         <ArticleSelector
           selectedArticles={selectedArticles}

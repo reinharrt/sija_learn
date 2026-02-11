@@ -1,7 +1,4 @@
-// ============================================
-// src/app/courses/[slug]/edit/page.tsx
-// Edit Course Page - Neobrutalist Design with Enhanced Features
-// ============================================
+
 
 'use client';
 
@@ -67,7 +64,7 @@ export default function EditCoursePage() {
   const [loading, setLoading] = useState(true);
   const [showArticleSelector, setShowArticleSelector] = useState(false);
 
-  // Load course data
+
   useEffect(() => {
     if (slug) {
       fetch(`/api/courses/${slug}`)
@@ -95,7 +92,7 @@ export default function EditCoursePage() {
     }
   }, [slug]);
 
-  // Check permission
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
@@ -111,7 +108,7 @@ export default function EditCoursePage() {
     }
   }, [user, authLoading, course, router]);
 
-  // Load ALL published articles
+
   useEffect(() => {
     fetch('/api/articles?published=true&limit=200')
       .then(res => res.json())
@@ -214,7 +211,6 @@ export default function EditCoursePage() {
 
   return (
     <div className="min-h-screen bg-sija-light dark:bg-gray-950 transition-colors duration-300">
-      {/* Header */}
       <section className="relative pt-8 pb-12 px-6 border-b-2 border-sija-primary dark:border-white bg-sija-surface dark:bg-gray-900 transition-colors">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-start gap-6">
@@ -234,7 +230,6 @@ export default function EditCoursePage() {
       </section>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
-        {/* Success Alert */}
         {success && (
           <div className="bg-green-100 border-2 border-green-500 p-6 mb-8 shadow-hard">
             <div className="flex items-start gap-3">
@@ -246,8 +241,6 @@ export default function EditCoursePage() {
             </div>
           </div>
         )}
-
-        {/* Error Alert */}
         {error && (
           <div className="bg-red-100 border-2 border-red-500 p-6 mb-8 shadow-hard">
             <div className="flex items-start gap-3">
@@ -261,7 +254,6 @@ export default function EditCoursePage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Thumbnail */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-sija-primary border-2 border-sija-primary">
@@ -277,8 +269,6 @@ export default function EditCoursePage() {
               aspectRatio="16/9"
             />
           </div>
-
-          {/* Basic Info */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-green-500 border-2 border-green-700">
@@ -316,8 +306,6 @@ export default function EditCoursePage() {
               />
             </div>
           </div>
-
-          {/* Articles Selection */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-purple-500 border-2 border-purple-700">
@@ -325,8 +313,6 @@ export default function EditCoursePage() {
               </div>
               Artikel Course
             </h2>
-
-            {/* Open Selector Button */}
             <button
               type="button"
               onClick={() => setShowArticleSelector(true)}
@@ -335,8 +321,6 @@ export default function EditCoursePage() {
               <Plus className="w-5 h-5" strokeWidth={2.5} />
               Pilih / Edit Artikel ({selectedArticles.length} dipilih)
             </button>
-
-            {/* Selected Articles Display */}
             {selectedArticles.length > 0 ? (
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -409,8 +393,6 @@ export default function EditCoursePage() {
               </div>
             )}
           </div>
-
-          {/* Quiz Management */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-orange-500 border-2 border-orange-700">
@@ -441,8 +423,6 @@ export default function EditCoursePage() {
               Kelola Quiz Course
             </Link>
           </div>
-
-          {/* XP & Difficulty Settings */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-yellow-500 border-2 border-yellow-700">
@@ -452,13 +432,10 @@ export default function EditCoursePage() {
             </h2>
 
             <div className="space-y-6">
-              {/* Difficulty Selector */}
               <DifficultySelector
                 value={difficulty}
                 onChange={setDifficulty}
               />
-
-              {/* Custom XP Override */}
               <div>
                 <label className="block text-sm font-bold text-sija-text dark:text-white mb-2 uppercase tracking-wider">
                   Custom XP Reward (Optional)
@@ -475,8 +452,6 @@ export default function EditCoursePage() {
                   💡 Kosongkan field ini untuk menggunakan perhitungan otomatis berdasarkan difficulty dan jumlah artikel
                 </p>
               </div>
-
-              {/* XP Preview */}
               <XPPreview
                 difficulty={difficulty}
                 articleCount={selectedArticles.length}
@@ -484,8 +459,6 @@ export default function EditCoursePage() {
               />
             </div>
           </div>
-
-          {/* Tags */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <h2 className="font-display text-2xl font-bold text-sija-text dark:text-white mb-6 uppercase flex items-center gap-3 border-b-2 border-dashed border-sija-text/10 dark:border-gray-700 pb-4">
               <div className="p-2 bg-blue-500 border-2 border-blue-700">
@@ -500,8 +473,6 @@ export default function EditCoursePage() {
               maxTags={10}
             />
           </div>
-
-          {/* Publish Settings */}
           <div className="bg-sija-surface dark:bg-gray-900 border-2 border-sija-primary dark:border-white p-6 md:p-8 shadow-hard transition-colors">
             <div className="flex items-start gap-4 p-4 bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-500 dark:border-blue-700">
               <input
@@ -525,8 +496,6 @@ export default function EditCoursePage() {
               </label>
             </div>
           </div>
-
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button
               type="submit"
@@ -549,8 +518,6 @@ export default function EditCoursePage() {
               Batal
             </button>
           </div>
-
-          {/* Danger Zone */}
           <div className="pt-8 border-t-2 border-dashed border-sija-text/10 dark:border-gray-700">
             <div className="bg-red-100 dark:bg-red-900/20 border-2 border-red-500 p-6 shadow-hard">
               <div className="flex items-start gap-4 mb-4">
@@ -586,8 +553,6 @@ export default function EditCoursePage() {
           </div>
         </form>
       </div>
-
-      {/* Article Selector Modal */}
       {showArticleSelector && (
         <ArticleSelector
           selectedArticles={selectedArticles}

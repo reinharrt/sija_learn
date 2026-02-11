@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/courses/[id]/route.ts
-// Course Detail API - Get, update, delete specific course
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -31,7 +28,6 @@ export async function GET(
       );
     }
 
-    // Populate creator information
     if (course.creator) {
       const creator = await findUserById(course.creator.toString());
       if (creator) {
@@ -78,7 +74,6 @@ export async function PUT(
     delete updates.enrolledCount;
     delete updates.createdAt;
 
-    // Validate difficulty if provided
     if (updates.difficulty && !['beginner', 'intermediate', 'advanced'].includes(updates.difficulty)) {
       return NextResponse.json(
         { error: 'Invalid difficulty level. Must be: beginner, intermediate, or advanced' },
@@ -86,7 +81,6 @@ export async function PUT(
       );
     }
 
-    // Validate xpReward if provided
     if (updates.xpReward !== undefined && updates.xpReward !== null) {
       const xpValue = Number(updates.xpReward);
       if (isNaN(xpValue) || xpValue < 0) {
@@ -102,7 +96,6 @@ export async function PUT(
       updates.articles = updates.articles.map((aid: string) => new ObjectId(aid));
     }
 
-    // Check if course is being published (status changing from false to true)
     const existingCourse = await findCourseById(id);
     const isBeingPublished = existingCourse &&
       !existingCourse.published &&
@@ -117,7 +110,6 @@ export async function PUT(
       );
     }
 
-    // Send notification emails if course was just published
     console.log('🔍 DEBUG: Checking if course is being published...');
     console.log('🔍 DEBUG: existingCourse.published =', existingCourse?.published);
     console.log('🔍 DEBUG: updates.published =', updates.published);
@@ -126,7 +118,6 @@ export async function PUT(
     if (isBeingPublished && existingCourse) {
       console.log('✅ Course is being published! Starting email notification process...');
 
-      // Import email functions
       const { getAllActiveSubscribers } = await import('@/models/Subscriber');
       const { sendNewCourseEmail } = await import('@/lib/email');
 
@@ -139,7 +130,6 @@ export async function PUT(
         } else {
           console.log('📤 Sending emails to all subscribers...');
 
-          // Send emails to all subscribers with proper async handling
           await Promise.all(
             subscribers.map(async (subscriber, index) => {
               try {
@@ -162,7 +152,6 @@ export async function PUT(
         }
       } catch (notificationError) {
         console.error('❌ Error sending course notifications:', notificationError);
-        // Don't fail the update if notifications fail
       }
     } else {
       console.log('ℹ️ Course update does not trigger email notifications (not a new publication)');

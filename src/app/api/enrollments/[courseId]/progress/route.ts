@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/enrollments/[courseId]/progress/route.ts
-// UPDATED - Progress Tracking dengan Gamification Integration
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
@@ -9,7 +6,6 @@ import { ObjectId } from 'mongodb';
 import { getUserFromRequest } from '@/lib/auth';
 import { readArticle } from '@/lib/gamification';
 
-// POST - Mark article as completed AND award XP
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -29,7 +25,6 @@ export async function POST(
 
     const db = await getDatabase();
 
-    // Check if enrollment exists
     const enrollment = await db.collection('enrollments').findOne({
       userId: new ObjectId(user.id),
       courseId: new ObjectId(courseId),
@@ -39,12 +34,10 @@ export async function POST(
       return NextResponse.json({ error: 'Not enrolled in this course' }, { status: 404 });
     }
 
-    // Check if article is already completed
     const isAlreadyCompleted = enrollment.progress?.completedArticles?.some(
       (id: ObjectId) => id.toString() === articleId
     );
 
-    // Add article to completedArticles if not already there
     await db.collection('enrollments').updateOne(
       {
         userId: new ObjectId(user.id),
@@ -60,7 +53,6 @@ export async function POST(
       }
     );
 
-    // 🎮 GAMIFICATION: Award XP for reading article (only if first time)
     let xpGained = 0;
     if (!isAlreadyCompleted) {
       try {
@@ -68,28 +60,24 @@ export async function POST(
         xpGained = result.xpGained;
       } catch (error) {
         console.error('Failed to award XP:', error);
-        // Don't fail the request if gamification fails
       }
     }
 
-    // Get updated enrollment
     const updatedEnrollment = await db.collection('enrollments').findOne({
       userId: new ObjectId(user.id),
       courseId: new ObjectId(courseId),
     });
 
-    // Get course
     const course = await db.collection('courses').findOne({
       _id: new ObjectId(courseId),
     });
 
     const totalArticles = course?.articles?.length || 0;
     const completedCount = updatedEnrollment?.progress?.completedArticles?.length || 0;
-    const progressPercentage = totalArticles > 0 
-      ? Math.round((completedCount / totalArticles) * 100) 
+    const progressPercentage = totalArticles > 0
+      ? Math.round((completedCount / totalArticles) * 100)
       : 0;
 
-    // 🎮 Check if course is now complete
     const courseCompleted = completedCount === totalArticles && totalArticles > 0;
 
     return NextResponse.json({
@@ -114,7 +102,6 @@ export async function POST(
   }
 }
 
-// GET - Get progress details (unchanged)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
@@ -143,8 +130,8 @@ export async function GET(
 
     const totalArticles = course?.articles?.length || 0;
     const completedCount = enrollment.progress?.completedArticles?.length || 0;
-    const progressPercentage = totalArticles > 0 
-      ? Math.round((completedCount / totalArticles) * 100) 
+    const progressPercentage = totalArticles > 0
+      ? Math.round((completedCount / totalArticles) * 100)
       : 0;
 
     return NextResponse.json({

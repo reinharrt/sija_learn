@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/auth/login/route.ts
-// Login API - Handle user authentication
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { comparePassword, generateToken } from '@/lib/auth';

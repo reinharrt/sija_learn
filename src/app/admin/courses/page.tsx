@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/courses/page.tsx
-// Admin Courses - Manage courses
-// ============================================
 
 'use client';
 
@@ -16,11 +13,11 @@ import PageHeader from '@/components/common/PageHeader';
 import DataTable, { Column } from '@/components/common/DataTable';
 import Button from '@/components/common/Button';
 import ConfirmModal from '@/components/common/ConfirmModal';
-import { 
-  BookOpen, 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  BookOpen,
+  Plus,
+  Edit,
+  Trash2,
   FileText,
   Calendar,
   CheckCircle,
@@ -147,7 +144,6 @@ export default function AdminCoursesPage() {
     );
   }
 
-  // Define table columns
   const columns: Column<Course>[] = [
     {
       key: 'title',
@@ -177,11 +173,10 @@ export default function AdminCoursesPage() {
       render: (course) => (
         <button
           onClick={() => togglePublish(course._id!.toString(), course.published)}
-          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${
-            course.published
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${course.published
               ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
               : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
-          }`}
+            }`}
         >
           {course.published ? (
             <>
@@ -241,7 +236,6 @@ export default function AdminCoursesPage() {
     },
   ];
 
-  // Mobile card render function
   const renderMobileCard = (course: Course, index: number) => (
     <div className="p-4 space-y-3">
       <Link
@@ -254,11 +248,10 @@ export default function AdminCoursesPage() {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => togglePublish(course._id!.toString(), course.published)}
-          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${
-            course.published
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${course.published
               ? 'bg-green-100 text-green-800 border-green-800'
               : 'bg-gray-100 text-gray-800 border-gray-800'
-          }`}
+            }`}
         >
           {course.published ? (
             <>
@@ -310,7 +303,6 @@ export default function AdminCoursesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: 'Admin', href: '/admin', icon: <Shield size={16} strokeWidth={2.5} /> },
@@ -318,7 +310,6 @@ export default function AdminCoursesPage() {
         ]}
       />
 
-      {/* Page Header */}
       <PageHeader
         title="Manage Courses"
         subtitle={`${totalCourses} courses tersedia`}
@@ -333,7 +324,6 @@ export default function AdminCoursesPage() {
         }
       />
 
-      {/* Data Table */}
       <DataTable
         data={courses}
         columns={columns}
@@ -349,7 +339,6 @@ export default function AdminCoursesPage() {
         mobileCardRender={renderMobileCard}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.isOpen}
         onClose={closeDeleteModal}

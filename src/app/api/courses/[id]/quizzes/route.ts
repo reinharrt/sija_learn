@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/courses/[id]/quizzes/route.ts
-// Get all quizzes for a course with completion status
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -26,7 +23,6 @@ export async function GET(
 
         const { id } = await params;
 
-        // Get course
         const course = await findCourseById(id);
         if (!course) {
             return NextResponse.json(
@@ -35,13 +31,10 @@ export async function GET(
             );
         }
 
-        // Get all quizzes for this course
         const allQuizzes = await findQuizzesByCourse(id);
 
-        // Get user's quiz attempts
         const userAttempts = await getQuizAttemptsByUser(user.id);
 
-        // Create a map of quiz attempts for quick lookup
         const attemptMap = new Map();
         userAttempts.forEach(attempt => {
             const quizId = attempt.quizId.toString();
@@ -55,7 +48,6 @@ export async function GET(
             }
         });
 
-        // Separate article quizzes and final quiz
         const articleQuizzes: any[] = [];
         let finalQuiz: any = null;
 
@@ -83,7 +75,6 @@ export async function GET(
             };
 
             if (quiz.articleId) {
-                // Article quiz - get article info
                 const article = await findArticleById(quiz.articleId.toString());
                 if (article) {
                     articleQuizzes.push({
@@ -96,7 +87,6 @@ export async function GET(
                     });
                 }
             } else {
-                // Final quiz
                 finalQuiz = quizData;
             }
         }

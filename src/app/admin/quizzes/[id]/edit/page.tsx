@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/quizzes/[id]/edit/page.tsx
-// Admin Page - Edit Quiz
-// ============================================
 
 'use client';
 

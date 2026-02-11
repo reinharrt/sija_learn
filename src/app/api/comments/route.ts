@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/comments/route.ts
-// Comments API - List and create comments
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -78,15 +75,11 @@ export async function POST(request: NextRequest) {
       content: content.trim(),
     });
 
-    // Award XP and update participation stats
     try {
-      // Dynamic import to avoid circular dependencies if any, though standard import is likely fine. 
-      // Using standard import as per plan.
       const { postComment } = await import('@/lib/gamification');
       await postComment(user.id);
     } catch (error) {
       console.error('Error updating gamification stats:', error);
-      // Continue execution - failure to award XP should not fail the comment post
     }
 
     return NextResponse.json(

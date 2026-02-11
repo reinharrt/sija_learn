@@ -1,8 +1,4 @@
-// ============================================
 // src/app/api/admin/init-view-tracking/route.ts
-// Initialize View Tracking via API (Admin Only)
-// ============================================
-// Access: GET /api/admin/init-view-tracking
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -11,9 +7,8 @@ import { UserRole } from '@/types';
 
 export async function GET(request: NextRequest) {
   try {
-    // Check admin permission
     const user = getUserFromRequest(request);
-    
+
     if (!user || !hasPermission(user.role, UserRole.ADMIN)) {
       return NextResponse.json(
         { error: 'Unauthorized: Admin only' },
@@ -22,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('🚀 Initializing view tracking indexes...');
-    
+
     await createViewIndexes();
 
     return NextResponse.json({
@@ -40,7 +35,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Failed to initialize view tracking:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to create indexes',
         details: error instanceof Error ? error.message : 'Unknown error'
       },

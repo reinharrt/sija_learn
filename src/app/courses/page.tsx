@@ -1,7 +1,4 @@
-// ============================================
-// src/app/courses/page.tsx
-// Courses List Page - Neobrutalist Design
-// ============================================
+
 
 'use client';
 
@@ -80,7 +77,7 @@ function CoursesContent() {
     }
   };
 
-  // Bangun items untuk TagFilter dari data tags yang didapat dari API
+
   const tagFilterItems: FilterItem[] = [
     { value: null, label: 'All Courses' },
     ...allTags.map((tag) => ({
@@ -96,14 +93,11 @@ function CoursesContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <PageHeader
         title="Curriculum"
         subtitle="Jelajahi course pembelajaran terstruktur. Industry-standard modules designed to build real-world engineering skills."
         icon={BookOpen}
       />
-
-      {/* Tags Filter */}
       <TagFilter
         title="Filter by Tags"
         items={tagFilterItems}
@@ -112,8 +106,6 @@ function CoursesContent() {
         loading={tagsLoading}
         emptyMessage="Belum ada tags tersedia. Tags akan muncul setelah course dengan tags dibuat."
       />
-
-      {/* Content */}
       {loading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sija-primary border-t-transparent"></div>
@@ -145,14 +137,11 @@ function CoursesContent() {
         </div>
       ) : (
         <>
-          {/* Courses Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {courses.map((course) => (
               <CourseCard key={course._id?.toString()} course={course as any} />
             ))}
           </div>
-
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4">
               <button

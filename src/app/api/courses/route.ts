@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/courses/route.ts
-// Courses API - List and create courses
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -31,13 +28,11 @@ export async function GET(request: NextRequest) {
 
     let { courses, total } = await getCourses(filters, skip, limit);
 
-    // Filter by tag if provided
     if (tag) {
       courses = courses.filter(course => course.tags?.includes(tag));
       total = courses.length;
     }
 
-    // Populate creator information
     const coursesWithCreators = await Promise.all(
       courses.map(async (course) => {
         if (course.creator) {

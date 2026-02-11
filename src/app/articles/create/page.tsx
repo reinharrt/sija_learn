@@ -1,7 +1,4 @@
-// ============================================
-// src/app/articles/create/page.tsx
-// Article Create Page - FULL LUCIDE ICONS (No Emojis)
-// ============================================
+
 
 'use client';
 
@@ -51,12 +48,12 @@ export default function CreateArticlePage() {
     }
   }, [user, authLoading, router]);
 
-  // Debug: Log when formData changes
+
   useEffect(() => {
     console.log('📝 FormData changed:', formData);
   }, [formData]);
 
-  // Debug: Log when blocks change
+
   useEffect(() => {
     console.log('🧱 Blocks changed:', blocks.length, 'blocks');
   }, [blocks]);
@@ -114,16 +111,20 @@ export default function CreateArticlePage() {
       const response = await fetch('/api/articles', {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          banner: formData.banner,
-          category: formData.category,
-          type: formData.type,
-          tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-          blocks,
-          published: formData.published,
-        }),
+        body: JSON.stringify((() => {
+          const payload = {
+            title: formData.title,
+            description: formData.description,
+            banner: formData.banner,
+            category: formData.category,
+            type: formData.type,
+            tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
+            blocks,
+            published: formData.published,
+          };
+          console.log('📦 Sending payload:', payload);
+          return payload;
+        })()),
       });
 
       const data = await response.json();
@@ -155,13 +156,11 @@ export default function CreateArticlePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <div className="mb-8 pb-6 border-b-2 border-sija-border">
         <h1 className="text-4xl font-black text-sija-text mb-2 uppercase">Buat Artikel Baru</h1>
         <p className="text-sija-text/60 font-medium">Tulis dan bagikan pengetahuan Anda</p>
       </div>
 
-      {/* Error Alert */}
       {error && (
         <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-600 dark:border-red-500 px-4 py-3 mb-6 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]">
           <div className="flex items-start gap-3">
@@ -172,7 +171,6 @@ export default function CreateArticlePage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Banner Upload */}
         <div className="bg-sija-surface p-6 border-2 border-sija-border shadow-hard transition-colors duration-300">
           <h2 className="text-xl font-black text-sija-text mb-4 flex items-center gap-2 uppercase">
             <Image className="w-6 h-6" />
@@ -187,7 +185,6 @@ export default function CreateArticlePage() {
           />
         </div>
 
-        {/* Basic Info */}
         <div className="bg-sija-surface p-6 border-2 border-sija-border shadow-hard transition-colors duration-300">
           <h2 className="text-xl font-black text-sija-text mb-4 flex items-center gap-2 uppercase">
             <FileText className="w-6 h-6" />
@@ -220,13 +217,11 @@ export default function CreateArticlePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Category Selector */}
               <CategorySelector
                 selectedCategory={formData.category}
                 onChange={handleCategoryChange}
               />
 
-              {/* Article Type */}
               <div>
                 <label className="block text-sm font-bold text-sija-text mb-2">
                   Tipe Artikel <span className="text-red-600 dark:text-red-400">*</span>
@@ -307,7 +302,6 @@ export default function CreateArticlePage() {
           </div>
         </div>
 
-        {/* Content */}
         <div className="bg-sija-surface p-6 border-2 border-sija-border shadow-hard transition-colors duration-300">
           <h2 className="text-xl font-black text-sija-text mb-4 flex items-center gap-2 uppercase">
             <FileText className="w-6 h-6" />
@@ -316,7 +310,6 @@ export default function CreateArticlePage() {
           <BlockEditor blocks={blocks} onChange={handleBlocksChange} />
         </div>
 
-        {/* Submit Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             type="submit"

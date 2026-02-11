@@ -1,8 +1,4 @@
-// ============================================
-// src/app/my-courses/page.tsx
-// My Courses Page - User's enrolled courses dashboard
-// FIXED VERSION - Better error handling
-// ============================================
+
 
 'use client';
 
@@ -14,11 +10,11 @@ import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
 import { Course } from '@/types';
 import { formatDate } from '@/lib/utils';
 import ConfirmModal from '@/components/common/ConfirmModal';
-import { 
-  BookOpen, 
-  Calendar, 
-  TrendingUp, 
-  Trophy, 
+import {
+  BookOpen,
+  Calendar,
+  TrendingUp,
+  Trophy,
   ExternalLink,
   LogOut,
   Search,
@@ -75,8 +71,7 @@ export default function MyCoursesPage() {
         headers: getAuthHeaders(),
       });
       const data = await response.json();
-      
-      // Load course details for each enrollment
+
       const enrollmentsWithCourses = await Promise.all(
         (data.enrollments || []).map(async (enrollment: any) => {
           try {
@@ -147,20 +142,17 @@ export default function MyCoursesPage() {
   };
 
   const calculateProgress = (enrollment: EnrollmentWithCourse) => {
-    // ✅ DEFENSIVE: Check all possible undefined/null cases
     if (!enrollment) return 0;
     if (!enrollment.course) return 0;
     if (!enrollment.course.articles) return 0;
     if (!Array.isArray(enrollment.course.articles)) return 0;
     if (enrollment.course.articles.length === 0) return 0;
-    
+
     const total = enrollment.course.articles.length;
-    
-    // ✅ DEFENSIVE: Check progress object exists
     if (!enrollment.progress) return 0;
     if (!enrollment.progress.completedArticles) return 0;
     if (!Array.isArray(enrollment.progress.completedArticles)) return 0;
-    
+
     const completed = enrollment.progress.completedArticles.length;
     return Math.round((completed / total) * 100);
   };
@@ -182,12 +174,11 @@ export default function MyCoursesPage() {
     const progress = calculateProgress(e);
     return progress > 0 && progress < 100;
   }).length;
-  
+
   const completedCount = enrollments.filter(e => calculateProgress(e) === 100).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header - Neobrutalist */}
       <div className="mb-8 bg-sija-surface border-4 border-sija-primary shadow-hard p-8">
         <div className="flex items-center gap-4 mb-3">
           <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center shadow-hard-sm">
@@ -203,10 +194,7 @@ export default function MyCoursesPage() {
           </div>
         </div>
       </div>
-
-      {/* Stats Grid - Neobrutalist */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Total Courses */}
         <div className="bg-sija-light border-4 border-sija-primary shadow-hard p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-sija-primary border-2 border-sija-primary flex items-center justify-center shadow-hard-sm">
@@ -218,8 +206,6 @@ export default function MyCoursesPage() {
             Total Courses
           </div>
         </div>
-
-        {/* In Progress */}
         <div className="bg-blue-100 border-4 border-blue-500 shadow-hard p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-blue-500 border-2 border-blue-700 flex items-center justify-center shadow-hard-sm">
@@ -231,8 +217,6 @@ export default function MyCoursesPage() {
             In Progress
           </div>
         </div>
-
-        {/* Completed */}
         <div className="bg-green-100 border-4 border-green-500 shadow-hard p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-green-500 border-2 border-green-700 flex items-center justify-center shadow-hard-sm">
@@ -245,8 +229,6 @@ export default function MyCoursesPage() {
           </div>
         </div>
       </div>
-
-      {/* Courses List */}
       {enrollments.length === 0 ? (
         <div className="bg-sija-surface border-4 border-sija-primary shadow-hard p-12 text-center">
           <div className="w-24 h-24 bg-sija-light border-4 border-sija-primary mx-auto mb-6 flex items-center justify-center shadow-hard-sm">
@@ -277,21 +259,20 @@ export default function MyCoursesPage() {
             const isInProgress = progress > 0 && progress < 100;
 
             return (
-              <div 
-                key={enrollment._id} 
-                className={`bg-sija-surface border-4 shadow-hard overflow-hidden transition-all hover:shadow-hard-lg ${
-                  isCompleted 
-                    ? 'border-green-500' 
-                    : isInProgress 
-                    ? 'border-blue-500' 
-                    : 'border-sija-primary'
-                }`}
+              <div
+                key={enrollment._id}
+                className={`bg-sija-surface border-4 shadow-hard overflow-hidden transition-all hover:shadow-hard-lg ${isCompleted
+                    ? 'border-green-500'
+                    : isInProgress
+                      ? 'border-blue-500'
+                      : 'border-sija-primary'
+                  }`}
               >
                 {/* Thumbnail */}
                 {course.thumbnail && (
                   <div className="relative w-full h-48 border-b-4 border-current bg-sija-light overflow-hidden">
-                    <Image 
-                      src={course.thumbnail} 
+                    <Image
+                      src={course.thumbnail}
                       alt={course.title}
                       fill
                       className="object-cover"
@@ -315,7 +296,7 @@ export default function MyCoursesPage() {
                     )}
                   </div>
                 )}
-                
+
                 <div className="p-6">
                   <Link
                     href={`/courses/${course.slug}`}
@@ -323,7 +304,7 @@ export default function MyCoursesPage() {
                   >
                     {course.title}
                   </Link>
-                  
+
                   <p className="text-sija-text/70 text-sm font-medium mb-4 line-clamp-2">
                     {course.description}
                   </p>
@@ -340,9 +321,8 @@ export default function MyCoursesPage() {
                     </div>
                     <div className="w-full bg-sija-light border-2 border-sija-primary h-4 overflow-hidden">
                       <div
-                        className={`h-full transition-all duration-500 ${
-                          progress === 100 ? 'bg-green-500' : 'bg-blue-500'
-                        }`}
+                        className={`h-full transition-all duration-500 ${progress === 100 ? 'bg-green-500' : 'bg-blue-500'
+                          }`}
                         style={{ width: `${progress}%` }}
                       ></div>
                     </div>

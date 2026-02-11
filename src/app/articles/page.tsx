@@ -1,7 +1,4 @@
-// ============================================
-// src/app/articles/page.tsx
-// Articles List Page - Neobrutalist Design
-// ============================================
+
 
 'use client';
 
@@ -38,7 +35,7 @@ function ArticlesContent() {
 
   const search = searchParams.get('search');
 
-  // Sync initial category dari URL params
+
   useEffect(() => {
     const categoryParam = searchParams.get('category') as ArticleCategory | null;
     if (categoryParam) setSelectedCategory(categoryParam);
@@ -70,14 +67,14 @@ function ArticlesContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
+
       <PageHeader
         title="Articles"
         subtitle="Jelajahi artikel yang bisa diakses publik"
         icon={FileText}
       />
 
-      {/* Category Filter */}
+
       <TagFilter
         title="Filter by Category"
         items={CATEGORY_FILTERS}
@@ -85,7 +82,7 @@ function ArticlesContent() {
         onChange={handleCategoryChange}
       />
 
-      {/* Content */}
+
       {loading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sija-primary border-t-transparent"></div>
@@ -111,14 +108,12 @@ function ArticlesContent() {
         </div>
       ) : (
         <>
-          {/* Articles Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {articles.map((article) => (
               <ArticleCard key={article._id?.toString()} article={article} />
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4">
               <button

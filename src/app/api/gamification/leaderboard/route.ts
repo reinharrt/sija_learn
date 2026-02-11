@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/gamification/leaderboard/route.ts
-// API Route - Get leaderboard with populated user data
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
@@ -15,7 +12,6 @@ export async function GET(request: NextRequest) {
     const db = await getDatabase();
     const progressCollection = db.collection('user_progress');
 
-    // Get top users with populated user data
     const leaderboard = await progressCollection
       .aggregate([
         {

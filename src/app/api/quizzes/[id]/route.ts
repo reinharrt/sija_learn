@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/quizzes/[id]/route.ts
-// Student API - Get Quiz (without answers)
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -34,7 +31,6 @@ export async function GET(
             );
         }
 
-        // Check if user is enrolled in the course
         const enrolled = await isUserEnrolled(user.id, quiz.courseId.toString());
 
         if (!enrolled) {
@@ -44,28 +40,21 @@ export async function GET(
             );
         }
 
-        // Get quiz without answers (this call might be redundant if the above `quiz` already is sanitized,
-        // but keeping it as per original structure and diff context)
         const sanitizedQuiz = await getQuizForStudent(params.id);
 
-        // Get user's attempt history
         const attempts = await getUserQuizAttempts(user.id, params.id);
         const attemptCount = await getAttemptCount(user.id, params.id);
         const hasPassed = await hasUserPassedQuiz(user.id, params.id);
 
-        // Check if max attempts reached
         const canAttempt = !quiz.maxAttempts || attemptCount < quiz.maxAttempts;
 
-        // Get best score
         const bestScore = attempts.length > 0
             ? Math.max(...attempts.map(a => a.score))
             : null;
 
-        // Get course slug
         const course = await findCourseById(quiz.courseId.toString());
         const courseSlug = course?.slug;
 
-        // Check prerequisites
         let isLocked = false;
         let lockedReason = null;
         const missingPrerequisites: { id: string; title: string }[] = [];
@@ -87,7 +76,6 @@ export async function GET(
 
             if (isLocked) {
                 lockedReason = 'Prerequisites not met';
-                // Hide questions if locked
                 if (sanitizedQuiz) {
                     sanitizedQuiz.questions = [];
                 }

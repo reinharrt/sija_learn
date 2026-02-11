@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getAuthHeaders } from '@/contexts/AuthContext';
 import { Upload, Image as ImageIcon, Trash2, RefreshCw, Loader2 } from 'lucide-react';
 
@@ -17,8 +17,8 @@ interface ImageUploadProps {
   aspectRatio?: string;
 }
 
-export default function ImageUpload({ 
-  onUploadSuccess, 
+export default function ImageUpload({
+  onUploadSuccess,
   currentImage,
   type = 'content',
   label = 'Upload Gambar',
@@ -28,6 +28,14 @@ export default function ImageUpload({
   const [preview, setPreview] = useState(currentImage || '');
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync preview with currentImage prop
+  useEffect(() => {
+    if (currentImage !== preview) {
+      setPreview(currentImage || '');
+    }
+  }, [currentImage]);
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,13 +112,13 @@ export default function ImageUpload({
 
       {preview ? (
         <div className="space-y-3">
-          <div 
+          <div
             className="relative overflow-hidden border-2 border-sija-border shadow-hard transition-colors duration-300"
             style={{ aspectRatio }}
           >
-            <img 
-              src={preview} 
-              alt="Preview" 
+            <img
+              src={preview}
+              alt="Preview"
               className="w-full h-full object-cover"
             />
           </div>
@@ -134,11 +142,10 @@ export default function ImageUpload({
           </div>
         </div>
       ) : (
-        <div 
+        <div
           onClick={() => !uploading && fileInputRef.current?.click()}
-          className={`border-2 border-dashed border-sija-border p-8 text-center transition-all duration-300 ${
-            uploading ? 'cursor-wait bg-sija-light dark:bg-sija-dark/30' : 'cursor-pointer hover:border-sija-primary hover:bg-blue-50 dark:hover:bg-blue-950/30'
-          }`}
+          className={`border-2 border-dashed border-sija-border p-8 text-center transition-all duration-300 ${uploading ? 'cursor-wait bg-sija-light dark:bg-sija-dark/30' : 'cursor-pointer hover:border-sija-primary hover:bg-blue-50 dark:hover:bg-blue-950/30'
+            }`}
           style={{ aspectRatio }}
         >
           <div className="flex flex-col items-center justify-center h-full">

@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/articles/page.tsx
-// Admin Articles - Manage articles with Reusable Components
-// ============================================
 
 'use client';
 
@@ -16,12 +13,12 @@ import PageHeader from '@/components/common/PageHeader';
 import DataTable, { Column } from '@/components/common/DataTable';
 import Button from '@/components/common/Button';
 import Breadcrumb from '@/components/common/Breadcrumb';
-import { 
-  FileText, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
+import {
+  FileText,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
   Tag,
   Calendar,
   CheckCircle,
@@ -147,7 +144,6 @@ export default function AdminArticlesPage() {
     );
   }
 
-  // Define table columns
   const columns: Column<Article>[] = [
     {
       key: 'thumbnail',
@@ -200,11 +196,10 @@ export default function AdminArticlesPage() {
       render: (article) => (
         <button
           onClick={() => togglePublish(article._id!.toString(), article.published)}
-          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${
-            article.published
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${article.published
               ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
               : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
-          }`}
+            }`}
         >
           {article.published ? (
             <>
@@ -264,7 +259,6 @@ export default function AdminArticlesPage() {
     },
   ];
 
-  // Mobile card render function
   const renderMobileCard = (article: Article, index: number) => (
     <div className="p-4 space-y-3">
       <Link
@@ -281,11 +275,10 @@ export default function AdminArticlesPage() {
         </span>
         <button
           onClick={() => togglePublish(article._id!.toString(), article.published)}
-          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${
-            article.published
+          className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${article.published
               ? 'bg-green-100 text-green-800 border-green-800'
               : 'bg-gray-100 text-gray-800 border-gray-800'
-          }`}
+            }`}
         >
           {article.published ? (
             <>

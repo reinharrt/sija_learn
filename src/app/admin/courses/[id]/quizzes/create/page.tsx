@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/courses/[id]/quizzes/create/page.tsx
-// Admin Page - Create Quiz for Course
-// ============================================
 
 'use client';
 
@@ -18,7 +15,6 @@ export default function CreateQuizPage() {
     const { user, loading } = useAuth();
     const courseId = params.id as string;
 
-    // Get course slug from query params for back navigation
     const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const courseSlug = searchParams.get('slug');
 

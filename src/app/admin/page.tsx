@@ -1,7 +1,4 @@
-// ============================================
 // src/app/admin/page.tsx
-// Admin Dashboard - Main admin interface with Analytics
-// ============================================
 
 'use client';
 
@@ -11,11 +8,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import PageHeader from '@/components/common/PageHeader';
-import { 
-  Users, 
-  FileText, 
-  BookOpen, 
-  Eye, 
+import {
+  Users,
+  FileText,
+  BookOpen,
+  Eye,
   BarChart3,
   Shield,
   Tags,
@@ -52,16 +49,15 @@ export default function AdminPage() {
     setRefreshing(true);
     try {
       const [usersRes, articlesRes, coursesRes] = await Promise.all([
-        fetch('/api/users', { 
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } 
+        fetch('/api/users', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         }).then(r => r.json()),
         fetch('/api/articles').then(r => r.json()),
         fetch('/api/courses').then(r => r.json()),
       ]);
 
-      // Calculate total views from all articles
       const totalViews = articlesRes.articles?.reduce(
-        (sum: number, article: any) => sum + (article.views || 0), 
+        (sum: number, article: any) => sum + (article.views || 0),
         0
       ) || 0;
 
@@ -133,14 +129,12 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: 'Admin Dashboard', icon: <Shield size={16} strokeWidth={2.5} /> },
         ]}
       />
 
-      {/* Page Header */}
       <PageHeader
         title="Admin Dashboard"
         subtitle="Control panel untuk manajemen platform"
@@ -152,31 +146,28 @@ export default function AdminPage() {
             disabled={refreshing}
             className="inline-flex items-center gap-2 px-4 py-2 font-display font-bold text-xs bg-sija-surface text-sija-primary border-2 border-sija-primary shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <RefreshCw 
-              size={16} 
-              strokeWidth={2.5} 
-              className={refreshing ? 'animate-spin' : ''} 
+            <RefreshCw
+              size={16}
+              strokeWidth={2.5}
+              className={refreshing ? 'animate-spin' : ''}
             />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </button>
         }
       />
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statCards.map((stat) => (
           <StatsCard key={stat.label} {...stat} />
         ))}
       </div>
 
-      {/* Navigation Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {navigationCards.map((card) => (
           <NavigationCard key={card.href} {...card} />
         ))}
       </div>
 
-      {/* Quick Actions */}
       <QuickActions onRefresh={loadStats} refreshing={refreshing} />
     </div>
   );

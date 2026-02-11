@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/courses/[id]/quiz-status/route.ts
-// API Route - Get quiz completion status for a course
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -24,10 +21,8 @@ export async function GET(
 
         const { id: courseId } = await params;
 
-        // Get all quizzes for this course
         const quizzes = await findQuizzesByCourse(courseId);
 
-        // Get user's best attempt for each quiz
         const quizStatusPromises = quizzes.map(async (quiz) => {
             const bestAttempt = await getBestAttempt(user.id, quiz._id!.toString());
 
@@ -47,10 +42,8 @@ export async function GET(
 
         const quizStatuses = await Promise.all(quizStatusPromises);
 
-        // Filter only published quizzes
         const publishedQuizzes = quizStatuses.filter(q => q.published);
 
-        // Calculate overall progress
         const totalQuizzes = publishedQuizzes.length;
         const passedQuizzes = publishedQuizzes.filter(q => q.attempt?.passed).length;
         const percentage = totalQuizzes > 0 ? Math.round((passedQuizzes / totalQuizzes) * 100) : 100;

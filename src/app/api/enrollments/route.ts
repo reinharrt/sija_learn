@@ -121,7 +121,6 @@ export async function POST(request: NextRequest) {
     }
     console.log('Course found:', course.title);
 
-    // 6. Check if user is creator
     const creatorId = course.creator?.toString();
     const userId = user.id.toString();
 

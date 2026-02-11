@@ -1,8 +1,4 @@
-// ============================================
-// src/app/articles/[slug]/page.tsx  
-// Article Detail Page - WITH NEOBRUTALIST STYLE
-// FULL LUCIDE ICONS - NO EMOJI VERSION
-// ============================================
+
 
 'use client';
 
@@ -50,7 +46,7 @@ function ArticleDetailContent() {
   const [submitting, setSubmitting] = useState(false);
   const [showAccessLoader, setShowAccessLoader] = useState(false);
 
-  // Check if opened from course
+
   const isInCourseMode = !!courseSlugParam;
 
   useEffect(() => {
@@ -63,7 +59,7 @@ function ArticleDetailContent() {
     loadArticle();
   }, [slug, user, authLoading]);
 
-  // Load course context if in course mode
+
   useEffect(() => {
     if (isInCourseMode && courseSlugParam && user && pageState.article) {
       loadCourseContext(courseSlugParam);
@@ -91,7 +87,7 @@ function ArticleDetailContent() {
         markAsViewed(viewedKey);
       }
 
-      // Check access for COURSE_ONLY
+
       if (data.type === ArticleType.COURSE_ONLY) {
         console.log('📌 COURSE_ONLY - checking access...');
 
@@ -116,7 +112,6 @@ function ArticleDetailContent() {
         accessDenied: false,
       });
 
-      // Load comments (only if not in course mode)
       if (data._id && !isInCourseMode) {
         const commentsRes = await fetch(`/api/comments?articleId=${data._id}`);
         const commentsData = await commentsRes.json();
@@ -132,19 +127,16 @@ function ArticleDetailContent() {
 
   const loadCourseContext = async (courseSlug: string) => {
     try {
-      // Load course details
       const courseRes = await fetch(`/api/courses/${courseSlug}`);
       if (!courseRes.ok) return;
 
       const course = await courseRes.json();
 
-      // Load all articles in course
       const articlePromises = (course.articles || []).map((articleId: any) =>
         fetch(`/api/articles/${articleId}`).then((r) => r.json())
       );
       const articles = await Promise.all(articlePromises);
 
-      // Load enrollment progress
       const progressRes = await fetch(`/api/enrollments/${course._id}/progress`, {
         headers: getAuthHeaders(),
       });
@@ -162,13 +154,11 @@ function ArticleDetailContent() {
         completedArticleIds: completedIds,
       });
 
-      // Check if current article is completed
       if (pageState.article) {
         const isCompleted = completedIds.some(
           (id: string) => id.toString() === pageState.article!._id?.toString()
         );
 
-        // If not completed, show access loader to track progress
         if (!isCompleted) {
           setShowAccessLoader(true);
         }
@@ -180,7 +170,6 @@ function ArticleDetailContent() {
 
   const handleAccessComplete = () => {
     setShowAccessLoader(false);
-    // Reload context to update completed status in UI
     if (courseSlugParam) {
       loadCourseContext(courseSlugParam);
     }
@@ -326,7 +315,6 @@ function ArticleDetailContent() {
   };
 
   const handleArticleComplete = () => {
-    // Reload course context to update completion status
     if (courseSlugParam) {
       loadCourseContext(courseSlugParam);
     }
@@ -384,7 +372,6 @@ function ArticleDetailContent() {
             </p>
           </div>
 
-          {/* Cara Mengakses */}
           <div className="bg-sija-surface border-4 border-sija-border shadow-hard p-6 mb-8 transition-colors duration-300">
             <h3 className="font-display font-black text-sija-text mb-4 uppercase text-lg">Cara Mengakses:</h3>
             <ol className="space-y-3">
@@ -445,7 +432,7 @@ function ArticleDetailContent() {
     );
   }
 
-  // COURSE MODE: Show CourseArticleReader
+
   if (isInCourseMode && courseContext) {
     if (showAccessLoader && article) {
       return (
@@ -471,7 +458,7 @@ function ArticleDetailContent() {
     );
   }
 
-  // STANDALONE MODE: Show normal article with comments
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-4xl mx-auto">

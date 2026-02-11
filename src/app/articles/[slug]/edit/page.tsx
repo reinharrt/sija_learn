@@ -1,7 +1,4 @@
-// ============================================
-// src/app/articles/[slug]/edit/page.tsx
-// Article Edit Page - FULL LUCIDE ICONS + Neobrutalist
-// ============================================
+
 
 'use client';
 
@@ -50,7 +47,7 @@ export default function EditArticlePage() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load article data
+
   useEffect(() => {
     if (slug) {
       fetch(`/api/articles/${slug}`)
@@ -77,7 +74,7 @@ export default function EditArticlePage() {
     }
   }, [slug]);
 
-  // Check permission
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
@@ -93,12 +90,12 @@ export default function EditArticlePage() {
     }
   }, [user, authLoading, article, router]);
 
-  // Debug: Log when formData changes
+
   useEffect(() => {
     console.log('📝 [EDIT] FormData changed:', formData);
   }, [formData]);
 
-  // Debug: Log when blocks change
+
   useEffect(() => {
     console.log('🧱 [EDIT] Blocks changed:', blocks.length, 'blocks');
   }, [blocks]);
@@ -241,7 +238,7 @@ export default function EditArticlePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b-2 border-sija-border">
         <div>
           <h1 className="text-4xl font-black text-sija-text mb-2 uppercase">Edit Artikel</h1>
@@ -256,7 +253,6 @@ export default function EditArticlePage() {
         </button>
       </div>
 
-      {/* Error Alert */}
       {error && (
         <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-600 dark:border-red-500 px-4 py-3 mb-6 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]">
           <div className="flex items-start gap-3">
@@ -315,13 +311,11 @@ export default function EditArticlePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Category Selector */}
               <CategorySelector
                 selectedCategory={formData.category}
                 onChange={handleCategoryChange}
               />
 
-              {/* Article Type */}
               <div>
                 <label className="block text-sm font-bold text-sija-text mb-2">
                   Tipe Artikel <span className="text-red-600 dark:text-red-400">*</span>

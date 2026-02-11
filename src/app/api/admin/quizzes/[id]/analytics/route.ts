@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/admin/quizzes/[id]/analytics/route.ts
-// Admin API - Quiz Analytics
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';

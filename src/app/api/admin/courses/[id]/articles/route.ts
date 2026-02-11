@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/admin/courses/[id]/articles/route.ts
-// Admin API - Get all articles for a course
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -40,7 +37,6 @@ export async function GET(
             );
         }
 
-        // Fetch all articles for this course
         const articles = await Promise.all(
             course.articles.map(async (articleId) => {
                 const article = await findArticleById(articleId.toString());
@@ -55,7 +51,6 @@ export async function GET(
             })
         );
 
-        // Filter out null values (articles that weren't found)
         const validArticles = articles.filter(a => a !== null);
 
         return NextResponse.json({ articles: validArticles });

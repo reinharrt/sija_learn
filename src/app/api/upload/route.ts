@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/upload/route.ts
-// Upload API - Handle file uploads to Cloudinary
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -44,11 +41,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Determine folder structure
     let folder = 'sija-learn/general';
     if (entityType && entityId) {
       const entityFolder = entityType === 'post' ? 'posts' :
@@ -58,7 +53,6 @@ export async function POST(request: NextRequest) {
       folder = `sija-learn/${type}`;
     }
 
-    // Upload to Cloudinary with transformations based on type
     const transformation = type === 'banner'
       ? [
         { width: 1200, crop: 'limit' },

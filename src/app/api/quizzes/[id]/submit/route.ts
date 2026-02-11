@@ -1,7 +1,4 @@
-// ============================================
 // src/app/api/quizzes/[id]/submit/route.ts
-// Student API - Submit Quiz Attempt
-// ============================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
@@ -41,7 +38,6 @@ export async function POST(
             );
         }
 
-        // Check if user is enrolled in the course
         const enrolled = await isUserEnrolled(user.id, quiz.courseId.toString());
 
         if (!enrolled) {
@@ -51,7 +47,6 @@ export async function POST(
             );
         }
 
-        // Check attempt limit
         if (quiz.maxAttempts) {
             const attemptCount = await getAttemptCount(user.id, params.id);
             if (attemptCount >= quiz.maxAttempts) {
@@ -62,13 +57,7 @@ export async function POST(
             }
         }
 
-        // Check prerequisites
         if (quiz.prerequisiteQuizIds && quiz.prerequisiteQuizIds.length > 0) {
-            // Import check logic or repeat it
-            // Since we can't easily import the logic from the route handler, and we are in the same package (effectively),
-            // I'll reuse the model function.
-            // But I need to import hasUserPassedQuiz first. It is imported.
-
             for (const prereqId of quiz.prerequisiteQuizIds) {
                 const passed = await hasUserPassedQuiz(user.id, prereqId.toString());
                 if (!passed) {
@@ -97,7 +86,6 @@ export async function POST(
             );
         }
 
-        // Grade the quiz
         const result = await gradeQuizAttempt(
             params.id,
             user.id,
@@ -105,7 +93,6 @@ export async function POST(
             new Date(startedAt)
         );
 
-        // Award XP if passed
         if (result.passed && result.attempt.xpEarned > 0) {
             await addXP(
                 user.id,

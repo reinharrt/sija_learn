@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { ContentBlock, BlockType } from '@/types';
 import { generateUniqueId } from '@/lib/utils';
+import { parseMarkdownToBlocks, readFileAsText, validateMarkdownFile } from '@/lib/markdownParser';
 import {
   Type,
   Heading1,
@@ -19,7 +20,10 @@ import {
   ChevronDown,
   Trash2,
   Loader2,
-  Plus
+  Plus,
+  FileUp,
+  X,
+  AlertCircle
 } from 'lucide-react';
 
 interface BlockEditorProps {
@@ -27,8 +31,48 @@ interface BlockEditorProps {
   onChange: (blocks: ContentBlock[]) => void;
 }
 
+// Auto-resize textarea component
+const AutoResizeTextarea = ({
+  value,
+  onChange,
+  placeholder,
+  className,
+  minHeight = "min-h-24"
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  className?: string;
+  minHeight?: string;
+}) => {
+  return (
+    <textarea
+      value={value}
+      onChange={(e) => {
+        onChange(e);
+        // Auto-resize
+        e.target.style.height = 'auto';
+        e.target.style.height = `${e.target.scrollHeight}px`;
+      }}
+      // Auto-resize on focus and mount (via ref callback)
+      ref={(el) => {
+        if (el) {
+          el.style.height = 'auto';
+          el.style.height = `${el.scrollHeight}px`;
+        }
+      }}
+      className={`${className} ${minHeight} resize-none overflow-hidden`}
+      placeholder={placeholder}
+    />
+  );
+};
+
 export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
   const [uploadingBlockId, setUploadingBlockId] = useState<string | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importMode, setImportMode] = useState<'append' | 'replace'>('append');
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState('');
 
   const addBlock = (type: BlockType) => {
     const newBlock: ContentBlock = {
@@ -108,6 +152,49 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
     }
   };
 
+  const handleMarkdownImport = async (file: File) => {
+    setImporting(true);
+    setImportError('');
+
+    try {
+      // Validate file
+      const validation = validateMarkdownFile(file);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+
+      // Read file content
+      const content = await readFileAsText(file);
+
+      // Parse markdown to blocks
+      const newBlocks = parseMarkdownToBlocks(content);
+
+      if (newBlocks.length === 0) {
+        throw new Error('File markdown kosong atau tidak valid');
+      }
+
+      // Apply import mode
+      if (importMode === 'replace') {
+        onChange(newBlocks);
+      } else {
+        // Append: update order for new blocks
+        const updatedNewBlocks = newBlocks.map((block, index) => ({
+          ...block,
+          order: blocks.length + index,
+        }));
+        onChange([...blocks, ...updatedNewBlocks]);
+      }
+
+      // Close modal and reset
+      setShowImportModal(false);
+      setImportMode('append');
+    } catch (error: any) {
+      setImportError(error.message || 'Gagal mengimport file');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const blockTypes = [
     { type: BlockType.TEXT, label: 'Text', icon: Type },
     { type: BlockType.HEADING, label: 'Heading', icon: Heading1 },
@@ -121,10 +208,10 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
     switch (block.type) {
       case BlockType.TEXT:
         return (
-          <textarea
+          <AutoResizeTextarea
             value={block.content}
             onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary min-h-24 font-medium transition-colors duration-300"
+            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-medium transition-colors duration-300"
             placeholder="Masukkan teks..."
           />
         );
@@ -229,32 +316,35 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
               className="px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-mono transition-colors duration-300"
               placeholder="Bahasa (javascript, python, dll)..."
             />
-            <textarea
+            <AutoResizeTextarea
               value={block.content}
               onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-sija-border font-mono min-h-32 bg-gray-900 dark:bg-black text-green-400 dark:text-green-300 focus:outline-none focus:border-sija-primary transition-colors duration-300"
+              className="w-full px-3 py-2 border-2 border-sija-border font-mono bg-gray-900 dark:bg-black text-green-400 dark:text-green-300 focus:outline-none focus:border-sija-primary transition-colors duration-300"
               placeholder="Masukkan kode..."
+              minHeight="min-h-32"
             />
           </div>
         );
 
       case BlockType.QUOTE:
         return (
-          <textarea
+          <AutoResizeTextarea
             value={block.content}
             onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text border-l-4 border-l-sija-primary focus:outline-none focus:border-sija-primary min-h-20 italic font-medium transition-colors duration-300"
+            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text border-l-4 border-l-sija-primary focus:outline-none focus:border-sija-primary italic font-medium transition-colors duration-300"
             placeholder="Masukkan kutipan..."
+            minHeight="min-h-20"
           />
         );
 
       case BlockType.LIST:
         return (
-          <textarea
+          <AutoResizeTextarea
             value={block.content}
             onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary min-h-32 font-medium transition-colors duration-300"
+            className="w-full px-3 py-2 border-2 border-sija-border bg-sija-background text-sija-text focus:outline-none focus:border-sija-primary font-medium transition-colors duration-300"
             placeholder="Satu item per baris..."
+            minHeight="min-h-32"
           />
         );
 
@@ -282,6 +372,16 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
               {label}
             </button>
           ))}
+
+          {/* Import from Markdown Button */}
+          <button
+            type="button"
+            onClick={() => setShowImportModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 border-2 border-green-600 font-bold text-sm text-white hover:shadow-hard-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
+          >
+            <FileUp className="w-4 h-4" />
+            Import Markdown
+          </button>
         </div>
       </div>
 
@@ -350,6 +450,103 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
           <p className="text-sm text-sija-text/60 dark:text-sija-text/50 transition-colors duration-300">
             Klik tombol di atas untuk menambahkan block konten
           </p>
+        </div>
+      )}
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-sija-surface border-2 border-sija-border shadow-hard w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-black text-sija-text uppercase flex items-center gap-2">
+                <FileUp className="w-6 h-6" />
+                Import Markdown
+              </h3>
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="p-1 hover:bg-sija-light dark:hover:bg-sija-dark/30 transition-colors"
+                disabled={importing}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {importError && (
+              <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-600 dark:border-red-500 px-4 py-3 mb-6 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="font-bold text-sm text-red-700 dark:text-red-300">{importError}</p>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-sija-text mb-2">
+                  Metode Import
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="importMode"
+                      value="append"
+                      checked={importMode === 'append'}
+                      onChange={() => setImportMode('append')}
+                      className="w-4 h-4 text-sija-primary focus:ring-sija-primary border-gray-300"
+                    />
+                    <span className="text-sm font-medium">Tambahkan di bawah</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="importMode"
+                      value="replace"
+                      checked={importMode === 'replace'}
+                      onChange={() => setImportMode('replace')}
+                      className="w-4 h-4 text-sija-primary focus:ring-sija-primary border-gray-300"
+                    />
+                    <span className="text-sm font-medium">Ganti semua blocks</span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-sija-text mb-2">
+                  Upload File (.md)
+                </label>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-sija-border border-dashed bg-sija-light dark:bg-sija-dark/30 hover:bg-sija-background transition-colors cursor-pointer">
+                  {importing ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-8 h-8 animate-spin text-sija-primary" />
+                      <span className="text-sm font-bold text-sija-text/60">Processing...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <FileUp className="w-8 h-8 text-sija-text/40 mb-2" />
+                      <span className="text-sm font-bold text-sija-text/60">Klik untuk upload</span>
+                      <span className="text-xs text-sija-text/40 mt-1">Max 5MB</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept=".md"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleMarkdownImport(file);
+                    }}
+                    disabled={importing}
+                  />
+                </label>
+              </div>
+
+              <div className="pt-2 text-xs text-sija-text/60">
+                <p className="font-bold mb-1">Catatan:</p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>Support Heading 1-3, Text, List, Quote, Code Block, Image.</li>
+                  <li>Gambar harus berupa URL public atau path yang valid.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
