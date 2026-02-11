@@ -1,7 +1,7 @@
 // ============================================
-// UPDATED: src/app/api/articles/[id]/route.ts
-// Article Detail API WITH TAG SYSTEM INTEGRATION
-// ============================================
+
+
+
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -12,7 +12,7 @@ import { deleteCommentsByArticle } from '@/models/Comment';
 import { shouldCountView, recordView, incrementArticleViews } from '@/lib/view-tracker';
 import { UserRole } from '@/types';
 
-// Helper to get client IP
+
 function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIP = request.headers.get('x-real-ip');
@@ -22,7 +22,7 @@ function getClientIP(request: NextRequest): string {
   return 'unknown';
 }
 
-// GET - Get article by ID or slug WITH TAGS
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -31,7 +31,7 @@ export async function GET(
     const { id } = await params;
     let article;
 
-    // Auto-detect: ID atau slug
+
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       article = await findArticleById(id);
     } else {
@@ -45,11 +45,11 @@ export async function GET(
       );
     }
 
-    // ✨ NEW: Get tags from tag system
+
     const tags = await getTagsForEntity('article', article._id!.toString());
     article.tags = tags.map(t => t.name);
 
-    // View tracking
+
     const shouldTrackView = request.nextUrl.searchParams.get('view') === 'true';
 
     if (shouldTrackView && article._id) {
@@ -83,7 +83,7 @@ export async function GET(
   }
 }
 
-// PUT - Update article WITH TAG SYSTEM
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -113,7 +113,7 @@ export async function PUT(
       );
     }
 
-    // Check permission
+
     const isAuthor = article.author.toString() === user.id;
     const isAdmin = hasPermission(user.role, UserRole.ADMIN);
 
@@ -126,19 +126,19 @@ export async function PUT(
 
     const updates = await request.json();
 
-    // Generate new slug if title changed
+
     if (updates.title) {
       updates.slug = generateSlug(updates.title);
     }
 
-    // ✨ NEW: Handle tags separately
-    const newTags = updates.tags;
-    delete updates.tags; // Remove from updates object
 
-    // Check if article is being published (status changing from false to true)
+    const newTags = updates.tags;
+    delete updates.tags;
+
+
     const isBeingPublished = !article.published && updates.published === true;
 
-    // Update article
+
     const success = await updateArticle(article._id!.toString(), updates);
 
     if (!success) {
@@ -148,12 +148,12 @@ export async function PUT(
       );
     }
 
-    // ✨ NEW: Update tags via tag system
+
     if (newTags && Array.isArray(newTags)) {
       await updateEntityTags('article', article._id!.toString(), newTags, user.id);
     }
 
-    // Send notification emails if article was just published
+
     console.log('🔍 DEBUG: Checking if article is being published...');
     console.log('🔍 DEBUG: article.published =', article.published);
     console.log('🔍 DEBUG: updates.published =', updates.published);
@@ -162,7 +162,7 @@ export async function PUT(
     if (isBeingPublished) {
       console.log('✅ Article is being published! Starting email notification process...');
 
-      // Import email functions
+
       const { getAllActiveSubscribers } = await import('@/models/Subscriber');
       const { sendNewArticleEmail } = await import('@/lib/email');
 
@@ -175,7 +175,7 @@ export async function PUT(
         } else {
           console.log('📤 Sending emails to all subscribers...');
 
-          // Send emails to all subscribers with proper async handling
+
           await Promise.all(
             subscribers.map(async (subscriber, index) => {
               try {
@@ -198,7 +198,7 @@ export async function PUT(
         }
       } catch (notificationError) {
         console.error('❌ Error sending article notifications:', notificationError);
-        // Don't fail the update if notifications fail
+
       }
     } else {
       console.log('ℹ️ Article update does not trigger email notifications (not a new publication)');
@@ -217,7 +217,7 @@ export async function PUT(
   }
 }
 
-// DELETE - Delete article (unchanged)
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -257,12 +257,12 @@ export async function DELETE(
       );
     }
 
-    // Delete comments and article
+
     const articleId = article._id!.toString();
     await deleteCommentsByArticle(articleId);
 
-    // Note: Tag usage will be automatically cleaned up
-    // because we're deleting the article
+
+
     const success = await deleteArticle(articleId);
 
     if (!success) {

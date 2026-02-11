@@ -1,7 +1,7 @@
 // ============================================
-// UPDATED: src/app/api/articles/route.ts
-// Articles API WITH TAG SYSTEM INTEGRATION
-// ============================================
+
+
+
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ FIX: Include 'type' and 'banner' from request
+
     const { title, description, banner, category, type, blocks, tags, published } = await request.json();
 
     if (!title || !description || !category || !blocks) {
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     const slug = generateSlug(title);
 
-    // ✅ FIX: Create article with all required fields including 'type' and 'banner'
+
     const articleId = await createArticle({
       title,
       slug,
@@ -91,20 +91,20 @@ export async function POST(request: NextRequest) {
       type,
       blocks,
       author: new ObjectId(user.id),
-      tags: [], // Empty for now
+      tags: [],
       published: published || false,
     });
 
-    // ✨ NEW: Use tag system to add tags
+
     if (tags && Array.isArray(tags) && tags.length > 0) {
       await updateEntityTags('article', articleId.toString(), tags, user.id);
     }
 
     return NextResponse.json(
-      { 
+      {
         message: 'Artikel berhasil dibuat',
         articleId: articleId.toString(),
-        slug 
+        slug
       },
       { status: 201 }
     );

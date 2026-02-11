@@ -1,7 +1,7 @@
 // ============================================
-// src/app/api/admin/quizzes/[id]/route.ts
-// Admin API - Get/Update/Delete Quiz
-// ============================================
+
+
+
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -9,7 +9,7 @@ import { findQuizById, updateQuiz, deleteQuiz } from '@/models/Quiz';
 import { UserRole, QuizQuestionType } from '@/types';
 import { ObjectId } from 'mongodb';
 
-// GET - Fetch quiz details (admin view with answers)
+
 export async function GET(
     request: NextRequest,
     props: { params: Promise<{ id: string }> }
@@ -52,7 +52,7 @@ export async function GET(
     }
 }
 
-// PUT - Update quiz
+
 export async function PUT(
     request: NextRequest,
     props: { params: Promise<{ id: string }> }
@@ -97,7 +97,7 @@ export async function PUT(
             published
         } = body;
 
-        // Validation
+
         if (questions && questions.length > 0) {
             for (const question of questions) {
                 if (!question.question || !question.type || !question.options || question.options.length === 0) {
@@ -141,7 +141,7 @@ export async function PUT(
             );
         }
 
-        // Update quiz
+
         const updates: any = {};
         if (title !== undefined) updates.title = title;
         if (description !== undefined) updates.description = description;
@@ -175,7 +175,7 @@ export async function PUT(
     }
 }
 
-// DELETE - Delete quiz
+
 export async function DELETE(
     request: NextRequest,
     props: { params: Promise<{ id: string }> }
@@ -207,11 +207,11 @@ export async function DELETE(
             );
         }
 
-        // Note: Quiz attempts will remain in database for record keeping
-        // If you want to delete them, implement deleteAttemptsByQuiz in QuizAttempt model
-        // await deleteAttemptsByQuiz(params.id); // Removed as per instruction
 
-        // Delete quiz
+
+
+
+
         const success = await deleteQuiz(params.id);
 
         if (!success) {

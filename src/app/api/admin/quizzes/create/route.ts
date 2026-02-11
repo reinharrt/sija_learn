@@ -1,7 +1,7 @@
 // ============================================
-// src/app/api/admin/quizzes/create/route.ts
-// Admin API - Create Quiz
-// ============================================
+
+
+
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             published
         } = body;
 
-        // Validation
+
         if (!title || !courseId || !type || !questions || questions.length === 0) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Validate questions
+
         for (const question of questions) {
             if (!question.question || !question.type || !question.options || question.options.length === 0) {
                 return NextResponse.json(
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            // Check if at least one option is marked as correct
+
             const hasCorrectAnswer = question.options.some((opt: any) => opt.isCorrect);
             if (!hasCorrectAnswer) {
                 return NextResponse.json(
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            // For MULTIPLE_CHOICE, ensure only one correct answer
+
             if (question.type === QuizQuestionType.MULTIPLE_CHOICE) {
                 const correctCount = question.options.filter((opt: any) => opt.isCorrect).length;
                 if (correctCount !== 1) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
                 }
             }
 
-            // For TRUE_FALSE, ensure exactly 2 options
+
             if (question.type === QuizQuestionType.TRUE_FALSE && question.options.length !== 2) {
                 return NextResponse.json(
                     { error: `True/False question "${question.question}" must have exactly 2 options` },
@@ -96,21 +96,21 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Create quiz
+
         const quizData = {
             title,
-            description: description || '', // Keep default for description if not provided
+            description: description || '',
             courseId: new ObjectId(courseId),
             articleId: articleId ? new ObjectId(articleId) : undefined,
-            type: type as QuizType, // Cast type
+            type: type as QuizType,
             questions,
-            passingScore: passingScore || 70, // Keep default for passingScore if not provided
+            passingScore: passingScore || 70,
             timeLimit,
             maxAttempts,
-            xpReward: xpReward || 100, // Keep default for xpReward if not provided
+            xpReward: xpReward || 100,
             prerequisiteQuizIds: prerequisiteQuizIds ? prerequisiteQuizIds.map((id: string) => new ObjectId(id)) : [],
-            createdBy: new ObjectId(user.id), // Changed from session.user.id to user.id
-            published: published || false // Keep default for published if not provided
+            createdBy: new ObjectId(user.id),
+            published: published || false
         };
         const quizId = await createQuiz(quizData);
 
