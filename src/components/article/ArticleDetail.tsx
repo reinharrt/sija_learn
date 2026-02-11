@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Article, BlockType } from '@/types';
 import { formatDate } from '@/lib/utils';
+import { getImageUrl } from '@/lib/image-utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
 import { Eye, Tag, Calendar, Edit } from 'lucide-react';
@@ -62,9 +63,7 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
         return (
           <div className="my-6 border-4 border-sija-border shadow-hard overflow-hidden transition-colors duration-300">
             <img
-              src={block.content.startsWith('/uploads')
-                ? `/api/serve-upload${block.content.replace('/uploads', '')}`
-                : block.content}
+              src={getImageUrl(block.content)}
               alt={block.metadata?.alt || 'Image'}
               className="w-full h-full object-cover"
             />
@@ -122,21 +121,11 @@ export default function ArticleDetail({ article }: ArticleDetailProps) {
       {article.banner && (
         <div className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 border-4 border-sija-border shadow-hard overflow-hidden transition-colors duration-300">
           <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
-            {article.banner.startsWith('/uploads') ? (
-              <img
-                src={`/api/serve-upload${article.banner.replace('/uploads', '')}`}
-                alt={article.title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <Image
-                src={article.banner}
-                alt={article.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            )}
+            <img
+              src={getImageUrl(article.banner)}
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       )}

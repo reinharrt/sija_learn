@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Book, Clock, Users, Trophy, CheckCircle2 } from 'lucide-react';
 import XPRewardBadge from '../gamification/XPRewardBadge';
 import { calculateCourseXP, getDifficultyDisplay, getDifficultyColor, estimateCourseTime } from '@/lib/xp-calculator';
+import { getImageUrl } from '@/lib/image-utils';
 
 interface Course {
   _id: string;
@@ -47,9 +48,7 @@ export default function EnhancedCourseCard({
         {course.thumbnail ? (
           <div className="relative h-48 border-b-2 border-sija-primary overflow-hidden">
             <img
-              src={course.thumbnail.startsWith('/uploads')
-                ? `/api/serve-upload${course.thumbnail.replace('/uploads', '')}`
-                : course.thumbnail}
+              src={getImageUrl(course.thumbnail)}
               alt={course.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

@@ -7,6 +7,7 @@
 
 import Link from 'next/link';
 import { Article } from '@/types';
+import { getImageUrl } from '@/lib/image-utils';
 import { Calendar, ArrowRight, FileText, Clock } from 'lucide-react';
 
 interface ArticleCardProps {
@@ -28,7 +29,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         <div className="relative h-48 border-b-2 border-sija-primary overflow-hidden bg-sija-light">
           {article.banner ? (
             <img
-              src={article.banner}
+              src={getImageUrl(article.banner)}
               alt={article.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

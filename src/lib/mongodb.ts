@@ -5,7 +5,6 @@
 
 import { MongoClient, Db } from 'mongodb';
 
-// Skip validation during build time (Next.js pre-rendering)
 const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
 
 if (!process.env.MONGODB_URI && !isBuildTime) {
@@ -14,11 +13,6 @@ if (!process.env.MONGODB_URI && !isBuildTime) {
 
 const uri: string = process.env.MONGODB_URI || 'mongodb://localhost:27017/sija-learn';
 
-// DEBUG - tambahkan ini
-console.log('===== MONGODB DEBUG =====');
-console.log('MONGODB_URI exists?', !!process.env.MONGODB_URI);
-console.log('URI value:', uri.substring(0, 50));
-console.log('========================');
 const options = {};
 
 let client: MongoClient;
@@ -28,9 +22,7 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-// Skip connection during build time
 if (isBuildTime) {
-  // Dummy promise for build time
   clientPromise = Promise.resolve({
     db: () => ({} as Db)
   } as MongoClient);
@@ -47,7 +39,6 @@ if (isBuildTime) {
 
 export async function getDatabase(): Promise<Db> {
   if (isBuildTime) {
-    // Return dummy during build
     return {} as Db;
   }
   const client = await clientPromise;
