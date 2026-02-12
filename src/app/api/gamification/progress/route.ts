@@ -20,6 +20,14 @@ export async function GET(request: NextRequest) {
         }
 
         const targetUserId = requestedUserId || authenticatedUser.id;
+
+        if (!ObjectId.isValid(targetUserId)) {
+            return NextResponse.json(
+                { error: 'Invalid user ID' },
+                { status: 400 }
+            );
+        }
+
         const db = await getDatabase();
         const userId = new ObjectId(targetUserId);
 

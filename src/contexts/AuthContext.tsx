@@ -5,7 +5,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthContextType, AuthUser } from '@/types';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Extend AuthContextType to include updateUser
+interface ExtendedAuthContextType extends AuthContextType {
+  updateUser: (userData: Partial<AuthUser>) => void;
+}
+
+const AuthContext = createContext<ExtendedAuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -68,8 +73,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   };
 
+  const updateUser = (userData: Partial<AuthUser>) => {
+    if (user) {
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

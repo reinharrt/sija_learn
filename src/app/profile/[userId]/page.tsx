@@ -64,12 +64,24 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading || !progress) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-sija-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="font-bold text-sija-text">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!progress || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Award className="w-16 h-16 text-sija-text/20 mx-auto mb-4" />
+          <h2 className="text-2xl font-black font-display text-sija-text mb-2">Profile Not Found</h2>
+          <p className="text-sija-text/60">The user you are looking for does not exist or has no progress data.</p>
         </div>
       </div>
     );

@@ -5,7 +5,7 @@ import { MongoClient, Db, MongoClientOptions } from 'mongodb';
 const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
 
 const CLOUD_URI = process.env.MONGODB_URI;
-const LOCAL_URI = process.env.MONGODB_LOCAL_URI || 'mongodb://mongodb:27017/sija-learn';
+const LOCAL_URI = process.env.MONGODB_LOCAL_URI || 'mongodb://127.0.0.1:27017/sija-learn';
 
 if (!CLOUD_URI && !isBuildTime) {
   throw new Error('Please add your MongoDB Cloud URI to .env.local');
@@ -14,6 +14,7 @@ if (!CLOUD_URI && !isBuildTime) {
 const options: MongoClientOptions = {
   maxPoolSize: 10,
   minPoolSize: 2,
+  serverSelectionTimeoutMS: 5000, // Fail fast if DB is down (5 seconds)
 };
 
 let cloudClient: MongoClient;

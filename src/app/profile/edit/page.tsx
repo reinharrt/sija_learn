@@ -7,7 +7,7 @@ import { Loader2, ArrowLeft, Mail, User, AlertCircle, CheckCircle, Lock, KeyRoun
 import Link from 'next/link';
 
 export default function EditProfilePage() {
-    const { user, loading, logout } = useAuth();
+    const { user, loading, logout, updateUser } = useAuth();
     const router = useRouter();
 
     // Profile update states
@@ -193,9 +193,8 @@ export default function EditProfilePage() {
                     router.push('/login?message=email_updated');
                 }, 3000);
             } else {
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                updateUser({ name });
+                // No reload needed
             }
 
         } catch (err: any) {

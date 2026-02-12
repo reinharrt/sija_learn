@@ -62,7 +62,27 @@ export default function ProfilePage() {
   }
 
   if (!user || !progress) {
-    return null;
+    return (
+      <div className="min-h-screen bg-sija-light flex items-center justify-center">
+        <div className="text-center p-8">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="font-display text-2xl font-black text-sija-text mb-2">
+            Failed to Load Profile
+          </h2>
+          <p className="text-sija-text/60 mb-6">
+            We couldn't load your profile data. Please try refreshing the page.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-sija-primary text-white font-bold border-2 border-transparent hover:bg-sija-primary/90 transition-all"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -60,19 +60,34 @@ export function useGamification() {
 
     try {
       setLoading(true);
-      const response = await fetch('/api/gamification/progress', {
-        headers: getAuthHeaders(),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      if (response.ok) {
-        const data = await response.json();
-        setProgress(data.progress);
-      } else if (response.status === 401) {
-        setProgress(null);
+      try {
+        const response = await fetch('/api/gamification/progress', {
+          headers: getAuthHeaders(),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          setProgress(data.progress);
+        } else if (response.status === 401) {
+          setProgress(null);
+        }
+      } catch (error: any) {
+        if (error.name === 'AbortError') {
+          console.error('Request timed out');
+        } else {
+          console.error('Failed to load progress:', error);
+        }
+      } finally {
+        setLoading(false);
       }
     } catch (error) {
-      console.error('Failed to load progress:', error);
-    } finally {
+      console.error('Unexpected error in loadProgress:', error);
       setLoading(false);
     }
   }, [user]);
