@@ -1,11 +1,6 @@
 // src/lib/image-utils.ts
 
-/**
- * Get the correct image URL for display
- * Supports both Cloudinary URLs and legacy local uploads
- * @param url - Image URL from database
- * @returns Processed URL ready for display
- */
+
 export function getImageUrl(url: string | undefined): string {
     if (!url) return '';
 
@@ -23,9 +18,7 @@ export function getImageUrl(url: string | undefined): string {
     return url;
 }
 
-/**
- * Check if URL is a Cloudinary URL
- */
+
 export function isCloudinaryUrl(url: string | undefined): boolean {
     if (!url) return false;
     return url.startsWith('https://res.cloudinary.com') || url.startsWith('http://res.cloudinary.com');

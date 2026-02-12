@@ -21,9 +21,7 @@ export interface BadgeDefinition {
   xpReward?: number; // Bonus XP for earning this badge
 }
 
-// ============================================
-// BADGE COLORS BY RARITY
-// ============================================
+// Badge Colors by Rarity
 export const RARITY_COLORS = {
   common: {
     bg: 'bg-gray-100 dark:bg-gray-800',
@@ -51,9 +49,7 @@ export const RARITY_COLORS = {
   }
 };
 
-// ============================================
-// ALL BADGES
-// ============================================
+// All Badges
 export const BADGES: BadgeDefinition[] = [
   // ==================== PROGRESS BADGES ====================
   {
@@ -292,9 +288,7 @@ export const BADGES: BadgeDefinition[] = [
   }
 ];
 
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
+// Helper Functions
 export function getBadgeById(badgeId: string): BadgeDefinition | undefined {
   return BADGES.find(badge => badge.id === badgeId);
 }

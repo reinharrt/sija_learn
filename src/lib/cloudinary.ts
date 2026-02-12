@@ -19,12 +19,7 @@ export interface CloudinaryUploadResult {
     bytes: number;
 }
 
-/**
- * Upload image to Cloudinary
- * @param fileBuffer - File buffer to upload
- * @param options - Upload options
- * @returns Cloudinary upload result
- */
+
 export async function uploadToCloudinary(
     fileBuffer: Buffer,
     options: {
@@ -57,19 +52,12 @@ export async function uploadToCloudinary(
     });
 }
 
-/**
- * Delete image from Cloudinary
- * @param publicId - Public ID of the image to delete
- */
+
 export async function deleteFromCloudinary(publicId: string): Promise<void> {
     await cloudinary.uploader.destroy(publicId);
 }
 
-/**
- * Get optimized image URL from Cloudinary
- * @param publicId - Public ID of the image
- * @param transformations - Cloudinary transformations
- */
+
 export function getCloudinaryUrl(
     publicId: string,
     transformations?: any

@@ -2,9 +2,7 @@
 
 import { type CourseDifficulty } from './gamification';
 
-/**
- * Calculate total XP yang akan didapat dari course
- */
+
 export function calculateCourseXP(
   difficulty: CourseDifficulty = 'beginner',
   articleCount: number = 1
@@ -20,9 +18,7 @@ export function calculateCourseXP(
   return baseXP[difficulty] + articleBonus;
 }
 
-/**
- * Calculate XP untuk single article read
- */
+
 export function calculateArticleXP(wordCount?: number): number {
   const baseXP = 10;
 
@@ -35,9 +31,7 @@ export function calculateArticleXP(wordCount?: number): number {
   return baseXP;
 }
 
-/**
- * Get difficulty display text
- */
+
 export function getDifficultyDisplay(difficulty?: CourseDifficulty): string {
   const display = {
     beginner: 'Beginner',
@@ -48,9 +42,7 @@ export function getDifficultyDisplay(difficulty?: CourseDifficulty): string {
   return display[difficulty || 'beginner'];
 }
 
-/**
- * Get difficulty color classes
- */
+
 export function getDifficultyColor(difficulty?: CourseDifficulty): string {
   const colors = {
     beginner: 'text-green-600 bg-green-100 border-green-500',
@@ -61,16 +53,12 @@ export function getDifficultyColor(difficulty?: CourseDifficulty): string {
   return colors[difficulty || 'beginner'];
 }
 
-/**
- * Format XP dengan thousand separator
- */
+
 export function formatXP(xp: number): string {
   return xp.toLocaleString();
 }
 
-/**
- * Get estimated time untuk complete course (rough estimate)
- */
+
 export function estimateCourseTime(articleCount: number, difficulty?: CourseDifficulty): string {
   const baseMinutesPerArticle = {
     beginner: 5,
@@ -95,13 +83,9 @@ export function estimateCourseTime(articleCount: number, difficulty?: CourseDiff
   return `~${hours}h ${minutes}m`;
 }
 
-// ============================================
-// LEVEL CALCULATION UTILITIES
-// ============================================
+// Level Calculation Utilities
 
-/**
- * Calculate level from total XP
- */
+
 export function calculateLevel(xp: number): number {
   if (xp < 0) return 1;
 
@@ -132,9 +116,7 @@ export function calculateLevel(xp: number): number {
   return level;
 }
 
-/**
- * Get XP needed for next level
- */
+
 export function xpForNextLevel(currentLevel: number): number {
   if (currentLevel <= 10) return 100;
   if (currentLevel <= 25) return 200;
@@ -142,9 +124,7 @@ export function xpForNextLevel(currentLevel: number): number {
   return 1000;
 }
 
-/**
- * Get XP progress to next level
- */
+
 export function getXPProgress(totalXP: number, currentLevel: number): {
   currentLevelXP: number;
   xpForNext: number;

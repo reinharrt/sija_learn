@@ -1,9 +1,6 @@
 // src/lib/id-utils.ts
 
-/**
- * Normalize any ID format to string for safe comparison
- * Handles: ObjectId, string, {_id: ObjectId}, undefined, null
- */
+
 export function normalizeId(id: any): string {
   if (!id) return '';
 
@@ -24,39 +21,29 @@ export function normalizeId(id: any): string {
   return String(id);
 }
 
-/**
- * Compare two IDs safely
- */
+
 export function compareIds(id1: any, id2: any): boolean {
   return normalizeId(id1) === normalizeId(id2);
 }
 
-/**
- * Check if user is the author of an entity
- */
+
 export function isAuthor(entityAuthorId: any, userId: any): boolean {
   return compareIds(entityAuthorId, userId);
 }
 
-/**
- * Check if ID exists in array of IDs
- */
+
 export function idInArray(targetId: any, idArray: any[]): boolean {
   const normalizedTarget = normalizeId(targetId);
   return idArray.some(id => normalizeId(id) === normalizedTarget);
 }
 
-/**
- * Filter array to remove specific ID
- */
+
 export function removeIdFromArray(idArray: any[], idToRemove: any): any[] {
   const normalizedRemove = normalizeId(idToRemove);
   return idArray.filter(id => normalizeId(id) !== normalizedRemove);
 }
 
-/**
- * Get unique IDs from array
- */
+
 export function uniqueIds(idArray: any[]): string[] {
   const normalized = idArray.map(id => normalizeId(id));
   return Array.from(new Set(normalized)).filter(id => id !== '');

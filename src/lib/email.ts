@@ -20,10 +20,7 @@ const transporter = nodemailer.createTransport({
 
 // Neobrutalist Email Template
 
-/**
- * Creates a neobrutalism-styled email template
- * Features: Bold typography, high-contrast colors, sharp edges
- */
+
 function createNeobrutalistEmailTemplate(
   title: string,
   content: string,

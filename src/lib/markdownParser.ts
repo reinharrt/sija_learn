@@ -16,9 +16,7 @@ interface ParsedBlock {
     metadata?: Record<string, any>;
 }
 
-/**
- * Parse markdown content and convert to ContentBlocks
- */
+
 export function parseMarkdownToBlocks(markdownContent: string): ContentBlock[] {
     const tokens = md.parse(markdownContent, {});
     const parsedBlocks: ParsedBlock[] = [];
@@ -140,9 +138,7 @@ export function parseMarkdownToBlocks(markdownContent: string): ContentBlock[] {
     }));
 }
 
-/**
- * Read file content as text
- */
+
 export function readFileAsText(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -160,9 +156,7 @@ export function readFileAsText(file: File): Promise<string> {
     });
 }
 
-/**
- * Validate markdown file
- */
+
 export function validateMarkdownFile(file: File): { valid: boolean; error?: string } {
     // Check file extension
     if (!file.name.endsWith('.md')) {

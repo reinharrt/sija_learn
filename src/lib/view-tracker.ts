@@ -11,12 +11,7 @@ interface ViewRecord {
   userId?: ObjectId; // Optional: if user is logged in
 }
 
-/**
- * Check if view should be counted
- * Rules:
- * 1. Same IP + Article = Only count once per 24 hours
- * 2. Logged in user + Article = Only count once per 24 hours (regardless of IP)
- */
+
 export async function shouldCountView(
   articleId: string,
   ipAddress: string,
@@ -64,9 +59,7 @@ export async function shouldCountView(
   }
 }
 
-/**
- * Record a view in the database
- */
+
 export async function recordView(
   articleId: string,
   ipAddress: string,
@@ -95,9 +88,7 @@ export async function recordView(
   }
 }
 
-/**
- * Increment article view count (call after shouldCountView returns true)
- */
+
 export async function incrementArticleViews(articleId: string): Promise<void> {
   try {
     const db = await getDatabase();
@@ -117,9 +108,7 @@ export async function incrementArticleViews(articleId: string): Promise<void> {
   }
 }
 
-/**
- * Get view statistics for an article
- */
+
 export async function getArticleViewStats(articleId: string) {
   try {
     const db = await getDatabase();
@@ -157,10 +146,7 @@ export async function getArticleViewStats(articleId: string) {
   }
 }
 
-/**
- * Clean up old view records (run periodically via cron)
- * Keep only last 90 days of data
- */
+
 export async function cleanupOldViews(): Promise<number> {
   try {
     const db = await getDatabase();
@@ -180,9 +166,7 @@ export async function cleanupOldViews(): Promise<number> {
   }
 }
 
-/**
- * Create indexes for view tracking collection
- */
+
 export async function createViewIndexes(): Promise<void> {
   try {
     const db = await getDatabase();

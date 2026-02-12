@@ -83,16 +83,12 @@ export function getUserFromCookies(request: NextRequest): AuthUser | null {
 
 // OTP Utilities
 
-/**
- * Generate a 6-digit numeric OTP
- */
+
 export function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-/**
- * Check if OTP is still valid (not expired)
- */
+
 export function isOTPValid(otpExpiry: Date | undefined): boolean {
   if (!otpExpiry) return false;
   return new Date() < new Date(otpExpiry);
@@ -108,10 +104,7 @@ export interface RateLimitResult {
   resetAt?: Date;
 }
 
-/**
- * Check if user has exceeded OTP request rate limit
- * Max 3 requests per 15 minutes
- */
+
 export function checkOTPRequestRateLimit(
   requestCount: number | undefined,
   resetAt: Date | undefined
@@ -137,10 +130,7 @@ export function checkOTPRequestRateLimit(
   return { allowed: true };
 }
 
-/**
- * Check if user has exceeded password change attempt rate limit
- * Max 5 attempts per hour
- */
+
 export function checkPasswordChangeRateLimit(
   attempts: number | undefined,
   resetAt: Date | undefined
@@ -166,9 +156,7 @@ export function checkPasswordChangeRateLimit(
   return { allowed: true };
 }
 
-/**
- * Calculate new rate limit values for OTP requests
- */
+
 export function incrementOTPRequestLimit(
   currentCount: number | undefined,
   currentResetAt: Date | undefined
@@ -189,9 +177,7 @@ export function incrementOTPRequestLimit(
   };
 }
 
-/**
- * Calculate new rate limit values for password change attempts
- */
+
 export function incrementPasswordChangeLimit(
   currentAttempts: number | undefined,
   currentResetAt: Date | undefined
