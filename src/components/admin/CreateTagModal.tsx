@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/CreateTagModal.tsx
-// Create Tag Modal Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 import { X } from 'lucide-react';
 

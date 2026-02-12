@@ -1,7 +1,4 @@
-// ============================================
 // src/contexts/AuthContext.tsx
-// Auth Context - Authentication state management
-// ============================================
 
 'use client';
 

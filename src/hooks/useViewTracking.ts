@@ -1,7 +1,4 @@
-// ============================================
 // src/hooks/useViewTracking.ts
-// Custom Hook - Track article/course views with anti-spam
-// ============================================
 
 import { useEffect, useRef } from 'react';
 
@@ -11,10 +8,10 @@ interface ViewTrackingOptions {
   cooldownMinutes?: number; // Default: 60 minutes
 }
 
-export function useViewTracking({ 
-  entityType, 
-  entityId, 
-  cooldownMinutes = 60 
+export function useViewTracking({
+  entityType,
+  entityId,
+  cooldownMinutes = 60
 }: ViewTrackingOptions) {
   const hasTracked = useRef(false);
 
@@ -24,7 +21,7 @@ export function useViewTracking({
 
     const trackView = async () => {
       const viewKey = `viewed-${entityType}-${entityId}`;
-      
+
       // Check if recently viewed
       if (checkRecentView(viewKey, cooldownMinutes)) {
         return; // Don't track again
@@ -44,7 +41,7 @@ export function useViewTracking({
 // Check if entity was viewed recently
 function checkRecentView(key: string, cooldownMinutes: number): boolean {
   if (typeof window === 'undefined') return false;
-  
+
   try {
     const viewData = localStorage.getItem(key);
     if (!viewData) return false;
@@ -52,7 +49,7 @@ function checkRecentView(key: string, cooldownMinutes: number): boolean {
     const { timestamp } = JSON.parse(viewData);
     const cooldownMs = cooldownMinutes * 60 * 1000;
     const expiryTime = Date.now() - cooldownMs;
-    
+
     return timestamp > expiryTime;
   } catch {
     return false;
@@ -62,11 +59,11 @@ function checkRecentView(key: string, cooldownMinutes: number): boolean {
 // Mark entity as viewed
 function markAsViewed(key: string): void {
   if (typeof window === 'undefined') return;
-  
+
   const viewData = {
     timestamp: Date.now(),
   };
-  
+
   try {
     localStorage.setItem(key, JSON.stringify(viewData));
   } catch (error) {
@@ -80,7 +77,7 @@ export const viewTrackingUtils = {
   markAsViewed,
   clearViewHistory: () => {
     if (typeof window === 'undefined') return;
-    
+
     // Clear all view tracking data
     const keys = Object.keys(localStorage);
     keys.forEach(key => {

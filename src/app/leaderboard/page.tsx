@@ -1,7 +1,4 @@
-// ============================================
 // src/app/leaderboard/page.tsx
-// Leaderboard Page - Global leaderboard
-// ============================================
 
 'use client';
 

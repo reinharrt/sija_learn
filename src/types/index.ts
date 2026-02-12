@@ -1,7 +1,4 @@
-// ============================================
 // src/types/index.ts
-// Type Definitions - WITH COURSE TAGS
-// ============================================
 
 import { ObjectId } from 'mongodb';
 
@@ -151,7 +148,7 @@ export interface Article {
   updatedAt: Date;
 }
 
-// ✨ NEW: Category interface
+// NEW: Category interface
 export interface Category {
   _id?: ObjectId;
   name: string;

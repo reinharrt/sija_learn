@@ -1,13 +1,10 @@
-// ============================================
 // src/components/course/XPPreview.tsx
-// XP Calculation Preview Component
-// ============================================
 
 'use client';
 
 import { CourseDifficulty } from '@/lib/gamification';
 import { calculateCourseXP } from '@/lib/xp-calculator';
-import { Star, Plus, Equal, AlertCircle } from 'lucide-react';
+import { Star, Plus, Equal, AlertCircle, AlertTriangle, Sparkles } from 'lucide-react';
 
 interface XPPreviewProps {
     difficulty?: CourseDifficulty;
@@ -135,8 +132,18 @@ export default function XPPreview({ difficulty, articleCount, customXP }: XPPrev
             <div className="pt-3 border-t-2 border-dashed border-gray-300 dark:border-gray-600">
                 <p className="text-xs font-medium text-gray-700 dark:text-gray-400">
                     {isCustom
-                        ? '⚠️ Custom XP override aktif - nilai manual akan digunakan'
-                        : '✨ XP dihitung otomatis berdasarkan difficulty dan jumlah artikel'
+                        ? (
+                            <span className="flex items-center gap-2">
+                                <AlertTriangle className="w-4 h-4 inline" />
+                                Custom XP override aktif - nilai manual akan digunakan
+                            </span>
+                        )
+                        : (
+                            <span className="flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 inline" />
+                                XP dihitung otomatis berdasarkan difficulty dan jumlah artikel
+                            </span>
+                        )
                     }
                 </p>
             </div>

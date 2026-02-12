@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/LeaderboardTable.tsx
-// Leaderboard Table - Shows top users by XP
-// ============================================
 
 'use client';
 

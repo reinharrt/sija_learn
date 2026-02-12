@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/Breadcrumb.tsx
-// Breadcrumb Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 
@@ -20,17 +17,17 @@ interface BreadcrumbProps {
   className?: string;
 }
 
-export default function Breadcrumb({ 
-  items, 
+export default function Breadcrumb({
+  items,
   showHome = true,
-  className = '' 
+  className = ''
 }: BreadcrumbProps) {
-  const allItems = showHome 
+  const allItems = showHome
     ? [{ label: 'Home', href: '/', icon: <Home size={16} strokeWidth={2.5} /> }, ...items]
     : items;
 
   return (
-    <nav 
+    <nav
       className={`mb-6 bg-sija-surface border-2 border-sija-border px-4 py-3 shadow-hard transition-colors duration-300 ${className}`}
       aria-label="Breadcrumb"
     >
@@ -56,7 +53,7 @@ export default function Breadcrumb({
                   </span>
                 </Link>
               ) : (
-                <span 
+                <span
                   className="inline-flex items-center gap-1.5 font-black text-sija-primary uppercase tracking-wide transition-colors duration-300"
                   aria-current={isLast ? 'page' : undefined}
                 >
@@ -66,12 +63,12 @@ export default function Breadcrumb({
                   </span>
                 </span>
               )}
-              
+
               {!isLast && (
-                <ChevronRight 
-                  size={16} 
-                  strokeWidth={2.5} 
-                  className="text-sija-text/40 dark:text-sija-text/30 flex-shrink-0 transition-colors duration-300" 
+                <ChevronRight
+                  size={16}
+                  strokeWidth={2.5}
+                  className="text-sija-text/40 dark:text-sija-text/30 flex-shrink-0 transition-colors duration-300"
                 />
               )}
             </li>

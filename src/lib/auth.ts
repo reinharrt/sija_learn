@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/auth.ts
-// Auth Utilities - FIXED VERSION with proper JWT typing
-// ============================================
 
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -84,9 +81,7 @@ export function getUserFromCookies(request: NextRequest): AuthUser | null {
   return verifyToken(token);
 }
 
-// ============================================
-// OTP UTILITIES
-// ============================================
+// OTP Utilities
 
 /**
  * Generate a 6-digit numeric OTP

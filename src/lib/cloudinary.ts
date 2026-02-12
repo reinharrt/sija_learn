@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/cloudinary.ts
-// Cloudinary Configuration and Upload Utilities
-// ============================================
 
 import { v2 as cloudinary } from 'cloudinary';
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/TagInput.tsx
-// Tag Input Component - FULL LUCIDE ICONS + Neobrutalist + Dark Mode
-// ============================================
 
 'use client';
 
@@ -204,8 +201,8 @@ export default function TagInput({
                 type="button"
                 onClick={() => addTag(suggestion.name)}
                 className={`w-full text-left px-4 py-3 transition-colors border-b-2 border-sija-border/30 last:border-b-0 ${index === selectedIndex
-                    ? 'bg-blue-50 dark:bg-blue-950/30 border-l-4 border-l-sija-primary'
-                    : 'hover:bg-sija-light dark:hover:bg-sija-dark/50'
+                  ? 'bg-blue-50 dark:bg-blue-950/30 border-l-4 border-l-sija-primary'
+                  : 'hover:bg-sija-light dark:hover:bg-sija-dark/50'
                   } duration-300`}
               >
                 <div className="flex items-center justify-between">

@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/markdownParser.ts
-// Markdown Parser - Convert .md files to ContentBlocks
-// ============================================
 
 import MarkdownIt from 'markdown-it';
 import { ContentBlock, BlockType } from '@/types';

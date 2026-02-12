@@ -1,7 +1,4 @@
-// ============================================
 // src/app/profile/[userId]/page.tsx
-// Profile Page - User profile WITHOUT MONGODB IMPORTS
-// ============================================
 
 'use client';
 
@@ -12,7 +9,7 @@ import LevelBadge from '@/components/gamification/LevelBadge';
 import XPProgressBar from '@/components/gamification/XPProgressBar';
 import BadgeGrid from '@/components/gamification/BadgeGrid';
 
-// ✅ DEFINE TYPES LOCALLY - DON'T IMPORT FROM MODELS
+// DEFINE TYPES LOCALLY - DON'T IMPORT FROM MODELS
 interface UserProgress {
   totalXP: number;
   currentLevel: number;

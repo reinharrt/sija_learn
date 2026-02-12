@@ -1,7 +1,4 @@
-// ============================================
 // src/contexts/GamificationContext.tsx
-// Gamification Context - Global gamification state
-// ============================================
 
 'use client';
 
@@ -18,7 +15,7 @@ export function GamificationProvider({ children }: { children: React.ReactNode }
   return (
     <GamificationContext.Provider value={gamification}>
       {children}
-      
+
       {/* XP Toast */}
       <RewardToast
         isOpen={gamification.showXPToast}

@@ -1,21 +1,18 @@
-// ============================================
 // src/components/common/CategoryBadge.tsx
-// Category Badge with Lucide Icon and Dark Mode
-// ============================================
 
 'use client';
 
-import { 
-  Folder, 
-  BookOpen, 
-  Code, 
-  Laptop, 
-  Palette, 
-  Wrench, 
-  FileText, 
-  Rocket, 
-  Zap, 
-  Target, 
+import {
+  Folder,
+  BookOpen,
+  Code,
+  Laptop,
+  Palette,
+  Wrench,
+  FileText,
+  Rocket,
+  Zap,
+  Target,
   Star,
   Lightbulb,
   Coffee
@@ -46,16 +43,16 @@ const iconMap: Record<string, any> = {
   Coffee,
 };
 
-export default function CategoryBadge({ 
-  name, 
-  slug, 
-  icon = 'Folder', 
+export default function CategoryBadge({
+  name,
+  slug,
+  icon = 'Folder',
   color = '#3B82F6',
   size = 'md',
   showCount
 }: CategoryBadgeProps) {
   const IconComponent = iconMap[icon] || Folder;
-  
+
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs gap-1',
     md: 'px-3 py-1.5 text-sm gap-1.5',
@@ -69,9 +66,9 @@ export default function CategoryBadge({
   };
 
   return (
-    <span 
+    <span
       className={`inline-flex items-center ${sizeClasses[size]} font-medium border-2 border-sija-border shadow-hard-sm transition-colors duration-300`}
-      style={{ 
+      style={{
         backgroundColor: color + '20',
         color: color
       }}

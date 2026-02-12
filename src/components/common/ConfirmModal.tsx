@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/ConfirmModal.tsx
-// Confirmation Modal - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 
@@ -94,9 +91,8 @@ export default function ConfirmModal({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
-        isAnimating ? 'opacity-100' : 'opacity-0'
-      }`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'
+        }`}
       onClick={handleCancel}
     >
       {/* Backdrop */}
@@ -104,9 +100,8 @@ export default function ConfirmModal({
 
       {/* Modal */}
       <div
-        className={`relative bg-sija-surface border-4 border-sija-border shadow-hard-lg max-w-md w-full transform transition-all duration-300 ${
-          isAnimating ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-        }`}
+        className={`relative bg-sija-surface border-4 border-sija-border shadow-hard-lg max-w-md w-full transform transition-all duration-300 ${isAnimating ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
+          }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -121,7 +116,7 @@ export default function ConfirmModal({
               </h3>
             </div>
           </div>
-          
+
           {/* Close button */}
           <button
             onClick={handleCancel}

@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Comment.ts
-// Comment Model - Comment database schema
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

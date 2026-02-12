@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/id-utils.ts
-// ID Utilities - Normalize MongoDB ObjectId for comparison
-// ============================================
 
 /**
  * Normalize any ID format to string for safe comparison
@@ -9,20 +6,20 @@
  */
 export function normalizeId(id: any): string {
   if (!id) return '';
-  
+
   // Already a string
   if (typeof id === 'string') return id;
-  
+
   // Has _id property (MongoDB object)
   if (id._id) {
     return typeof id._id === 'string' ? id._id : id._id.toString();
   }
-  
+
   // Has toString method (ObjectId)
   if (typeof id.toString === 'function') {
     return id.toString();
   }
-  
+
   // Fallback to String()
   return String(id);
 }

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
+import { CheckCircle } from 'lucide-react';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -158,14 +159,16 @@ export default function Footer() {
 
             {success ? (
               <div className="border-2 border-black dark:border-white bg-green-400 p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                <p className="font-black text-black text-sm">
-                  ✓ Berhasil! Cek email kamu.
+                <p className="font-black text-black text-sm flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Berhasil! Cek email kamu.
                 </p>
               </div>
             ) : isSubscribed ? (
               <div className="border-2 border-black dark:border-white bg-blue-400 p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                <p className="font-black text-black text-sm">
-                  ✓ Kamu sudah berlangganan newsletter!
+                <p className="font-black text-black text-sm flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Kamu sudah berlangganan newsletter!
                 </p>
                 <p className="font-bold text-black text-xs mt-2">
                   Kamu akan mendapat notifikasi setiap ada artikel atau kursus baru.

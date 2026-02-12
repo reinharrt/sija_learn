@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/StatsCard.tsx
-// Stats Card Component - Reusable stats display with Dark Mode
-// ============================================
 
 import { LucideIcon } from 'lucide-react';
 

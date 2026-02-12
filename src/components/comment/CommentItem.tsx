@@ -1,7 +1,4 @@
-// ============================================
 // src/components/comment/CommentItem.tsx
-// Comment Item Component - FULL LUCIDE ICONS + Neobrutalist
-// ============================================
 
 'use client';
 

@@ -1,6 +1,4 @@
-// ============================================
 // src/components/course/ArticleSelector.tsx
-// ============================================
 
 'use client';
 
@@ -19,7 +17,8 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-  Loader2
+  Loader2,
+  Check
 } from 'lucide-react';
 
 interface ArticleSelectorProps {
@@ -207,8 +206,8 @@ export default function ArticleSelector({
                   type="button"
                   onClick={() => setTypeFilter('all')}
                   className={`px-3 py-1.5 font-bold text-xs border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider ${typeFilter === 'all'
-                      ? 'bg-sija-primary text-white border-sija-primary'
-                      : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600'
+                    ? 'bg-sija-primary text-white border-sija-primary'
+                    : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600'
                     }`}
                 >
                   Semua
@@ -217,8 +216,8 @@ export default function ArticleSelector({
                   type="button"
                   onClick={() => setTypeFilter('public')}
                   className={`px-3 py-1.5 font-bold text-xs border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider flex items-center gap-1 ${typeFilter === 'public'
-                      ? 'bg-green-500 text-white border-green-700'
-                      : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600'
+                    ? 'bg-green-500 text-white border-green-700'
+                    : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600'
                     }`}
                 >
                   <Globe className="w-3 h-3" /> Public ({publicCount})
@@ -227,8 +226,8 @@ export default function ArticleSelector({
                   type="button"
                   onClick={() => setTypeFilter('course-only')}
                   className={`px-3 py-1.5 font-bold text-xs border-2 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider flex items-center gap-1 ${typeFilter === 'course-only'
-                      ? 'bg-purple-500 text-white border-purple-700'
-                      : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600'
+                    ? 'bg-purple-500 text-white border-purple-700'
+                    : 'bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white border-sija-text/30 dark:border-gray-600'
                     }`}
                 >
                   <Lock className="w-3 h-3" /> Course ({courseOnlyCount})
@@ -264,14 +263,14 @@ export default function ArticleSelector({
                 onClick={selectAll}
                 className="px-3 py-1 bg-green-500 text-white font-bold text-[10px] border-2 border-green-700 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase"
               >
-                ✓ Pilih Halaman
+                <Check className="w-3 h-3" /> Pilih Halaman
               </button>
               <button
                 type="button"
                 onClick={deselectAll}
                 className="px-3 py-1 bg-red-500 text-white font-bold text-[10px] border-2 border-red-700 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase"
               >
-                ✗ Hapus Halaman
+                <X className="w-3 h-3" /> Hapus Halaman
               </button>
             </div>
           </div>
@@ -303,8 +302,8 @@ export default function ArticleSelector({
                     key={article._id?.toString()}
                     onClick={() => toggleArticle(article._id?.toString() || '')}
                     className={`flex items-start gap-3 p-3 border-2 cursor-pointer transition-all ${isSelected
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 shadow-hard-sm'
-                        : 'bg-sija-surface dark:bg-gray-900 border-sija-text/20 dark:border-gray-700 hover:border-sija-primary dark:hover:border-yellow-400 hover:shadow-hard-sm'
+                      ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 shadow-hard-sm'
+                      : 'bg-sija-surface dark:bg-gray-900 border-sija-text/20 dark:border-gray-700 hover:border-sija-primary dark:hover:border-yellow-400 hover:shadow-hard-sm'
                       }`}
                   >
                     <div className="flex-shrink-0 pt-0.5">
@@ -322,8 +321,8 @@ export default function ArticleSelector({
                         </h3>
 
                         <span className={`flex-shrink-0 text-[10px] px-2 py-1 font-bold border-2 uppercase tracking-wider flex items-center gap-1 ${article.type === 'public'
-                            ? 'bg-green-100 text-green-900 border-green-500'
-                            : 'bg-purple-100 text-purple-900 border-purple-500'
+                          ? 'bg-green-100 text-green-900 border-green-500'
+                          : 'bg-purple-100 text-purple-900 border-purple-500'
                           }`}>
                           {article.type === 'public' ? (
                             <><Globe className="w-2.5 h-2.5" /> Public</>

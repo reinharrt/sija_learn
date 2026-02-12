@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/quiz/QuizAssignment.tsx
-// Quiz Assignment Component - Assign quizzes to articles or as final quiz
-// ============================================
 
 'use client';
 
@@ -159,16 +156,16 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
     const canAssign = mode === 'article' ? !!selectedArticleId : true;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-sija-surface border-4 border-sija-primary shadow-hard-lg max-w-md w-full">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900">
+                <div className="flex items-center justify-between p-6 border-b-4 border-sija-primary/10">
+                    <h2 className="text-xl font-display font-black text-sija-text uppercase tracking-wide">
                         Assign Quiz
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-2 text-sija-text border-2 border-transparent hover:border-sija-border hover:text-sija-primary transition-all"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -177,29 +174,29 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                 {/* Content */}
                 <div className="p-6">
                     {/* Quiz Info */}
-                    <div className="mb-6">
-                        <h3 className="font-medium text-gray-900 mb-1">{quiz.title}</h3>
+                    <div className="mb-6 p-4 bg-sija-light border-2 border-sija-primary/20">
+                        <h3 className="font-bold text-sija-text mb-1 uppercase tracking-wide text-sm">{quiz.title}</h3>
                         {quiz.description && (
-                            <p className="text-sm text-gray-600">{quiz.description}</p>
+                            <p className="text-sm text-sija-text/70 font-medium">{quiz.description}</p>
                         )}
                     </div>
 
                     {/* Mode Toggle */}
-                    <div className="bg-gray-100 p-1 rounded-lg flex mb-6">
+                    <div className="bg-sija-light p-1 border-2 border-sija-primary/20 flex mb-6">
                         <button
                             onClick={() => setMode('article')}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${mode === 'article'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
+                            className={`flex-1 py-3 px-4 text-sm font-bold uppercase tracking-wide transition-all ${mode === 'article'
+                                ? 'bg-sija-primary text-white border-2 border-sija-primary shadow-hard-sm'
+                                : 'text-sija-text/70 hover:text-sija-text border-2 border-transparent'
                                 }`}
                         >
                             Assign to Article
                         </button>
                         <button
                             onClick={() => setMode('final')}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${mode === 'final'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
+                            className={`flex-1 py-3 px-4 text-sm font-bold uppercase tracking-wide transition-all ${mode === 'final'
+                                ? 'bg-sija-primary text-white border-2 border-sija-primary shadow-hard-sm'
+                                : 'text-sija-text/70 hover:text-sija-text border-2 border-transparent'
                                 }`}
                         >
                             Set as Final Quiz
@@ -208,20 +205,20 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
 
                     {loading ? (
                         <div className="flex items-center justify-center py-8">
-                            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                            <Loader2 className="w-6 h-6 animate-spin text-sija-primary" />
                         </div>
                     ) : (
                         <>
                             {/* Article Quiz Assignment */}
                             {mode === 'article' && (
                                 <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                                         Select Article
                                     </label>
                                     <select
                                         value={selectedArticleId}
                                         onChange={(e) => setSelectedArticleId(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={submitting}
                                     >
                                         <option value="">-- Select an article --</option>
@@ -233,7 +230,7 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                                         ))}
                                     </select>
                                     {articles.length === 0 && (
-                                        <p className="text-sm text-gray-500 mt-2">
+                                        <p className="text-sm text-sija-text/60 mt-2 font-medium">
                                             No articles found in this course. Please add articles first.
                                         </p>
                                     )}
@@ -243,9 +240,9 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                             {/* Final Quiz Assignment */}
                             {mode === 'final' && (
                                 <div className="mb-6">
-                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                                        <h4 className="text-sm font-medium text-amber-900 mb-1">Final Course Assessment</h4>
-                                        <p className="text-sm text-amber-700">
+                                    <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-500 shadow-hard-sm p-4">
+                                        <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400 mb-2 uppercase tracking-wide">Final Course Assessment</h4>
+                                        <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">
                                             This quiz will be set as the final assessment for the entire course.
                                             Students will need to complete it after finishing all course articles.
                                         </p>
@@ -255,17 +252,17 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
 
                             {/* Success Message */}
                             {success && (
-                                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
-                                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                    <p className="text-sm text-green-700">{success}</p>
+                                <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 shadow-hard-sm flex items-start gap-3">
+                                    <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                                    <p className="text-sm text-green-700 dark:text-green-300 font-bold">{success}</p>
                                 </div>
                             )}
 
                             {/* Error Message */}
                             {error && (
-                                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-                                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                                    <p className="text-sm text-red-700">{error}</p>
+                                <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 shadow-hard-sm flex items-start gap-3">
+                                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                                    <p className="text-sm text-red-700 dark:text-red-300 font-bold">{error}</p>
                                 </div>
                             )}
                         </>
@@ -273,13 +270,13 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
-                    {/* Unassign button matches current quiz type logic, not selected mode */}
+                <div className="flex items-center justify-end gap-3 p-6 border-t-4 border-sija-primary/10 bg-sija-light">
+                    {/* Unassign button */}
                     {isAssigned && (
                         <button
                             onClick={handleUnassign}
                             disabled={submitting || loading}
-                            className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-5 py-3 text-red-600 dark:text-red-400 border-2 border-red-600 dark:border-red-500 bg-sija-surface hover:bg-red-50 dark:hover:bg-red-900/20 shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-hard-sm"
                         >
                             {submitting ? 'Unassigning...' : 'Unassign Current'}
                         </button>
@@ -287,14 +284,14 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                     <button
                         onClick={onClose}
                         disabled={submitting}
-                        className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-5 py-3 border-2 border-sija-text text-sija-text bg-sija-surface shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-hard-sm"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleAssign}
                         disabled={submitting || loading || !canAssign}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-5 py-3 bg-sija-primary text-white border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-hard flex items-center gap-2"
                     >
                         {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                         {submitting ? 'Assigning...' : 'Assign Quiz'}

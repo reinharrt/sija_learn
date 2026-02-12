@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/XPProgressBar.tsx
-// XP Progress Bar - CLIENT-SAFE VERSION
-// ============================================
 
 'use client';
 

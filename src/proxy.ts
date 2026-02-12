@@ -1,7 +1,4 @@
-// ============================================
 // src/proxy.ts
-// Proxy pengganti middleware
-// ============================================
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';

@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/gamification-client.ts
-// Client-Safe Gamification Utilities (NO MONGODB)
-// ============================================
 
 // Level tier definitions
 export interface LevelTier {

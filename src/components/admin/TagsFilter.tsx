@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/TagsFilter.tsx
-// Tags Filter Component - Filter and sort controls with Dark Mode
-// ============================================
 
 import { Filter, RefreshCw } from 'lucide-react';
 

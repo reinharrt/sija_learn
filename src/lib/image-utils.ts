@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/image-utils.ts
-// Image URL utilities for Cloudinary and local images
-// ============================================
 
 /**
  * Get the correct image URL for display

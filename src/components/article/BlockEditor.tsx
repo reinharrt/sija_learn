@@ -1,7 +1,4 @@
-// ============================================
 // src/components/article/BlockEditor.tsx
-// Block Editor Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 

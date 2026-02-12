@@ -63,19 +63,19 @@ export default function CourseDetailPage() {
 
       if (res.ok) {
         const data = await res.json();
-        console.log('📋 Enrollment check - All enrollments:', data.enrollments);
-        console.log('📋 Current course ID:', course._id);
+        console.log('[ENROLL] Enrollment check - All enrollments:', data.enrollments);
+        console.log('[ENROLL] Current course ID:', course._id);
 
         const enrolled = data.enrollments?.some((e: any) => {
           const enrollmentCourseId = e.courseId;
           const currentCourseId = course._id?.toString();
 
-          console.log('🔍 Comparing:', enrollmentCourseId, '===', currentCourseId);
+          console.log('[ENROLL] Comparing:', enrollmentCourseId, '===', currentCourseId);
 
           return enrollmentCourseId === currentCourseId;
         });
 
-        console.log('✅ Enrollment status:', enrolled);
+        console.log('[ENROLL] Enrollment status:', enrolled);
         setIsEnrolled(enrolled);
       }
     } catch (error) {

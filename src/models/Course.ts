@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Course.ts
-// Course Model - Course database schema
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

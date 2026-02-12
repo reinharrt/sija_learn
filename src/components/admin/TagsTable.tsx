@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/TagsTable.tsx
-// Tags Table Component - Reusable table for displaying tags with Dark Mode
-// ============================================
 
 import { Trash2, User } from 'lucide-react';
 
@@ -89,9 +86,8 @@ export default function TagsTable({ tags, onDelete }: TagsTableProps) {
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`text-lg font-black ${
-                    tag.usageCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-sija-text/40 dark:text-sija-text/30'
-                  } transition-colors duration-300`}>
+                  <span className={`text-lg font-black ${tag.usageCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-sija-text/40 dark:text-sija-text/30'
+                    } transition-colors duration-300`}>
                     {tag.usageCount}
                   </span>
                 </td>
@@ -121,11 +117,10 @@ export default function TagsTable({ tags, onDelete }: TagsTableProps) {
                   <button
                     onClick={() => onDelete(tag._id, tag.name, tag.usageCount)}
                     disabled={tag.usageCount > 0}
-                    className={`flex items-center gap-2 px-4 py-2 font-bold border-2 shadow-hard-sm transition-all text-sm uppercase tracking-wider ${
-                      tag.usageCount > 0
+                    className={`flex items-center gap-2 px-4 py-2 font-bold border-2 shadow-hard-sm transition-all text-sm uppercase tracking-wider ${tag.usageCount > 0
                         ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-gray-700 cursor-not-allowed'
                         : 'bg-red-500 dark:bg-red-600 text-white border-red-600 dark:border-red-700 hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
-                    } duration-300`}
+                      } duration-300`}
                     title={tag.usageCount > 0 ? 'Cannot delete tag in use' : 'Delete tag'}
                   >
                     <Trash2 className="w-4 h-4" />

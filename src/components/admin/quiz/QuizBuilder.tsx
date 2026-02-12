@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/quiz/QuizBuilder.tsx
-// Quiz Builder Component - Create/Edit Quiz
-// ============================================
 
 'use client';
 
@@ -142,40 +139,41 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
 
     return (
         <div className="max-w-5xl mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-8">
+                <h1 className="text-3xl font-display font-black text-sija-text mb-6 uppercase tracking-wide">
                     {mode === 'edit' ? 'Edit Quiz' : 'Create New Quiz'}
                 </h1>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                        {error}
+                    <div className="mb-6 p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 shadow-hard-sm text-red-700 dark:text-red-400">
+                        <p className="font-bold uppercase text-sm mb-1">Error</p>
+                        <p>{error}</p>
                     </div>
                 )}
 
                 {/* Quiz Metadata */}
                 <div className="space-y-6 mb-8">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                             Quiz Title *
                         </label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text"
                             placeholder="Enter quiz title..."
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                             Description
                         </label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text resize-none"
                             rows={3}
                             placeholder="Enter quiz description..."
                         />
@@ -183,7 +181,7 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                                 <Target className="w-4 h-4" />
                                 Passing Score (%)
                             </label>
@@ -193,12 +191,12 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
                                 onChange={(e) => setPassingScore(parseInt(e.target.value) || 0)}
                                 min="0"
                                 max="100"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text"
                             />
                         </div>
 
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                                 <Award className="w-4 h-4" />
                                 XP Reward
                             </label>
@@ -207,12 +205,12 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
                                 value={xpReward}
                                 onChange={(e) => setXpReward(parseInt(e.target.value) || 0)}
                                 min="0"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text"
                             />
                         </div>
 
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                                 <Clock className="w-4 h-4" />
                                 Time Limit (minutes, 0 = unlimited)
                             </label>
@@ -221,12 +219,12 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
                                 value={timeLimit}
                                 onChange={(e) => setTimeLimit(parseInt(e.target.value) || 0)}
                                 min="0"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text"
                             />
                         </div>
 
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-bold text-sija-text mb-2 uppercase tracking-wide">
                                 <Hash className="w-4 h-4" />
                                 Max Attempts (0 = unlimited)
                             </label>
@@ -235,20 +233,20 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
                                 value={maxAttempts}
                                 onChange={(e) => setMaxAttempts(parseInt(e.target.value) || 0)}
                                 min="0"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-sija-surface border-2 border-sija-text/30 focus:border-sija-primary focus:outline-none transition-colors font-medium text-sija-text"
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3 p-4 bg-sija-light border-2 border-sija-primary/20">
                         <input
                             type="checkbox"
                             id="published"
                             checked={published}
                             onChange={(e) => setPublished(e.target.checked)}
-                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 rounded"
+                            className="w-5 h-5 accent-sija-primary"
                         />
-                        <label htmlFor="published" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <label htmlFor="published" className="flex items-center gap-2 text-sm font-bold text-sija-text uppercase tracking-wide cursor-pointer">
                             <Eye className="w-4 h-4" />
                             Publish Quiz
                         </label>
@@ -257,12 +255,12 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
 
                 {/* Questions */}
                 <div className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold text-gray-900">
+                    <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-sija-primary/10">
+                        <h2 className="text-xl font-display font-black text-sija-text uppercase tracking-wide">
                             Questions ({questions.length})
                         </h2>
                         {totalPoints > 0 && (
-                            <span className="text-sm text-gray-600">
+                            <span className="px-4 py-2 bg-sija-light border-2 border-sija-primary/20 text-sm font-bold text-sija-text uppercase">
                                 Total Points: {totalPoints}
                             </span>
                         )}
@@ -282,7 +280,7 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
 
                     <button
                         onClick={addQuestion}
-                        className="mt-4 flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                        className="mt-6 flex items-center gap-2 px-6 py-3 bg-sija-light text-sija-primary border-2 border-sija-primary hover:bg-sija-primary hover:text-white shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider"
                     >
                         <Plus className="w-5 h-5" />
                         Add Question
@@ -290,18 +288,18 @@ export default function QuizBuilder({ courseId, articleId, initialQuiz, mode = '
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 pt-6 border-t">
+                <div className="flex items-center gap-4 pt-6 border-t-2 border-sija-primary/10">
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-8 py-4 bg-sija-primary text-white border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-hard"
                     >
                         <Save className="w-5 h-5" />
                         {loading ? 'Saving...' : mode === 'edit' ? 'Update Quiz' : 'Create Quiz'}
                     </button>
                     <button
                         onClick={() => router.back()}
-                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        className="px-8 py-4 border-2 border-sija-text text-sija-text bg-sija-surface shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider"
                     >
                         Cancel
                     </button>

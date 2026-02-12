@@ -1,7 +1,4 @@
-// ============================================
 // src/components/course/CourseDetail.tsx
-// Course Detail Component - WITH QUIZ HIERARCHY SIDEBAR
-// ============================================
 
 'use client';
 
@@ -31,7 +28,8 @@ import {
   Star,
   Zap,
   XCircle,
-  Clock
+  Clock,
+  AlertTriangle
 } from 'lucide-react';
 
 interface CourseDetailProps {
@@ -63,13 +61,13 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   }>({ articleQuizzes: [], finalQuiz: null });
   const [loadingQuizData, setLoadingQuizData] = useState(false);
 
-  // ✅ CHECK IF USER IS CREATOR
+  // CHECK IF USER IS CREATOR
   const isCreator = user && course.creator &&
     (typeof course.creator === 'string'
       ? course.creator === user.id
       : course.creator._id?.toString() === user.id);
 
-  // ✅ SYNC ENROLLMENT STATE WITH PROP
+  // SYNC ENROLLMENT STATE WITH PROP
   useEffect(() => {
     setIsEnrolled(initialIsEnrolled);
   }, [initialIsEnrolled]);
@@ -81,7 +79,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   }, [course.articles]);
 
   useEffect(() => {
-    // ✅ ONLY LOAD PROGRESS IF NOT CREATOR
+    // ONLY LOAD PROGRESS IF NOT CREATOR
     if (isEnrolled && user && !isCreator) {
       loadProgress();
       loadQuizStatus();
@@ -249,7 +247,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
   };
 
   const isArticleUnlocked = (index: number) => {
-    // ✅ CREATORS HAVE ACCESS TO ALL ARTICLES
+    // CREATORS HAVE ACCESS TO ALL ARTICLES
     if (isCreator) return true;
 
     if (index === 0) return true; // First article always unlocked
@@ -272,7 +270,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
               alt={course.title}
               className="w-full h-full object-cover"
             />
-            {/* ✅ CREATOR BADGE ON THUMBNAIL */}
+            {/* CREATOR BADGE ON THUMBNAIL */}
             {isCreator && (
               <div className="absolute top-4 right-4 bg-yellow-400 text-sija-primary px-4 py-2 border-2 border-sija-primary shadow-hard font-bold uppercase tracking-wider flex items-center gap-2">
                 <Crown className="w-5 h-5" />
@@ -369,7 +367,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
 
           {/* Enrollment Section */}
           <div className="mt-6">
-            {/* ✅ CREATOR VIEW */}
+            {/* CREATOR VIEW */}
             {isCreator ? (
               <div className="bg-yellow-100 border-2 border-yellow-500 p-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -582,8 +580,9 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
               </h2>
 
               <div className="bg-yellow-100 border-2 border-yellow-500 p-4 mb-6">
-                <p className="text-sm font-bold text-yellow-900">
-                  ⚠️ Anda harus lulus semua quiz untuk menyelesaikan course ini!
+                <p className="text-sm font-bold text-yellow-900 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  Anda harus lulus semua quiz untuk menyelesaikan course ini!
                 </p>
               </div>
 
@@ -676,7 +675,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
                               : 'bg-sija-primary text-white border-sija-primary'
                             }`}
                         >
-                          {hasPassed ? 'Review ✓' : hasAttempted ? 'Retake' : 'Take Quiz'}
+                          {hasPassed ? 'Review' : hasAttempted ? 'Retake' : 'Take Quiz'}
                           <PlayCircle className="w-4 h-4" />
                         </Link>
                       </div>
@@ -708,7 +707,7 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
                       <CheckCircle2 className="w-8 h-8 text-green-600" />
                       <div>
                         <h3 className="font-bold text-green-900 uppercase tracking-wider text-lg">
-                          Final Quiz Completed! ✓
+                          Final Quiz Completed!
                         </h3>
                         <p className="text-sm text-green-800 font-medium">
                           Score: {finalQuizStatus.attempt.score}% (Passing: {finalQuizStatus.passingScore}%)

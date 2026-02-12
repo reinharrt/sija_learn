@@ -1,7 +1,4 @@
-// ============================================
 // src/contexts/NotificationContext.tsx
-// Notification Context - Global notification management
-// ============================================
 
 'use client';
 

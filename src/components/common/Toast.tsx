@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/Toast.tsx
-// Toast Notification - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 

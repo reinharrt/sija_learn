@@ -1,4 +1,4 @@
-// ============================================
+// src/app/api/articles/[id]/route.ts
 
 
 
@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';
 import { findArticleById, findArticleBySlug, updateArticle, deleteArticle } from '@/models/Article';
-import { getTagsForEntity, updateEntityTags } from '@/models/Tag';
+import { getTagsForEntity, updateEntityTags, removeAllTagsFromEntity } from '@/models/Tag';
 import { deleteCommentsByArticle } from '@/models/Comment';
 import { shouldCountView, recordView, incrementArticleViews } from '@/lib/view-tracker';
 import { UserRole } from '@/types';
@@ -44,7 +44,6 @@ export async function GET(
         { status: 404 }
       );
     }
-
 
     const tags = await getTagsForEntity('article', article._id!.toString());
     article.tags = tags.map(t => t.name);
@@ -112,7 +111,6 @@ export async function PUT(
         { status: 404 }
       );
     }
-
 
     const isAuthor = article.author.toString() === user.id;
     const isAdmin = hasPermission(user.role, UserRole.ADMIN);
@@ -261,7 +259,7 @@ export async function DELETE(
     const articleId = article._id!.toString();
     await deleteCommentsByArticle(articleId);
 
-
+    await removeAllTagsFromEntity('article', articleId);
 
     const success = await deleteArticle(articleId);
 

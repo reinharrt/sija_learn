@@ -1,7 +1,4 @@
-// ============================================
 // src/components/course/CourseCompletionHandler.tsx
-// Course Completion Handler - Detects and handles course completion
-// ============================================
 
 'use client';
 

@@ -1,13 +1,11 @@
-// ============================================
 // src/components/common/ImageUpload.tsx
-// Image Upload Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { getAuthHeaders } from '@/contexts/AuthContext';
-import { Upload, Image as ImageIcon, Trash2, RefreshCw, Loader2 } from 'lucide-react';
+import { useNotification } from '@/contexts/NotificationContext';
+import { Upload, Image as ImageIcon, Trash2, RefreshCw, Loader2, AlertTriangle } from 'lucide-react';
 
 interface ImageUploadProps {
   onUploadSuccess: (url: string) => void;
@@ -24,6 +22,7 @@ export default function ImageUpload({
   label = 'Upload Gambar',
   aspectRatio = '16/9'
 }: ImageUploadProps) {
+  const { showConfirm } = useNotification();
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentImage || '');
   const [error, setError] = useState('');
@@ -96,7 +95,17 @@ export default function ImageUpload({
     }
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    const confirmed = await showConfirm({
+      title: 'Hapus Gambar',
+      message: 'Yakin ingin menghapus gambar ini?',
+      confirmText: 'Hapus',
+      cancelText: 'Batal',
+      type: 'warning',
+    });
+
+    if (!confirmed) return;
+
     setPreview('');
     onUploadSuccess('');
     if (fileInputRef.current) {
@@ -183,7 +192,10 @@ export default function ImageUpload({
 
       {error && (
         <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-500 dark:border-red-400 px-3 py-2 transition-colors duration-300">
-          <p className="text-red-700 dark:text-red-300 text-sm font-bold transition-colors duration-300">⚠️ {error}</p>
+          <p className="text-red-700 dark:text-red-300 text-sm font-bold transition-colors duration-300 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            {error}
+          </p>
         </div>
       )}
     </div>

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/quiz/QuizTaker.tsx
-// Quiz Taker Component - Main quiz interface
-// ============================================
 
 'use client';
 

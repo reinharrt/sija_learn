@@ -1,7 +1,4 @@
-// ============================================
 // src/models/UserProgress.ts
-// UserProgress Model - SERVER-SIDE ONLY
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

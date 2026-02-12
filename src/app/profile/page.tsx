@@ -1,7 +1,4 @@
-// ============================================
 // src/app/profile/page.tsx
-// Profile Page - WITHOUT MONGODB IMPORTS
-// ============================================
 
 'use client';
 

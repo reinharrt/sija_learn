@@ -1,7 +1,4 @@
-// ============================================
 // src/components/article/ArticleAccessLoader.tsx
-// Article Access Loader - Progress tracking overlay
-// ============================================
 
 'use client';
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/XPRewardBadge.tsx
-// XP Reward Badge - Shows XP reward for courses/activities
-// ============================================
 
 'use client';
 
@@ -14,11 +11,11 @@ interface XPRewardBadgeProps {
   showIcon?: boolean;
 }
 
-export default function XPRewardBadge({ 
-  xp, 
+export default function XPRewardBadge({
+  xp,
   size = 'md',
   variant = 'badge',
-  showIcon = true 
+  showIcon = true
 }: XPRewardBadgeProps) {
   const sizes = {
     sm: {

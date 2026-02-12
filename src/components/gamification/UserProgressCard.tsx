@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/UserProgressCard.tsx
-// User Progress Card - Compact progress display
-// ============================================
 
 'use client';
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/QuickActions.tsx
-// Quick Actions Component - Quick action buttons with Dark Mode
-// ============================================
 
 import Link from 'next/link';
 import { Plus, RefreshCw } from 'lucide-react';

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/course/CourseDetailWithGamification.tsx
-// Course Detail - EXAMPLE integration dengan gamification
-// ============================================
 
 'use client';
 

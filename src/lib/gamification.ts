@@ -1,21 +1,16 @@
-// ============================================
 // src/lib/gamification.ts
-// Gamification Core Logic - XP, Levels, Badges
-// ============================================
 
-import { 
-  getUserProgress, 
-  addXP, 
-  awardBadge, 
+import {
+  getUserProgress,
+  addXP,
+  awardBadge,
   incrementStat,
   updateStats,
-  type UserProgress 
+  type UserProgress
 } from '@/models/UserProgress';
 import { BADGES, getBadgeById, type BadgeDefinition } from './badge-definitions';
 
-// ============================================
-// COURSE XP CALCULATION
-// ============================================
+// Course XP Calculation
 export type CourseDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export function calculateCourseXP(
@@ -33,24 +28,20 @@ export function calculateCourseXP(
   return baseXP[difficulty] + articleBonus;
 }
 
-// ============================================
-// ARTICLE XP CALCULATION
-// ============================================
+// Article XP Calculation
 export function calculateArticleXP(wordCount?: number): number {
   const baseXP = 10;
-  
+
   if (!wordCount) return baseXP;
-  
+
   // Bonus for longer articles
   if (wordCount > 2000) return 30;
   if (wordCount > 1000) return 20;
-  
+
   return baseXP;
 }
 
-// ============================================
-// COMPLETE COURSE - Award XP and check badges
-// ============================================
+// Complete Course - Award XP and check badges
 export async function completeCourse(
   userId: string,
   courseId: string,
@@ -65,20 +56,20 @@ export async function completeCourse(
 }> {
   // Calculate XP
   const xpGained = calculateCourseXP(difficulty, articleCount);
-  
+
   // Add XP to user
   const { newLevel, leveledUp, levelsGained } = await addXP(
     userId,
     xpGained,
     `Completed course: ${courseId}`
   );
-  
+
   // Increment course completion stat
   await incrementStat(userId, 'coursesCompleted', 1);
-  
+
   // Check for new badges
   const newBadges = await checkAndAwardBadges(userId);
-  
+
   return {
     xpGained,
     leveledUp,
@@ -88,77 +79,69 @@ export async function completeCourse(
   };
 }
 
-// ============================================
-// READ ARTICLE - Award XP
-// ============================================
+// Read Article - Award XP
 export async function readArticle(
   userId: string,
   articleId: string,
   wordCount?: number
 ): Promise<{ xpGained: number }> {
   const xpGained = calculateArticleXP(wordCount);
-  
+
   await addXP(userId, xpGained, `Read article: ${articleId}`);
   await incrementStat(userId, 'articlesRead', 1);
-  
+
   return { xpGained };
 }
 
-// ============================================
-// POST COMMENT - Award XP
-// ============================================
+// Post Comment - Award XP
 export async function postComment(userId: string): Promise<{ xpGained: number }> {
   const xpGained = 5;
-  
+
   await addXP(userId, xpGained, 'Posted comment');
   await incrementStat(userId, 'commentsPosted', 1);
-  
+
   // Check for comment badges
   await checkAndAwardBadges(userId);
-  
+
   return { xpGained };
 }
 
-// ============================================
-// CHECK AND AWARD BADGES
-// ============================================
+// Check and Award Badges
 export async function checkAndAwardBadges(userId: string): Promise<BadgeDefinition[]> {
   const progress = await getUserProgress(userId);
   if (!progress) return [];
-  
+
   const newBadges: BadgeDefinition[] = [];
-  
+
   for (const badge of BADGES) {
     // Skip if already earned
     if (progress.badges.includes(badge.id)) continue;
-    
+
     // Check if requirements are met
     if (checkBadgeRequirement(badge, progress)) {
       await awardBadge(userId, badge.id);
       newBadges.push(badge);
-      
+
       // Award bonus XP if badge has it
       if (badge.xpReward) {
         await addXP(userId, badge.xpReward, `Earned badge: ${badge.name}`);
       }
     }
   }
-  
+
   return newBadges;
 }
 
-// ============================================
-// CHECK BADGE REQUIREMENT
-// ============================================
+// Check Badge Requirement
 function checkBadgeRequirement(
   badge: BadgeDefinition,
   progress: UserProgress
 ): boolean {
   const { requirement } = badge;
   const operator = requirement.operator || 'gte';
-  
+
   let currentValue: number;
-  
+
   switch (requirement.type) {
     case 'xp':
       currentValue = progress.totalXP;
@@ -184,9 +167,9 @@ function checkBadgeRequirement(
     default:
       return false;
   }
-  
+
   const targetValue = typeof requirement.value === 'number' ? requirement.value : 0;
-  
+
   switch (operator) {
     case 'gte':
       return currentValue >= targetValue;
@@ -199,9 +182,7 @@ function checkBadgeRequirement(
   }
 }
 
-// ============================================
-// UPDATE STREAK
-// ============================================
+// Update Streak
 export async function updateStreak(userId: string): Promise<{
   currentStreak: number;
   isNewRecord: boolean;
@@ -210,16 +191,16 @@ export async function updateStreak(userId: string): Promise<{
   if (!progress) {
     return { currentStreak: 0, isNewRecord: false };
   }
-  
+
   const now = new Date();
   const lastActivity = progress.stats.lastActivityDate;
   const diffInDays = Math.floor(
     (now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   let newStreak = progress.stats.currentStreak;
   let isNewRecord = false;
-  
+
   if (diffInDays === 0) {
     // Same day, no change
     return { currentStreak: newStreak, isNewRecord: false };
@@ -230,46 +211,41 @@ export async function updateStreak(userId: string): Promise<{
     // Streak broken, reset
     newStreak = 1;
   }
-  
+
   // Check if new record
   if (newStreak > progress.stats.longestStreak) {
     isNewRecord = true;
   }
-  
+
   await updateStats(userId, {
     currentStreak: newStreak,
     longestStreak: Math.max(newStreak, progress.stats.longestStreak),
     lastActivityDate: now
   });
-  
+
   // Check for streak badges
   await checkAndAwardBadges(userId);
-  
+
   return { currentStreak: newStreak, isNewRecord };
 }
 
-// ============================================
-// GET LEVEL TIER NAME
-// ============================================
+// Get Level Tier Name
 export function getLevelTier(level: number): {
   name: string;
   color: string;
-  icon: string;
 } {
   if (level <= 10) {
-    return { name: 'Bronze', color: 'text-amber-700', icon: '🥉' };
+    return { name: 'Bronze', color: 'text-amber-700' };
   } else if (level <= 25) {
-    return { name: 'Silver', color: 'text-gray-400', icon: '🥈' };
+    return { name: 'Silver', color: 'text-gray-400' };
   } else if (level <= 50) {
-    return { name: 'Gold', color: 'text-yellow-500', icon: '🥇' };
+    return { name: 'Gold', color: 'text-yellow-500' };
   } else {
-    return { name: 'Diamond', color: 'text-cyan-400', icon: '💎' };
+    return { name: 'Diamond', color: 'text-cyan-400' };
   }
 }
 
-// ============================================
-// MANUALLY AWARD SPECIAL BADGE
-// ============================================
+// Manually Award Special Badge
 export async function awardSpecialBadge(
   userId: string,
   badgeId: string
@@ -278,20 +254,18 @@ export async function awardSpecialBadge(
   if (!badge || badge.requirement.type !== 'special') {
     return false;
   }
-  
+
   await awardBadge(userId, badgeId);
-  
+
   // Award bonus XP
   if (badge.xpReward) {
     await addXP(userId, badge.xpReward, `Earned special badge: ${badge.name}`);
   }
-  
+
   return true;
 }
 
-// ============================================
-// GET USER BADGES WITH DETAILS
-// ============================================
+// Get User Badges with Details
 export async function getUserBadgesWithDetails(userId: string): Promise<{
   earned: BadgeDefinition[];
   locked: BadgeDefinition[];
@@ -301,23 +275,23 @@ export async function getUserBadgesWithDetails(userId: string): Promise<{
   if (!progress) {
     return { earned: [], locked: BADGES, progress: {} };
   }
-  
+
   const earned: BadgeDefinition[] = [];
   const locked: BadgeDefinition[] = [];
   const progressMap: Record<string, number> = {};
-  
+
   for (const badge of BADGES) {
     if (progress.badges.includes(badge.id)) {
       earned.push(badge);
     } else if (!badge.hidden) {
       locked.push(badge);
-      
+
       // Calculate progress percentage
       const percentage = calculateBadgeProgress(badge, progress);
       progressMap[badge.id] = percentage;
     }
   }
-  
+
   return { earned, locked, progress: progressMap };
 }
 
@@ -330,9 +304,9 @@ function calculateBadgeProgress(
 ): number {
   const { requirement } = badge;
   const targetValue = typeof requirement.value === 'number' ? requirement.value : 0;
-  
+
   let currentValue: number;
-  
+
   switch (requirement.type) {
     case 'xp':
       currentValue = progress.totalXP;
@@ -355,6 +329,6 @@ function calculateBadgeProgress(
     default:
       return 0;
   }
-  
+
   return Math.min((currentValue / targetValue) * 100, 100);
 }

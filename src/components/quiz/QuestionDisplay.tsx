@@ -1,7 +1,4 @@
-// ============================================
 // src/components/quiz/QuestionDisplay.tsx
-// Question Display Component - Render questions by type
-// ============================================
 
 'use client';
 

@@ -1,8 +1,4 @@
-// ============================================
 // src/components/common/TagFilter.tsx
-// Tag / Category Filter Component - Neobrutalist Design with Dark Mode
-// Reusable across Articles (static categories) and Courses (dynamic tags)
-// ============================================
 
 'use client';
 
@@ -70,8 +66,8 @@ export default function TagFilter({
                             <button
                                 onClick={() => onChange(null)}
                                 className={`px-5 py-2.5 text-sm font-bold border-2 uppercase tracking-wider transition-all flex items-center gap-2 duration-300 ${selectedValue === null
-                                        ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
-                                        : 'bg-sija-surface text-sija-text border-sija-border hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] shadow-hard-sm'
+                                    ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
+                                    : 'bg-sija-surface text-sija-text border-sija-border hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] shadow-hard-sm'
                                     }`}
                             >
                                 {allItem.icon && <allItem.icon className="w-4 h-4" />}
@@ -89,8 +85,8 @@ export default function TagFilter({
                                     key={item.value}
                                     onClick={() => onChange(item.value)}
                                     className={`px-5 py-2.5 text-sm font-bold border-2 uppercase tracking-wider transition-all flex items-center gap-2 duration-300 ${isActive
-                                            ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
-                                            : 'bg-sija-surface text-sija-text border-sija-border hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] shadow-hard-sm'
+                                        ? 'bg-sija-primary text-white border-sija-primary shadow-hard'
+                                        : 'bg-sija-surface text-sija-text border-sija-border hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] shadow-hard-sm'
                                         }`}
                                 >
                                     {Icon && <Icon className="w-4 h-4" />}

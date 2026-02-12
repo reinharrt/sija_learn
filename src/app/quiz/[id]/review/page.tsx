@@ -1,14 +1,11 @@
-// ============================================
 // src/app/quiz/[id]/review/page.tsx
-// Student Page - Review Quiz Results
-// ============================================
 
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
-import { CheckCircle, XCircle, Award, TrendingUp, ArrowLeft, RotateCcw } from 'lucide-react';
+import { CheckCircle, XCircle, Award, TrendingUp, ArrowLeft, RotateCcw, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuizReviewPage() {
@@ -101,7 +98,7 @@ export default function QuizReviewPage() {
                             <XCircle className="w-16 h-16 text-red-600 mx-auto mb-4" strokeWidth={2.5} />
                         )}
                         <h1 className="font-display text-3xl font-black text-sija-text mb-2 uppercase">
-                            {passed ? 'Quiz Passed! ✓' : 'Quiz Not Passed'}
+                            {passed ? 'Quiz Passed!' : 'Quiz Not Passed'}
                         </h1>
                         <p className="text-lg font-bold text-sija-text/80 mb-4">
                             {quiz.title}
@@ -187,9 +184,9 @@ export default function QuizReviewPage() {
 
                                 {qResult.explanation && (
                                     <div className="p-3 bg-blue-50 border-2 border-blue-200">
-                                        <p className="text-sm font-medium text-blue-900">
-                                            <span className="font-bold">💡 Explanation: </span>
-                                            {qResult.explanation}
+                                        <p className="text-sm font-medium text-blue-900 flex items-start gap-2">
+                                            <Lightbulb className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
+                                            <span><span className="font-bold">Explanation:</span> {qResult.explanation}</span>
                                         </p>
                                     </div>
                                 )}

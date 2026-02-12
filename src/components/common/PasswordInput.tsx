@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/PasswordInput.tsx
-// Password Input Component - Neobrutalist Design with Toggle
-// ============================================
 
 'use client';
 
@@ -58,8 +55,8 @@ export default function PasswordInput({
                     required={required}
                     disabled={disabled}
                     className={`w-full px-4 py-3 border-2 font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed pr-12 ${error
-                            ? 'border-red-600 bg-red-50 dark:bg-red-950/30 dark:border-red-500 text-sija-text focus:border-red-700 dark:focus:border-red-400'
-                            : 'border-sija-border bg-sija-background text-sija-text focus:border-sija-primary placeholder:text-sija-text/40'
+                        ? 'border-red-600 bg-red-50 dark:bg-red-950/30 dark:border-red-500 text-sija-text focus:border-red-700 dark:focus:border-red-400'
+                        : 'border-sija-border bg-sija-background text-sija-text focus:border-sija-primary placeholder:text-sija-text/40'
                         }`}
                 />
                 <button

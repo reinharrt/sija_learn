@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/BadgeGrid.tsx
-// Badge Grid - Display grid of badges with filters
-// ============================================
 
 'use client';
 
@@ -18,8 +15,8 @@ interface BadgeGridProps {
   showFilters?: boolean;
 }
 
-export default function BadgeGrid({ 
-  badges, 
+export default function BadgeGrid({
+  badges,
   earnedBadgeIds = [],
   progress = {},
   onBadgeClick,
@@ -84,8 +81,8 @@ export default function BadgeGrid({
               onClick={() => setShowEarnedOnly(!showEarnedOnly)}
               className={`
                 px-3 py-1.5 border-2 font-bold text-sm transition-all
-                ${showEarnedOnly 
-                  ? 'bg-sija-primary text-white border-sija-primary' 
+                ${showEarnedOnly
+                  ? 'bg-sija-primary text-white border-sija-primary'
                   : 'bg-sija-surface text-sija-text border-sija-primary'
                 }
               `}
@@ -124,10 +121,10 @@ export default function BadgeGrid({
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
         {(['common', 'rare', 'epic', 'legendary'] as BadgeRarity[]).map(rarity => {
           const total = badges.filter(b => b.rarity === rarity).length;
-          const earned = badges.filter(b => 
+          const earned = badges.filter(b =>
             b.rarity === rarity && earnedBadgeIds.includes(b.id)
           ).length;
-          
+
           return (
             <div key={rarity} className="border-2 border-sija-primary bg-sija-surface p-4">
               <p className="text-xs text-sija-text/60 uppercase tracking-wider mb-1">

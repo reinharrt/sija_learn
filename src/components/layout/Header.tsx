@@ -1,7 +1,4 @@
-// ============================================
 // src/components/layout/Header.tsx
-// Header Component - Neobrutalist Navigation
-// ============================================
 
 'use client';
 

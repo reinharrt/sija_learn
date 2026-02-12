@@ -1,7 +1,4 @@
-// ============================================
 // src/components/article/ArticleCard.tsx
-// Article Card - Neobrutalist Design
-// ============================================
 
 'use client';
 

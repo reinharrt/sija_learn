@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, hasPermission } from '@/lib/auth';
 import { findCourseById, findCourseBySlug, updateCourse, deleteCourse } from '@/models/Course';
+import { removeAllTagsFromEntity } from '@/models/Tag';
 import { findUserById } from '@/models/User';
 import { UserRole } from '@/types';
 import { ObjectId } from 'mongodb';
@@ -191,6 +192,9 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    await removeAllTagsFromEntity('course', id);
+
     const success = await deleteCourse(id);
 
     if (!success) {

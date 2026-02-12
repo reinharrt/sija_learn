@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 function UnsubscribeContent() {
     const searchParams = useSearchParams();
@@ -66,8 +67,9 @@ function UnsubscribeContent() {
                     ) : success ? (
                         <div>
                             <div className="bg-green-400 border-2 border-black dark:border-white p-6 mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                <p className="font-black text-black text-center text-xl mb-2">
-                                    ✓ Berhasil!
+                                <p className="font-black text-black text-center text-xl mb-2 flex items-center justify-center gap-2">
+                                    <CheckCircle className="w-6 h-6" />
+                                    Berhasil!
                                 </p>
                                 <p className="font-bold text-black text-center">
                                     Kamu sudah berhenti berlangganan newsletter SIJA.ID
@@ -88,8 +90,9 @@ function UnsubscribeContent() {
                     ) : (
                         <div>
                             <div className="bg-red-400 border-2 border-black dark:border-white p-6 mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                <p className="font-black text-black text-center text-xl mb-2">
-                                    ✗ Gagal
+                                <p className="font-black text-black text-center text-xl mb-2 flex items-center justify-center gap-2">
+                                    <XCircle className="w-6 h-6" />
+                                    Gagal
                                 </p>
                                 <p className="font-bold text-black text-center">
                                     {error}

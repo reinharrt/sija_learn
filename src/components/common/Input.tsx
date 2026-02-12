@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/Input.tsx
-// Input Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 
@@ -50,11 +47,10 @@ export default function Input({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
-        className={`w-full px-4 py-3 border-2 font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-          error 
-            ? 'border-red-600 bg-red-50 dark:bg-red-950/30 dark:border-red-500 text-sija-text focus:border-red-700 dark:focus:border-red-400' 
+        className={`w-full px-4 py-3 border-2 font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${error
+            ? 'border-red-600 bg-red-50 dark:bg-red-950/30 dark:border-red-500 text-sija-text focus:border-red-700 dark:focus:border-red-400'
             : 'border-sija-border bg-sija-background text-sija-text focus:border-sija-primary placeholder:text-sija-text/40'
-        }`}
+          }`}
       />
       {error && (
         <div className="mt-2 flex items-start gap-2 text-red-600 dark:text-red-400 transition-colors duration-300">

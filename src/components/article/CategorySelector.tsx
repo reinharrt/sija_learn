@@ -1,7 +1,4 @@
-// ============================================
 // src/components/article/CategorySelector.tsx
-// Category Selector - FULL LUCIDE ICONS + Neobrutalist + Dark Mode
-// ============================================
 
 'use client';
 
@@ -260,8 +257,8 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                           type="button"
                           onClick={() => setNewCategory({ ...newCategory, icon: iconOpt.name })}
                           className={`p-3 border-2 transition-all flex items-center justify-center ${newCategory.icon === iconOpt.name
-                              ? 'border-sija-primary bg-blue-50 dark:bg-blue-950/30 shadow-hard-sm'
-                              : 'border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50'
+                            ? 'border-sija-primary bg-blue-50 dark:bg-blue-950/30 shadow-hard-sm'
+                            : 'border-sija-border bg-sija-surface hover:bg-sija-light dark:hover:bg-sija-dark/50'
                             } duration-300`}
                           title={iconOpt.name}
                         >
@@ -286,8 +283,8 @@ export default function CategorySelector({ selectedCategory, onChange }: Categor
                           setNewCategory({ ...newCategory, color: color.value })
                         }
                         className={`w-12 h-12 border-2 transition-all ${newCategory.color === color.value
-                            ? 'border-sija-border scale-110 shadow-hard-sm'
-                            : 'border-sija-border opacity-60 hover:opacity-100'
+                          ? 'border-sija-border scale-110 shadow-hard-sm'
+                          : 'border-sija-border opacity-60 hover:opacity-100'
                           } duration-300`}
                         style={{ backgroundColor: color.value }}
                         title={color.name}

@@ -1,12 +1,9 @@
-// ============================================
 // src/components/course/DifficultySelector.tsx
-// Difficulty Level Selector Component
-// ============================================
 
 'use client';
 
 import { CourseDifficulty } from '@/lib/gamification';
-import { Zap, TrendingUp, Flame } from 'lucide-react';
+import { Zap, TrendingUp, Flame, Lightbulb } from 'lucide-react';
 
 interface DifficultySelectorProps {
     value: CourseDifficulty | undefined;
@@ -124,8 +121,9 @@ export default function DifficultySelector({ value, onChange }: DifficultySelect
             </div>
 
             {!value && (
-                <p className="mt-3 text-sm text-yellow-700 dark:text-yellow-400 font-medium">
-                    💡 Pilih difficulty level untuk menentukan base XP reward
+                <p className="mt-3 text-sm text-yellow-700 dark:text-yellow-400 font-medium flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4" strokeWidth={2.5} />
+                    Pilih difficulty level untuk menentukan base XP reward
                 </p>
             )}
         </div>

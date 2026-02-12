@@ -1,7 +1,4 @@
-// ============================================
-// src/components/course/EnhancedCourseCard.tsx
-// Enhanced Course Card - WITH GAMIFICATION INFO
-// ============================================
+// src/components/course/CourseCard.tsx
 
 'use client';
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/course/CourseSidebar.tsx
-// Course Sidebar - Tree-style navigation with quiz hierarchy
-// ============================================
 
 'use client';
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/models/QuizAttempt.ts
-// QuizAttempt Model - Quiz attempt tracking
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

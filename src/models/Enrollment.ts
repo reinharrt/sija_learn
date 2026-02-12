@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Enrollment.ts
-// Enrollment Model - Course enrollment database schema
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

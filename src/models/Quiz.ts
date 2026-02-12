@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Quiz.ts
-// Quiz Model - Quiz database schema
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

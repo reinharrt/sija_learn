@@ -54,11 +54,11 @@ function ArticleDetailContent() {
 
   useEffect(() => {
     if (authLoading) {
-      console.log('⏳ Waiting for auth...');
+      console.log('[AUTH] Waiting for auth...');
       return;
     }
 
-    console.log('✅ Auth ready, loading article...');
+    console.log('[AUTH] Auth ready, loading article...');
     loadArticle();
   }, [slug, user, authLoading]);
 
@@ -92,12 +92,12 @@ function ArticleDetailContent() {
 
 
       if (data.type === ArticleType.COURSE_ONLY) {
-        console.log('📌 COURSE_ONLY - checking access...');
+        console.log('[ACCESS] COURSE_ONLY - checking access...');
 
         const hasAccess = await checkArticleAccess(data);
 
         if (!hasAccess) {
-          console.log('❌ DENIED');
+          console.log('[ACCESS] DENIED');
           setPageState({
             article: data,
             loading: false,
@@ -106,7 +106,7 @@ function ArticleDetailContent() {
           return;
         }
 
-        console.log('✅ GRANTED');
+        console.log('[ACCESS] GRANTED');
       }
 
       setPageState({
@@ -208,7 +208,7 @@ function ArticleDetailContent() {
 
   const checkArticleAccess = async (article: Article): Promise<boolean> => {
     if (!user) {
-      console.log('❌ No user');
+      console.log('[ACCESS] No user');
       return false;
     }
 
@@ -224,23 +224,23 @@ function ArticleDetailContent() {
     const userId = normalizeId(user.id);
 
     if (authorId === userId) {
-      console.log('✅ AUTHOR');
+      console.log('[ACCESS] AUTHOR');
       return true;
     }
 
     if (user.role === 'admin') {
-      console.log('✅ ADMIN');
+      console.log('[ACCESS] ADMIN');
       return true;
     }
 
-    console.log('🔍 Checking enrollments...');
+    console.log('[ACCESS] Checking enrollments...');
     try {
       const enrollRes = await fetch('/api/enrollments', {
         headers: getAuthHeaders(),
       });
 
       if (!enrollRes.ok) {
-        console.log('❌ Enroll fetch failed');
+        console.log('[ACCESS] Enroll fetch failed');
         return false;
       }
 
@@ -261,16 +261,16 @@ function ArticleDetailContent() {
           );
 
           if (hasArticle) {
-            console.log(`✅ In course: ${course.title}`);
+            console.log(`[ACCESS] In course: ${course.title}`);
             return true;
           }
         }
       }
 
-      console.log('❌ Not in any course');
+      console.log('[ACCESS] Not in any course');
       return false;
     } catch (error) {
-      console.error('❌ Enroll error:', error);
+      console.error('[ACCESS] Enroll error:', error);
       return false;
     }
   };
@@ -279,7 +279,7 @@ function ArticleDetailContent() {
     if (!pageState.article) return;
 
     try {
-      console.log('🔄 Reloading comments...');
+      console.log('[COMMENTS] Reloading comments...');
       const res = await fetch(`/api/comments?articleId=${pageState.article._id}`, {
         cache: 'no-store',
         headers: {
@@ -290,7 +290,7 @@ function ArticleDetailContent() {
       if (data?.comments) {
         // Force new array reference to trigger React re-render
         setComments([...data.comments]);
-        console.log(`✅ Loaded ${data.comments.length} comments`);
+        console.log(`[COMMENTS] Loaded ${data.comments.length} comments`);
       }
     } catch (error) {
       console.error('Load comments error:', error);

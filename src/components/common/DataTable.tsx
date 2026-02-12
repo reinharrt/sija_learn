@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/DataTable.tsx
-// Data Table Component - Neobrutalist Design with Pagination and Dark Mode
-// ============================================
 
 'use client';
 
@@ -96,11 +93,10 @@ export default function DataTable<T extends { _id?: any }>({
                 <button
                   key={pageNum}
                   onClick={() => onPageChange(pageNum)}
-                  className={`w-10 h-10 font-display font-bold text-xs border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase duration-300 ${
-                    currentPage === pageNum
+                  className={`w-10 h-10 font-display font-bold text-xs border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase duration-300 ${currentPage === pageNum
                       ? 'bg-sija-primary text-white border-sija-primary'
                       : 'bg-sija-surface text-sija-primary border-sija-border hover:bg-sija-light dark:hover:bg-sija-dark/50'
-                  }`}
+                    }`}
                 >
                   {pageNum}
                 </button>
@@ -156,9 +152,8 @@ export default function DataTable<T extends { _id?: any }>({
               {safeData.map((item, index) => (
                 <tr
                   key={item._id?.toString() || index}
-                  className={`${
-                    index !== safeData.length - 1 ? 'border-b-2 border-sija-border/20' : ''
-                  } hover:bg-sija-light dark:hover:bg-sija-dark/20 transition-colors duration-300`}
+                  className={`${index !== safeData.length - 1 ? 'border-b-2 border-sija-border/20' : ''
+                    } hover:bg-sija-light dark:hover:bg-sija-dark/20 transition-colors duration-300`}
                 >
                   {columns.map((column) => (
                     <td key={column.key} className={`px-6 py-4 ${column.width || ''} ${column.className || ''}`}>

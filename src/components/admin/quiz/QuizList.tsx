@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/quiz/QuizList.tsx
-// Quiz List Component - Display quizzes for a course
-// ============================================
 
 'use client';
 
@@ -108,15 +105,16 @@ export default function QuizList({ courseId }: QuizListProps) {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="text-gray-600">Loading quizzes...</div>
+                <div className="text-sija-text/70 font-medium">Loading quizzes...</div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                {error}
+            <div className="p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 shadow-hard-sm text-red-700 dark:text-red-400">
+                <p className="font-bold uppercase text-sm mb-1">Error</p>
+                <p>{error}</p>
             </div>
         );
     }
@@ -124,11 +122,13 @@ export default function QuizList({ courseId }: QuizListProps) {
     if (quizzes.length === 0) {
         return (
             <div className="text-center py-12">
-                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">No quizzes created yet</p>
+                <div className="inline-block p-6 bg-sija-light border-2 border-sija-primary/20 mb-6">
+                    <FileText className="w-16 h-16 text-sija-primary/40 mx-auto" />
+                </div>
+                <p className="text-sija-text/70 font-medium mb-6 text-lg">No quizzes created yet</p>
                 <Link
                     href={`/admin/courses/${courseId}/quizzes/create`}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-sija-primary text-white border-2 border-sija-primary shadow-hard hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold uppercase tracking-wider"
                 >
                     Create Your First Quiz
                 </Link>
@@ -137,96 +137,96 @@ export default function QuizList({ courseId }: QuizListProps) {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {quizzes.map((quiz) => (
                 <div
                     key={quiz._id?.toString()}
-                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                    className="bg-sija-surface border-2 border-sija-primary shadow-hard hover:shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all p-6"
                 >
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start justify-between mb-4 pb-4 border-b-2 border-sija-primary/10">
                         <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                                <h3 className="text-xl font-semibold text-gray-900">{quiz.title}</h3>
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${quiz.type === QuizType.FINAL_QUIZ
-                                    ? 'bg-purple-100 text-purple-700'
-                                    : 'bg-blue-100 text-blue-700'
+                            <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                <h3 className="text-xl font-display font-black text-sija-text uppercase tracking-wide">{quiz.title}</h3>
+                                <span className={`px-3 py-1 border-2 text-xs font-bold uppercase ${quiz.type === QuizType.FINAL_QUIZ
+                                    ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-600 text-purple-700 dark:text-purple-400'
+                                    : 'bg-blue-100 dark:bg-blue-900/30 border-blue-600 text-blue-700 dark:text-blue-400'
                                     }`}>
                                     {quiz.type === QuizType.FINAL_QUIZ ? 'Final Quiz' : 'Article Quiz'}
                                 </span>
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${quiz.published
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-gray-100 text-gray-700'
+                                <span className={`px-3 py-1 border-2 text-xs font-bold uppercase ${quiz.published
+                                    ? 'bg-green-100 dark:bg-green-900/30 border-green-600 text-green-700 dark:text-green-400'
+                                    : 'bg-gray-100 dark:bg-gray-800 border-gray-600 text-gray-700 dark:text-gray-400'
                                     }`}>
                                     {quiz.published ? 'Published' : 'Draft'}
                                 </span>
                                 {/* Assignment Status */}
                                 {quiz.type === QuizType.ARTICLE_QUIZ && quiz.articleId && (
-                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 flex items-center gap-1">
+                                    <span className="px-3 py-1 border-2 text-xs font-bold uppercase bg-indigo-100 dark:bg-indigo-900/30 border-indigo-600 text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
                                         <Link2 className="w-3 h-3" />
                                         {getArticleName(quiz.articleId.toString())}
                                     </span>
                                 )}
                                 {quiz.type === QuizType.FINAL_QUIZ && (
-                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 flex items-center gap-1">
+                                    <span className="px-3 py-1 border-2 text-xs font-bold uppercase bg-amber-100 dark:bg-amber-900/30 border-amber-600 text-amber-700 dark:text-amber-400 flex items-center gap-1">
                                         <Award className="w-3 h-3" />
                                         Final Quiz
                                     </span>
                                 )}
                                 {!quiz.articleId && quiz.type === QuizType.ARTICLE_QUIZ && (
-                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                    <span className="px-3 py-1 border-2 text-xs font-bold uppercase bg-gray-100 dark:bg-gray-800 border-gray-500 text-gray-600 dark:text-gray-400">
                                         Not Assigned
                                     </span>
                                 )}
                             </div>
                             {quiz.description && (
-                                <p className="text-gray-600 mb-3">{quiz.description}</p>
+                                <p className="text-sija-text/70 mb-4 font-medium">{quiz.description}</p>
                             )}
-                            <div className="flex items-center gap-6 text-sm text-gray-600">
-                                <div className="flex items-center gap-1">
-                                    <FileText className="w-4 h-4" />
-                                    <span>{quiz.questions.length} questions</span>
+                            <div className="flex items-center gap-4 text-sm flex-wrap">
+                                <div className="flex items-center gap-2 bg-sija-light px-3 py-2 border-2 border-sija-primary/20">
+                                    <FileText className="w-4 h-4 text-sija-primary" />
+                                    <span className="font-bold text-sija-text">{quiz.questions.length} questions</span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Target className="w-4 h-4" />
-                                    <span>{quiz.passingScore}% to pass</span>
+                                <div className="flex items-center gap-2 bg-sija-light px-3 py-2 border-2 border-sija-primary/20">
+                                    <Target className="w-4 h-4 text-sija-primary" />
+                                    <span className="font-bold text-sija-text">{quiz.passingScore}% pass</span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Award className="w-4 h-4" />
-                                    <span>{quiz.xpReward} XP</span>
+                                <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/30 px-3 py-2 border-2 border-yellow-600">
+                                    <Award className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                                    <span className="font-bold text-yellow-700 dark:text-yellow-400">{quiz.xpReward} XP</span>
                                 </div>
                                 {quiz.timeLimit && (
-                                    <div className="flex items-center gap-1">
-                                        <Clock className="w-4 h-4" />
-                                        <span>{quiz.timeLimit} min</span>
+                                    <div className="flex items-center gap-2 bg-sija-light px-3 py-2 border-2 border-sija-primary/20">
+                                        <Clock className="w-4 h-4 text-sija-primary" />
+                                        <span className="font-bold text-sija-text">{quiz.timeLimit} min</span>
                                     </div>
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 ml-4">
                             <button
                                 onClick={() => setAssigningQuiz(quiz)}
-                                className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                className="p-2 text-sija-text border-2 border-sija-text/20 bg-sija-surface hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
                                 title="Assign Quiz"
                             >
                                 <Link2 className="w-5 h-5" />
                             </button>
                             <Link
                                 href={`/admin/quizzes/${quiz._id}/analytics`}
-                                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-2 text-sija-text border-2 border-sija-text/20 bg-sija-surface hover:border-sija-primary hover:text-sija-primary hover:bg-sija-light transition-colors"
                                 title="View Analytics"
                             >
                                 <BarChart3 className="w-5 h-5" />
                             </Link>
                             <Link
                                 href={`/admin/quizzes/${quiz._id}/edit`}
-                                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                className="p-2 text-sija-text border-2 border-sija-text/20 bg-sija-surface hover:border-sija-primary hover:text-sija-primary hover:bg-sija-light transition-colors"
                                 title="Edit Quiz"
                             >
                                 <Edit className="w-5 h-5" />
                             </Link>
                             <button
                                 onClick={() => handleDelete(quiz._id!.toString())}
-                                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-sija-text border-2 border-sija-text/20 bg-sija-surface hover:border-red-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                 title="Delete Quiz"
                             >
                                 <Trash2 className="w-5 h-5" />

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/article/CategoryFilter.tsx
-// Category Filter with Lucide Icons and Dark Mode
-// ============================================
 
 'use client';
 
@@ -92,8 +89,8 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
       <button
         onClick={() => onSelectCategory(null)}
         className={`inline-flex items-center gap-2 px-4 py-2 border-2 border-sija-border font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === null
-            ? 'bg-sija-primary text-white shadow-none translate-x-[2px] translate-y-[2px]'
-            : 'bg-sija-surface text-sija-text shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+          ? 'bg-sija-primary text-white shadow-none translate-x-[2px] translate-y-[2px]'
+          : 'bg-sija-surface text-sija-text shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
           }`}
       >
         <Grid className="w-4 h-4" />
@@ -110,8 +107,8 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
             key={cat.slug}
             onClick={() => onSelectCategory(cat.slug)}
             className={`inline-flex items-center gap-2 px-4 py-2 border-2 border-sija-border font-bold whitespace-nowrap transition-all duration-300 ${isSelected
-                ? 'shadow-none translate-x-[2px] translate-y-[2px]'
-                : 'shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+              ? 'shadow-none translate-x-[2px] translate-y-[2px]'
+              : 'shadow-hard-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
               }`}
             style={{
               backgroundColor: isSelected ? cat.color : cat.color + '20',

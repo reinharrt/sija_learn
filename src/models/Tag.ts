@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Tag.ts
-// Tag Model - Tag database schema with usage tracking
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';
@@ -37,23 +34,23 @@ const TAG_USAGE_COLLECTION = 'tag_usage';
  * Create a new tag (or return existing if already exists)
  */
 export async function createTag(
-  name: string, 
+  name: string,
   createdBy: string,
   options?: { description?: string; category?: string }
 ): Promise<ObjectId> {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   // Normalize tag name
   const normalizedName = name.toLowerCase().trim();
   const slug = normalizedName.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  
+
   // Check if tag already exists
   const existingTag = await collection.findOne({ name: normalizedName });
   if (existingTag) {
     return existingTag._id!;
   }
-  
+
   // Create new tag
   const tag: Tag = {
     name: normalizedName,
@@ -76,7 +73,7 @@ export async function createTag(
 export async function findTagByName(name: string): Promise<Tag | null> {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   const normalizedName = name.toLowerCase().trim();
   return collection.findOne({ name: normalizedName });
 }
@@ -113,20 +110,20 @@ export async function getTags(
 ) {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   const query: any = {};
-  
+
   if (filters.search) {
     query.$or = [
       { name: { $regex: filters.search, $options: 'i' } },
       { description: { $regex: filters.search, $options: 'i' } }
     ];
   }
-  
+
   if (filters.category) {
     query.category = filters.category;
   }
-  
+
   if (filters.minUsage) {
     query.usageCount = { $gte: filters.minUsage };
   }
@@ -149,7 +146,7 @@ export async function getTags(
 export async function getPopularTags(limit: number = 20): Promise<Tag[]> {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   return collection
     .find({ usageCount: { $gt: 0 } })
     .sort({ usageCount: -1 })
@@ -163,7 +160,7 @@ export async function getPopularTags(limit: number = 20): Promise<Tag[]> {
 export async function searchTags(query: string, limit: number = 10): Promise<Tag[]> {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   return collection
     .find({
       name: { $regex: query, $options: 'i' }
@@ -177,19 +174,19 @@ export async function searchTags(query: string, limit: number = 10): Promise<Tag
  * Update tag
  */
 export async function updateTag(
-  id: string, 
+  id: string,
   updates: Partial<Pick<Tag, 'description' | 'category'>>
 ): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
-    { 
-      $set: { 
-        ...updates, 
-        updatedAt: new Date() 
-      } 
+    {
+      $set: {
+        ...updates,
+        updatedAt: new Date()
+      }
     }
   );
 
@@ -203,13 +200,13 @@ export async function deleteTag(id: string): Promise<boolean> {
   const db = await getDatabase();
   const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   // Check if tag is being used
   const usage = await usageCollection.findOne({ tagId: new ObjectId(id) });
   if (usage) {
     throw new Error('Cannot delete tag that is being used');
   }
-  
+
   const result = await tagsCollection.deleteOne({ _id: new ObjectId(id) });
   return result.deletedCount > 0;
 }
@@ -230,21 +227,21 @@ export async function addTagToEntity(
   const db = await getDatabase();
   const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   // Create or get tag
   const tagId = await createTag(tagName, createdBy);
-  
+
   // Check if already exists
   const existingUsage = await usageCollection.findOne({
     tagId,
     entityType,
     entityId: new ObjectId(entityId)
   });
-  
+
   if (existingUsage) {
     return; // Already tagged
   }
-  
+
   // Add usage record
   const usage: TagUsage = {
     tagId,
@@ -252,13 +249,13 @@ export async function addTagToEntity(
     entityId: new ObjectId(entityId),
     createdAt: new Date()
   };
-  
+
   await usageCollection.insertOne(usage);
-  
+
   // Increment usage count
   await tagsCollection.updateOne(
     { _id: tagId },
-    { 
+    {
       $inc: { usageCount: 1 },
       $set: { updatedAt: new Date() }
     }
@@ -276,29 +273,68 @@ export async function removeTagFromEntity(
   const db = await getDatabase();
   const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   // Find tag
   const tag = await findTagByName(tagName);
   if (!tag) return;
-  
+
   // Remove usage record
   const result = await usageCollection.deleteOne({
     tagId: tag._id,
     entityType,
     entityId: new ObjectId(entityId)
   });
-  
+
   if (result.deletedCount > 0) {
     // Decrement usage count
     await tagsCollection.updateOne(
       { _id: tag._id },
-      { 
+      {
         $inc: { usageCount: -1 },
         $set: { updatedAt: new Date() }
       }
     );
   }
 }
+
+/**
+ * Remove all tags from entity (used when deleting entity)
+ */
+export async function removeAllTagsFromEntity(
+  entityType: 'article' | 'course',
+  entityId: string
+): Promise<void> {
+  const db = await getDatabase();
+  const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
+  const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
+
+  // Get all tag usages for this entity
+  const usages = await usageCollection
+    .find({
+      entityType,
+      entityId: new ObjectId(entityId)
+    })
+    .toArray();
+
+  if (usages.length === 0) return;
+
+  // Delete all usage records
+  await usageCollection.deleteMany({
+    entityType,
+    entityId: new ObjectId(entityId)
+  });
+
+  // Decrement usage count for each tag
+  const tagIds = usages.map(u => u.tagId);
+  await tagsCollection.updateMany(
+    { _id: { $in: tagIds } },
+    {
+      $inc: { usageCount: -1 },
+      $set: { updatedAt: new Date() }
+    }
+  );
+}
+
 
 /**
  * Get tags for entity
@@ -310,16 +346,16 @@ export async function getTagsForEntity(
   const db = await getDatabase();
   const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   const usages = await usageCollection
     .find({
       entityType,
       entityId: new ObjectId(entityId)
     })
     .toArray();
-  
+
   if (usages.length === 0) return [];
-  
+
   const tagIds = usages.map(u => u.tagId);
   return tagsCollection
     .find({ _id: { $in: tagIds } })
@@ -339,24 +375,24 @@ export async function updateEntityTags(
 ): Promise<void> {
   const db = await getDatabase();
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   // Get current tags
   const currentTags = await getTagsForEntity(entityType, entityId);
   const currentTagNames = currentTags.map(t => t.name);
-  
+
   // Determine which tags to add and remove
-  const tagsToAdd = tagNames.filter(name => 
+  const tagsToAdd = tagNames.filter(name =>
     !currentTagNames.includes(name.toLowerCase().trim())
   );
-  const tagsToRemove = currentTagNames.filter(name => 
+  const tagsToRemove = currentTagNames.filter(name =>
     !tagNames.map(n => n.toLowerCase().trim()).includes(name)
   );
-  
+
   // Remove old tags
   for (const tagName of tagsToRemove) {
     await removeTagFromEntity(tagName, entityType, entityId);
   }
-  
+
   // Add new tags
   for (const tagName of tagsToAdd) {
     await addTagToEntity(tagName, entityType, entityId, createdBy);
@@ -372,25 +408,25 @@ export async function getEntitiesByTag(
 ): Promise<{ articles: ObjectId[], courses: ObjectId[] }> {
   const db = await getDatabase();
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   const tag = await findTagByName(tagName);
   if (!tag) return { articles: [], courses: [] };
-  
+
   const query: any = { tagId: tag._id };
   if (entityType) {
     query.entityType = entityType;
   }
-  
+
   const usages = await usageCollection.find(query).toArray();
-  
+
   const articles = usages
     .filter(u => u.entityType === 'article')
     .map(u => u.entityId);
-  
+
   const courses = usages
     .filter(u => u.entityType === 'course')
     .map(u => u.entityId);
-  
+
   return { articles, courses };
 }
 
@@ -404,13 +440,13 @@ export async function getTagStats(tagId: string): Promise<{
 }> {
   const db = await getDatabase();
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   const [totalUsage, articleCount, courseCount] = await Promise.all([
     usageCollection.countDocuments({ tagId: new ObjectId(tagId) }),
     usageCollection.countDocuments({ tagId: new ObjectId(tagId), entityType: 'article' }),
     usageCollection.countDocuments({ tagId: new ObjectId(tagId), entityType: 'course' })
   ]);
-  
+
   return { totalUsage, articleCount, courseCount };
 }
 
@@ -425,9 +461,9 @@ export async function recalculateUsageCounts(): Promise<void> {
   const db = await getDatabase();
   const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   const tags = await tagsCollection.find({}).toArray();
-  
+
   for (const tag of tags) {
     const count = await usageCollection.countDocuments({ tagId: tag._id });
     await tagsCollection.updateOne(
@@ -443,7 +479,7 @@ export async function recalculateUsageCounts(): Promise<void> {
 export async function cleanupUnusedTags(): Promise<number> {
   const db = await getDatabase();
   const collection = db.collection<Tag>(TAGS_COLLECTION);
-  
+
   const result = await collection.deleteMany({ usageCount: 0 });
   return result.deletedCount;
 }
@@ -456,17 +492,17 @@ export async function createIndexes() {
   const db = await getDatabase();
   const tagsCollection = db.collection<Tag>(TAGS_COLLECTION);
   const usageCollection = db.collection<TagUsage>(TAG_USAGE_COLLECTION);
-  
+
   // Tags collection indexes
   await tagsCollection.createIndex({ name: 1 }, { unique: true });
   await tagsCollection.createIndex({ slug: 1 }, { unique: true });
   await tagsCollection.createIndex({ category: 1 });
   await tagsCollection.createIndex({ usageCount: -1 });
   await tagsCollection.createIndex({ createdAt: -1 });
-  
+
   // Tag usage collection indexes
   await usageCollection.createIndex(
-    { tagId: 1, entityType: 1, entityId: 1 }, 
+    { tagId: 1, entityType: 1, entityId: 1 },
     { unique: true }
   );
   await usageCollection.createIndex({ tagId: 1 });

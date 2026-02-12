@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/xp-calculator.ts
-// XP Calculator - Helper functions untuk calculate XP rewards
-// ============================================
 
 import { type CourseDifficulty } from './gamification';
 

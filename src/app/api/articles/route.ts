@@ -1,4 +1,4 @@
-// ============================================
+// src/app/api/articles/route.ts
 
 
 
@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-
     const { title, description, banner, category, type, blocks, tags, published } = await request.json();
 
     if (!title || !description || !category || !blocks) {
@@ -80,7 +79,6 @@ export async function POST(request: NextRequest) {
     }
 
     const slug = generateSlug(title);
-
 
     const articleId = await createArticle({
       title,

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/LevelBadge.tsx
-// Level Badge - Compact level display component
-// ============================================
 
 'use client';
 

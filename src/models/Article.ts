@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Article.ts
-// Article Model - WITH DYNAMIC CATEGORY SUPPORT
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/PageHeader.tsx
-// Page Header Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 

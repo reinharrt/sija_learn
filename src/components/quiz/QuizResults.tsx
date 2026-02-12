@@ -1,7 +1,4 @@
-// ============================================
 // src/components/quiz/QuizResults.tsx
-// Quiz Results Component - Display quiz results
-// ============================================
 
 'use client';
 

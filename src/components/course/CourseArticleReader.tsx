@@ -1,8 +1,4 @@
-// ============================================
 // src/components/course/CourseArticleReader.tsx
-// Course Article Reader - Sequential reading with scroll tracking
-// NEOBRUTALIST STYLE VERSION
-// ============================================
 
 'use client';
 
@@ -197,18 +193,18 @@ export default function CourseArticleReader({
 
       {/* Completion Card - Always visible with different states */}
       <div className={`mt-12 border-4 shadow-hard p-8 transition-all duration-500 ${isCurrentCompleted
-          ? 'bg-green-300 border-sija-text'
-          : hasScrolledToBottom
-            ? 'bg-yellow-300 border-sija-text'
-            : 'bg-gray-100 border-gray-300 opacity-50'
+        ? 'bg-green-300 border-sija-text'
+        : hasScrolledToBottom
+          ? 'bg-yellow-300 border-sija-text'
+          : 'bg-gray-100 border-gray-300 opacity-50'
         }`}>
         <div className="text-center">
           {/* Icon - Changes based on state */}
           <div className={`inline-flex items-center justify-center w-20 h-20 border-4 shadow-hard-sm mb-4 transition-all duration-500 ${isCurrentCompleted
-              ? 'bg-green-400 border-sija-text'
-              : hasScrolledToBottom
-                ? 'bg-yellow-400 border-sija-text'
-                : 'bg-gray-200 border-gray-400'
+            ? 'bg-green-400 border-sija-text'
+            : hasScrolledToBottom
+              ? 'bg-yellow-400 border-sija-text'
+              : 'bg-gray-200 border-gray-400'
             }`}>
             {isCurrentCompleted ? (
               <Trophy className="w-12 h-12 text-sija-text" />

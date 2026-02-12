@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/utils.ts
-// General Utilities - Common helper functions
-// ============================================
 
 export function generateSlug(title: string): string {
   return title
@@ -21,19 +18,19 @@ export function validatePassword(password: string): { valid: boolean; message?: 
   if (password.length < 8) {
     return { valid: false, message: 'Password minimal 8 karakter' };
   }
-  
+
   if (!/[A-Z]/.test(password)) {
     return { valid: false, message: 'Password harus mengandung huruf besar' };
   }
-  
+
   if (!/[a-z]/.test(password)) {
     return { valid: false, message: 'Password harus mengandung huruf kecil' };
   }
-  
+
   if (!/[0-9]/.test(password)) {
     return { valid: false, message: 'Password harus mengandung angka' };
   }
-  
+
   return { valid: true };
 }
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/email.ts
-// Email Service - Email sending utilities
-// ============================================
 
 import nodemailer from 'nodemailer';
 
@@ -21,9 +18,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ============================================
-// NEOBRUTALIST EMAIL TEMPLATE
-// ============================================
+// Neobrutalist Email Template
 
 /**
  * Creates a neobrutalism-styled email template
@@ -112,9 +107,7 @@ function createNeobrutalistEmailTemplate(
   `;
 }
 
-// ============================================
-// VERIFICATION & AUTHENTICATION EMAILS
-// ============================================
+// Verification & Authentication Emails
 
 export async function sendVerificationEmail(email: string, name: string, token: string) {
   const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify?token=${token}`;
@@ -244,9 +237,7 @@ export async function sendPasswordResetOTP(email: string, name: string, otp: str
   }
 }
 
-// ============================================
-// EMAIL SUBSCRIPTION TEMPLATES
-// ============================================
+// Email Subscription Templates
 
 export async function sendWelcomeSubscriptionEmail(email: string, unsubscribeToken: string) {
   const content = `

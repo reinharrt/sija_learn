@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/RewardToast.tsx
-// Reward Toast - Toast notification for XP and badge rewards
-// ============================================
 
 'use client';
 
@@ -19,8 +16,8 @@ interface RewardToastProps {
   autoCloseDelay?: number;
 }
 
-export default function RewardToast({ 
-  isOpen, 
+export default function RewardToast({
+  isOpen,
   onClose,
   type,
   xpGained,
@@ -33,13 +30,13 @@ export default function RewardToast({
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
-      
+
       if (autoClose) {
         const timer = setTimeout(() => {
           setIsVisible(false);
           setTimeout(onClose, 300); // Wait for animation
         }, autoCloseDelay);
-        
+
         return () => clearTimeout(timer);
       }
     } else {
@@ -56,7 +53,7 @@ export default function RewardToast({
 
   return (
     <div className="fixed top-20 right-4 z-50 animate-slide-in-right">
-      <div 
+      <div
         className={`
           bg-sija-surface border-2 border-sija-primary shadow-hard
           max-w-sm transition-all duration-300
@@ -103,7 +100,7 @@ export default function RewardToast({
                 <X className="w-4 h-4 text-sija-text/60" />
               </button>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="text-4xl animate-bounce-slow">
                 {badge.icon}
@@ -128,9 +125,9 @@ export default function RewardToast({
         {/* Progress bar */}
         {autoClose && (
           <div className="h-1 bg-sija-surface border-t-2 border-sija-primary/20">
-            <div 
+            <div
               className="h-full bg-sija-primary animate-progress"
-              style={{ 
+              style={{
                 animationDuration: `${autoCloseDelay}ms`,
                 animationTimingFunction: 'linear'
               }}

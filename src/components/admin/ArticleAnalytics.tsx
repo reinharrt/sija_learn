@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/ArticleAnalytics.tsx
-// Article Analytics Component - Display view stats with Dark Mode
-// ============================================
 
 'use client';
 

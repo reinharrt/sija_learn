@@ -1,7 +1,4 @@
-// ============================================
 // src/components/common/Button.tsx
-// Button Component - Neobrutalist Design with Dark Mode
-// ============================================
 
 'use client';
 
@@ -33,7 +30,7 @@ export default function Button({
   fullWidth = false,
 }: ButtonProps) {
   const baseClasses = 'inline-flex items-center justify-center gap-2 font-display font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 uppercase tracking-wide';
-  
+
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-6 py-3 text-sm',

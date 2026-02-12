@@ -1,7 +1,4 @@
-// ============================================
 // src/components/gamification/LevelUpModal.tsx
-// Level Up Modal - Celebration modal when user levels up
-// ============================================
 
 'use client';
 

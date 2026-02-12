@@ -1,8 +1,3 @@
-# Project File Structure
-
-This document provides a complete visual tree of the `src` directory to help you locate files.
-
-```text
 src
 +---app
 |   |   favicon.ico
@@ -403,4 +398,3 @@ src
 |
 \---types
         index.ts
-```

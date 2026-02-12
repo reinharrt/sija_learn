@@ -1,12 +1,9 @@
-// ============================================
 // src/components/gamification/BadgeCard.tsx
-// Badge Card - Display individual badge with details
-// ============================================
 
 'use client';
 
 import { type BadgeDefinition, RARITY_COLORS } from '@/lib/badge-definitions';
-import { Lock, HelpCircle } from 'lucide-react';
+import { Lock, HelpCircle, Check } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 interface BadgeCardProps {
@@ -126,7 +123,9 @@ export default function BadgeCard({
           )}
 
           {earned && (
-            <span className="text-xs text-sija-primary font-bold">✓ EARNED</span>
+            <span className="text-xs text-sija-primary font-bold flex items-center gap-1">
+              <Check className="w-3 h-3" /> EARNED
+            </span>
           )}
         </div>
       </div>

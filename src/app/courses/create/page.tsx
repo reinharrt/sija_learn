@@ -369,7 +369,7 @@ export default function CreateCoursePage() {
               </div>
               <div>
                 <p className="font-bold text-yellow-900 dark:text-yellow-300 mb-2 uppercase tracking-wider">
-                  💡 Tips
+                  Tips
                 </p>
                 <p className="text-sm text-yellow-800 dark:text-yellow-400 font-medium leading-relaxed">
                   Artikel bisa ditambahkan sekarang atau nanti dari halaman edit course.

@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/view-tracker.ts
-// View Tracking System - Prevent duplicate views
-// ============================================
 
 import { getDatabase } from './mongodb';
 import { ObjectId } from 'mongodb';
@@ -41,7 +38,7 @@ export async function shouldCountView(
       });
 
       if (existingView) {
-        console.log('🚫 View already counted for this user within time window');
+        console.log('[SKIP] View already counted for this user within time window');
         return false;
       }
     }
@@ -54,11 +51,11 @@ export async function shouldCountView(
     });
 
     if (existingViewByIP) {
-      console.log('🚫 View already counted for this IP within time window');
+      console.log('[SKIP] View already counted for this IP within time window');
       return false;
     }
 
-    console.log('✅ New view, should count');
+    console.log('[COUNT] New view, should count');
     return true;
   } catch (error) {
     console.error('View check error:', error);
@@ -92,7 +89,7 @@ export async function recordView(
     }
 
     await collection.insertOne(viewRecord);
-    console.log('📊 View recorded successfully');
+    console.log('[RECORD] View recorded successfully');
   } catch (error) {
     console.error('Record view error:', error);
   }
@@ -108,12 +105,12 @@ export async function incrementArticleViews(articleId: string): Promise<void> {
 
     await collection.updateOne(
       { _id: new ObjectId(articleId) },
-      { 
+      {
         $inc: { views: 1 },
         $set: { updatedAt: new Date() }
       }
     );
-    
+
     console.log('📈 Article view count incremented');
   } catch (error) {
     console.error('Increment views error:', error);
@@ -131,16 +128,16 @@ export async function getArticleViewStats(articleId: string) {
     const [totalViews, uniqueIPs, last24h, last7days] = await Promise.all([
       // Total views all time
       collection.countDocuments({ articleId: new ObjectId(articleId) }),
-      
+
       // Unique IP addresses
       collection.distinct('ipAddress', { articleId: new ObjectId(articleId) }).then(ips => ips.length),
-      
+
       // Views in last 24 hours
       collection.countDocuments({
         articleId: new ObjectId(articleId),
         timestamp: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
       }),
-      
+
       // Views in last 7 days
       collection.countDocuments({
         articleId: new ObjectId(articleId),
@@ -175,7 +172,7 @@ export async function cleanupOldViews(): Promise<number> {
       timestamp: { $lt: ninetyDaysAgo }
     });
 
-    console.log(`🧹 Cleaned up ${result.deletedCount} old view records`);
+    console.log(`[CLEANUP] Cleaned up ${result.deletedCount} old view records`);
     return result.deletedCount;
   } catch (error) {
     console.error('Cleanup views error:', error);
@@ -197,13 +194,13 @@ export async function createViewIndexes(): Promise<void> {
         { articleId: 1, ipAddress: 1, timestamp: -1 },
         { name: 'article_ip_time' }
       ),
-      
+
       // Index for userId-based checks
       collection.createIndex(
         { articleId: 1, userId: 1, timestamp: -1 },
         { name: 'article_user_time' }
       ),
-      
+
       // TTL index to auto-delete old records after 90 days
       collection.createIndex(
         { timestamp: 1 },
@@ -211,7 +208,7 @@ export async function createViewIndexes(): Promise<void> {
       ),
     ]);
 
-    console.log('✅ View tracking indexes created');
+    console.log('[INDEX] View tracking indexes created');
   } catch (error) {
     console.error('Create indexes error:', error);
   }

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/article/ArticleDetail.tsx
-// Article Detail Component - Neobrutalist Style with Dark Mode
-// ============================================
 
 'use client';
 

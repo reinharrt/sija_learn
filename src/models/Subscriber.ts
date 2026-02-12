@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Subscriber.ts
-// Subscriber Model - Email subscription management
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';

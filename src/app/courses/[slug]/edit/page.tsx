@@ -1,4 +1,4 @@
-
+// src/app/courses/[slug]/edit/page.tsx
 
 'use client';
 
@@ -456,8 +456,9 @@ export default function EditCoursePage() {
                   placeholder="Kosongkan untuk menggunakan nilai otomatis"
                   className="w-full px-4 py-3 border-2 border-sija-primary dark:border-white bg-sija-surface dark:bg-gray-800 text-sija-text dark:text-white focus:outline-none focus:ring-2 focus:ring-sija-primary dark:focus:ring-yellow-400 font-medium transition-colors"
                 />
-                <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 font-medium">
-                  💡 Kosongkan field ini untuk menggunakan perhitungan otomatis berdasarkan difficulty dan jumlah artikel
+                <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 font-medium flex items-start gap-1">
+                  <Lightbulb className="w-3 h-3 text-gray-500 flex-shrink-0 mt-0.5" strokeWidth={2} />
+                  Kosongkan field ini untuk menggunakan perhitungan otomatis berdasarkan difficulty dan jumlah artikel
                 </p>
               </div>
               <XPPreview
@@ -532,7 +533,7 @@ export default function EditCoursePage() {
                 <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
                 <div>
                   <p className="font-bold text-red-900 dark:text-red-300 uppercase tracking-wider mb-1">
-                    ⚠️ Danger Zone
+                    Danger Zone
                   </p>
                   <p className="text-sm text-red-800 dark:text-red-400 font-medium">
                     Menghapus course akan menghapus semua data terkait. Tindakan ini tidak dapat dibatalkan.

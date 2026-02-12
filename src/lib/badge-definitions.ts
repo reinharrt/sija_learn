@@ -1,7 +1,4 @@
-// ============================================
 // src/lib/badge-definitions.ts
-// Badge Definitions - All available badges and their requirements
-// ============================================
 
 export type BadgeRarity = 'common' | 'rare' | 'epic' | 'legendary';
 export type BadgeCategory = 'progress' | 'streak' | 'social' | 'speed' | 'explorer' | 'special';

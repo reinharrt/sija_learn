@@ -1,7 +1,4 @@
-// ============================================
 // src/models/Category.ts
-// Category Model - Dynamic category management
-// ============================================
 
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/mongodb';
@@ -33,15 +30,15 @@ export async function createCategory(
 ): Promise<ObjectId> {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   const slug = name.toLowerCase().trim().replace(/\s+/g, '-');
-  
+
   // Check if category already exists
   const existing = await collection.findOne({ slug });
   if (existing) {
     throw new Error('Category sudah ada');
   }
-  
+
   const category: Category = {
     name: name.trim(),
     slug,
@@ -53,7 +50,7 @@ export async function createCategory(
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  
+
   const result = await collection.insertOne(category);
   return result.insertedId;
 }
@@ -69,9 +66,9 @@ export async function getCategories(
 ) {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   const query: any = {};
-  
+
   if (filters.search) {
     query.$or = [
       { name: { $regex: filters.search, $options: 'i' } },
@@ -79,20 +76,20 @@ export async function getCategories(
       { description: { $regex: filters.search, $options: 'i' } },
     ];
   }
-  
+
   if (filters.minUsage !== undefined) {
     query.usageCount = { $gte: filters.minUsage };
   }
-  
+
   const categories = await collection
     .find(query)
     .sort({ usageCount: -1, name: 1 })
     .skip(skip)
     .limit(limit)
     .toArray();
-  
+
   const total = await collection.countDocuments(query);
-  
+
   return { categories, total };
 }
 
@@ -100,7 +97,7 @@ export async function getCategories(
 export async function getPopularCategories(limit: number = 10) {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   return collection
     .find({ usageCount: { $gt: 0 } })
     .sort({ usageCount: -1 })
@@ -112,7 +109,7 @@ export async function getPopularCategories(limit: number = 10) {
 export async function searchCategories(query: string, limit: number = 10) {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   return collection
     .find({
       $or: [
@@ -139,7 +136,7 @@ export async function updateCategory(
 ): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   const result = await collection.updateOne(
     { _id: new ObjectId(id) },
     {
@@ -149,7 +146,7 @@ export async function updateCategory(
       },
     }
   );
-  
+
   return result.modifiedCount > 0;
 }
 
@@ -157,13 +154,13 @@ export async function updateCategory(
 export async function deleteCategory(id: string): Promise<boolean> {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   // Check if category is in use
   const category = await collection.findOne({ _id: new ObjectId(id) });
   if (category && category.usageCount > 0) {
     throw new Error('Tidak bisa menghapus category yang sedang digunakan');
   }
-  
+
   const result = await collection.deleteOne({ _id: new ObjectId(id) });
   return result.deletedCount > 0;
 }
@@ -172,7 +169,7 @@ export async function deleteCategory(id: string): Promise<boolean> {
 export async function incrementCategoryUsage(slug: string): Promise<void> {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   await collection.updateOne(
     { slug },
     { $inc: { usageCount: 1 } }
@@ -183,7 +180,7 @@ export async function incrementCategoryUsage(slug: string): Promise<void> {
 export async function decrementCategoryUsage(slug: string): Promise<void> {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   await collection.updateOne(
     { slug },
     { $inc: { usageCount: -1 } }
@@ -194,7 +191,7 @@ export async function decrementCategoryUsage(slug: string): Promise<void> {
 export async function createCategoryIndexes() {
   const db = await getDatabase();
   const collection = db.collection<Category>(COLLECTION_NAME);
-  
+
   await collection.createIndex({ slug: 1 }, { unique: true });
   await collection.createIndex({ name: 1 });
   await collection.createIndex({ usageCount: -1 });

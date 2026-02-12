@@ -94,17 +94,17 @@ export default function EditArticlePage() {
 
 
   useEffect(() => {
-    console.log('📝 [EDIT] FormData changed:', formData);
+    console.log('[EDIT] FormData changed:', formData);
   }, [formData]);
 
 
   useEffect(() => {
-    console.log('🧱 [EDIT] Blocks changed:', blocks.length, 'blocks');
+    console.log('[EDIT] Blocks changed:', blocks.length, 'blocks');
   }, [blocks]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    console.log('🔄 [EDIT] handleChange called:', name, value);
+    console.log('[EDIT] handleChange called:', name, value);
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
@@ -113,7 +113,7 @@ export default function EditArticlePage() {
   }, []);
 
   const handleBannerUpload = useCallback((url: string) => {
-    console.log('🖼️ [EDIT] Banner uploaded:', url);
+    console.log('[EDIT] Banner uploaded:', url);
     setFormData(prev => ({
       ...prev,
       banner: url,
@@ -121,7 +121,7 @@ export default function EditArticlePage() {
   }, []);
 
   const handleCategoryChange = useCallback((categorySlug: string) => {
-    console.log('📂 [EDIT] Category changed:', categorySlug);
+    console.log('[EDIT] Category changed:', categorySlug);
     setFormData(prev => ({
       ...prev,
       category: categorySlug,
@@ -130,7 +130,7 @@ export default function EditArticlePage() {
   }, []);
 
   const handleBlocksChange = useCallback((newBlocks: ContentBlock[]) => {
-    console.log('🧱 [EDIT] handleBlocksChange called, new blocks count:', newBlocks.length);
+    console.log('[EDIT] handleBlocksChange called, new blocks count:', newBlocks.length);
     setBlocks(newBlocks);
   }, []);
 

@@ -1,7 +1,4 @@
-// ============================================
 // src/components/admin/NavigationCard.tsx
-// Navigation Card Component - Admin page navigation with Dark Mode
-// ============================================
 
 import Link from 'next/link';
 import { LucideIcon, ArrowRight } from 'lucide-react';
