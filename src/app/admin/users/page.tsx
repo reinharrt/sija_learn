@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { UserRole, User } from '@/types';
 import { formatDate } from '@/lib/utils';
 import Breadcrumb from '@/components/common/Breadcrumb';
@@ -25,6 +26,7 @@ import {
 export default function AdminUsersPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useNotification();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -105,12 +107,12 @@ export default function AdminUsersPage() {
           setIsDeleting(false);
         }, 500);
       } else {
-        alert('Gagal menghapus user');
+        showToast('error', 'Gagal menghapus user');
         setIsDeleting(false);
       }
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
       setIsDeleting(false);
     }
   };
@@ -126,11 +128,11 @@ export default function AdminUsersPage() {
       if (response.ok) {
         loadUsers(currentPage);
       } else {
-        alert('Gagal mengubah role');
+        showToast('error', 'Gagal mengubah role');
       }
     } catch (error) {
       console.error('Update error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     }
   };
 
@@ -206,8 +208,8 @@ export default function AdminUsersPage() {
       label: 'Status',
       render: (u) => (
         <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${u.isVerified
-            ? 'bg-green-100 text-green-800 border-green-800'
-            : 'bg-yellow-100 text-yellow-800 border-yellow-800'
+          ? 'bg-green-100 text-green-800 border-green-800'
+          : 'bg-yellow-100 text-yellow-800 border-yellow-800'
           }`}>
           {u.isVerified ? (
             <>
@@ -278,8 +280,8 @@ export default function AdminUsersPage() {
         </select>
 
         <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 border-2 font-bold uppercase ${u.isVerified
-            ? 'bg-green-100 text-green-800 border-green-800'
-            : 'bg-yellow-100 text-yellow-800 border-yellow-800'
+          ? 'bg-green-100 text-green-800 border-green-800'
+          : 'bg-yellow-100 text-yellow-800 border-yellow-800'
           }`}>
           {u.isVerified ? (
             <>

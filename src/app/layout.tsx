@@ -8,6 +8,7 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { GamificationProvider } from '@/contexts/GamificationContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -37,11 +38,13 @@ export default function RootLayout({
       <body className="min-h-screen bg-grid-pattern font-poppins antialiased selection:bg-sija-primary selection:text-white">
         <AuthProvider>
           <GamificationProvider>
-            <Header />
-            <main className="min-h-screen pt-20">
-              {children}
-            </main>
-            <Footer />
+            <NotificationProvider>
+              <Header />
+              <main className="min-h-screen pt-20">
+                {children}
+              </main>
+              <Footer />
+            </NotificationProvider>
           </GamificationProvider>
         </AuthProvider>
       </body>

@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import BlockEditor from '@/components/article/BlockEditor';
 import ImageUpload from '@/components/common/ImageUpload';
 import CategorySelector from '@/components/article/CategorySelector';
@@ -31,6 +32,7 @@ export default function EditArticlePage() {
   const params = useParams();
   const slug = params.slug as string;
   const { user, loading: authLoading } = useAuth();
+  const { showConfirm } = useNotification();
 
   const [article, setArticle] = useState<Article | null>(null);
   const [formData, setFormData] = useState({
@@ -180,9 +182,15 @@ export default function EditArticlePage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Yakin ingin menghapus artikel ini? Aksi ini tidak dapat dibatalkan.')) {
-      return;
-    }
+    const confirmed = await showConfirm({
+      title: 'Hapus Artikel',
+      message: 'Yakin ingin menghapus artikel ini? Aksi ini tidak dapat dibatalkan.',
+      confirmText: 'Hapus',
+      cancelText: 'Batal',
+      type: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await fetch(`/api/articles/${article?._id}`, {

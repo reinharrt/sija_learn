@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { UserRole, Article } from '@/types';
 import { formatDate } from '@/lib/utils';
 import ConfirmModal from '@/components/common/ConfirmModal';
@@ -29,6 +30,7 @@ import {
 export default function AdminArticlesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useNotification();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,12 +109,12 @@ export default function AdminArticlesPage() {
           setIsDeleting(false);
         }, 500);
       } else {
-        alert('Gagal menghapus artikel');
+        showToast('error', 'Gagal menghapus artikel');
         setIsDeleting(false);
       }
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
       setIsDeleting(false);
     }
   };
@@ -128,11 +130,11 @@ export default function AdminArticlesPage() {
       if (response.ok) {
         loadArticles(currentPage);
       } else {
-        alert('Gagal mengubah status publikasi');
+        showToast('error', 'Gagal mengubah status publikasi');
       }
     } catch (error) {
       console.error('Update error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     }
   };
 
@@ -197,8 +199,8 @@ export default function AdminArticlesPage() {
         <button
           onClick={() => togglePublish(article._id!.toString(), article.published)}
           className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${article.published
-              ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
-              : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
+            ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
+            : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
             }`}
         >
           {article.published ? (
@@ -276,8 +278,8 @@ export default function AdminArticlesPage() {
         <button
           onClick={() => togglePublish(article._id!.toString(), article.published)}
           className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${article.published
-              ? 'bg-green-100 text-green-800 border-green-800'
-              : 'bg-gray-100 text-gray-800 border-gray-800'
+            ? 'bg-green-100 text-green-800 border-green-800'
+            : 'bg-gray-100 text-gray-800 border-gray-800'
             }`}
         >
           {article.published ? (

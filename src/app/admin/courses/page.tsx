@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { UserRole, Course } from '@/types';
 import { formatDate } from '@/lib/utils';
 import Breadcrumb from '@/components/common/Breadcrumb';
@@ -29,6 +30,7 @@ import {
 export default function AdminCoursesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useNotification();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,12 +109,12 @@ export default function AdminCoursesPage() {
           setIsDeleting(false);
         }, 500);
       } else {
-        alert('Gagal menghapus course');
+        showToast('error', 'Gagal menghapus course');
         setIsDeleting(false);
       }
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
       setIsDeleting(false);
     }
   };
@@ -128,11 +130,11 @@ export default function AdminCoursesPage() {
       if (response.ok) {
         loadCourses(currentPage);
       } else {
-        alert('Gagal mengubah status publikasi');
+        showToast('error', 'Gagal mengubah status publikasi');
       }
     } catch (error) {
       console.error('Update error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     }
   };
 
@@ -174,8 +176,8 @@ export default function AdminCoursesPage() {
         <button
           onClick={() => togglePublish(course._id!.toString(), course.published)}
           className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 shadow-hard-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase ${course.published
-              ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
-              : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
+            ? 'bg-green-100 text-green-800 border-green-800 hover:bg-green-200'
+            : 'bg-gray-100 text-gray-800 border-gray-800 hover:bg-gray-200'
             }`}
         >
           {course.published ? (
@@ -249,8 +251,8 @@ export default function AdminCoursesPage() {
         <button
           onClick={() => togglePublish(course._id!.toString(), course.published)}
           className={`inline-flex items-center gap-1 text-xs px-2 py-1 font-bold border-2 uppercase ${course.published
-              ? 'bg-green-100 text-green-800 border-green-800'
-              : 'bg-gray-100 text-gray-800 border-gray-800'
+            ? 'bg-green-100 text-green-800 border-green-800'
+            : 'bg-gray-100 text-gray-800 border-gray-800'
             }`}
         >
           {course.published ? (

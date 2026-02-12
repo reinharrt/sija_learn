@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { UserRole } from '@/types';
 import { Tags, ArrowLeft, Plus, BookOpen, FileText, TrendingUp, Hash, Shield } from 'lucide-react';
 import StatsCard from '@/components/admin/StatsCard';
@@ -32,6 +33,7 @@ interface Tag {
 export default function AdminTagsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showToast, showConfirm } = useNotification();
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'usage' | 'name' | 'date'>('usage');
@@ -83,7 +85,7 @@ export default function AdminTagsPage() {
     e.preventDefault();
 
     if (!newTag.name.trim()) {
-      alert('Tag name is required!');
+      showToast('warning', 'Tag name is required!');
       return;
     }
 
@@ -101,12 +103,12 @@ export default function AdminTagsPage() {
         throw new Error(data.error || 'Failed to create tag');
       }
 
-      alert('Tag created successfully!');
+      showToast('success', 'Tag created successfully!');
       setShowCreateModal(false);
       setNewTag({ name: '', description: '', category: 'general' });
       loadTags();
     } catch (error: any) {
-      alert(error.message);
+      showToast('error', error.message);
     } finally {
       setCreating(false);
     }
@@ -118,13 +120,19 @@ export default function AdminTagsPage() {
     usageCount: number
   ) => {
     if (usageCount > 0) {
-      alert(
-        `Cannot delete tag "${tagName}" because it's being used in ${usageCount} items.`
-      );
+      showToast('warning', `Cannot delete tag "${tagName}" because it's being used in ${usageCount} items.`);
       return;
     }
 
-    if (!confirm(`Delete tag "${tagName}"?`)) return;
+    const confirmed = await showConfirm({
+      title: 'Delete Tag',
+      message: `Delete tag "${tagName}"?`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      type: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await fetch(`/api/tags/${tagId}`, {
@@ -137,10 +145,10 @@ export default function AdminTagsPage() {
         throw new Error(data.error || 'Failed to delete tag');
       }
 
-      alert('Tag deleted successfully!');
+      showToast('success', 'Tag deleted successfully!');
       loadTags();
     } catch (error: any) {
-      alert(error.message);
+      showToast('error', error.message);
     }
   };
 

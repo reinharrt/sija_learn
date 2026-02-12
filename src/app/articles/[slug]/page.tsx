@@ -1,4 +1,4 @@
-
+// src/app/articles/[slug]/page.tsx
 
 'use client';
 
@@ -11,6 +11,7 @@ import CommentItem from '@/components/comment/CommentItem';
 import ArticleAccessLoader from '@/components/article/ArticleAccessLoader';
 import { Article, Comment, ArticleType } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { Lock, BookOpen, GraduationCap, Home, Search, AlertCircle, LogIn, Loader2 } from 'lucide-react';
 
 interface PageState {
@@ -31,8 +32,9 @@ function ArticleDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const slug = params.slug as string;
-  const courseSlugParam = searchParams.get('course'); // ?course=slug
+  const courseSlugParam = searchParams.get('course');
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useNotification();
 
   const [pageState, setPageState] = useState<PageState>({
     article: null,
@@ -45,6 +47,7 @@ function ArticleDetailContent() {
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showAccessLoader, setShowAccessLoader] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
 
   const isInCourseMode = !!courseSlugParam;
@@ -276,9 +279,19 @@ function ArticleDetailContent() {
     if (!pageState.article) return;
 
     try {
-      const res = await fetch(`/api/comments?articleId=${pageState.article._id}`);
+      console.log('🔄 Reloading comments...');
+      const res = await fetch(`/api/comments?articleId=${pageState.article._id}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       const data = await res.json();
-      if (data?.comments) setComments(data.comments);
+      if (data?.comments) {
+        // Force new array reference to trigger React re-render
+        setComments([...data.comments]);
+        console.log(`✅ Loaded ${data.comments.length} comments`);
+      }
     } catch (error) {
       console.error('Load comments error:', error);
     }
@@ -302,13 +315,14 @@ function ArticleDetailContent() {
       if (res.ok) {
         setNewComment('');
         await loadComments();
+        showToast('success', 'Komentar berhasil dikirim');
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal mengirim komentar');
+        showToast('error', data.error || 'Gagal mengirim komentar');
       }
     } catch (error) {
       console.error('Comment error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     } finally {
       setSubmitting(false);
     }
@@ -525,6 +539,8 @@ function ArticleDetailContent() {
                 comment={comment}
                 onUpdate={loadComments}
                 onDelete={loadComments}
+                editingCommentId={editingCommentId}
+                onEditStart={setEditingCommentId}
               />
             ))
           )}

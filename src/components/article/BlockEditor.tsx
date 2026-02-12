@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { ContentBlock, BlockType } from '@/types';
 import { generateUniqueId } from '@/lib/utils';
 import { parseMarkdownToBlocks, readFileAsText, validateMarkdownFile } from '@/lib/markdownParser';
+import { useNotification } from '@/contexts/NotificationContext';
 import {
   Type,
   Heading1,
@@ -68,6 +69,7 @@ const AutoResizeTextarea = ({
 };
 
 export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
+  const { showToast } = useNotification();
   const [uploadingBlockId, setUploadingBlockId] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importMode, setImportMode] = useState<'append' | 'replace'>('append');
@@ -146,7 +148,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
 
       updateBlock(blockId, { content: data.url });
     } catch (error: any) {
-      alert(error.message || 'Gagal upload gambar');
+      showToast('error', error.message || 'Gagal upload gambar');
     } finally {
       setUploadingBlockId(null);
     }

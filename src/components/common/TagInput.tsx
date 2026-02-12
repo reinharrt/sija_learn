@@ -7,12 +7,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  X, 
-  Loader2, 
-  Lightbulb, 
-  ArrowUp, 
-  ArrowDown, 
+import { useNotification } from '@/contexts/NotificationContext';
+import {
+  X,
+  Loader2,
+  Lightbulb,
+  ArrowUp,
+  ArrowDown,
   CornerDownLeft,
   Hash,
   TrendingUp
@@ -38,6 +39,7 @@ export default function TagInput({
   maxTags = 10,
 }: TagInputProps) {
   const { user } = useAuth();
+  const { showToast } = useNotification();
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -73,11 +75,11 @@ export default function TagInput({
     try {
       const response = await fetch(`/api/tags?action=search&q=${encodeURIComponent(query)}&limit=10`);
       const data = await response.json();
-      
+
       const filtered = (data.tags || []).filter(
         (tag: Tag) => !tags.includes(tag.name)
       );
-      
+
       setSuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
     } catch (error) {
@@ -90,26 +92,26 @@ export default function TagInput({
 
   const addTag = (tagName: string) => {
     const trimmedTag = tagName.trim().toLowerCase();
-    
+
     if (!trimmedTag) return;
-    
+
     if (tags.includes(trimmedTag)) {
-      alert('Tag already added!');
+      showToast('warning', 'Tag sudah ditambahkan!');
       return;
     }
-    
+
     if (tags.length >= maxTags) {
-      alert(`Maximum ${maxTags} tags allowed!`);
+      showToast('warning', `Maksimal ${maxTags} tags!`);
       return;
     }
 
     if (trimmedTag.length < 2) {
-      alert('Tag must be at least 2 characters!');
+      showToast('warning', 'Tag minimal 2 karakter!');
       return;
     }
 
     if (trimmedTag.length > 50) {
-      alert('Tag must be less than 50 characters!');
+      showToast('warning', 'Tag maksimal 50 karakter!');
       return;
     }
 
@@ -127,7 +129,7 @@ export default function TagInput({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      
+
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
         addTag(suggestions[selectedIndex].name);
       } else if (input.trim()) {
@@ -201,11 +203,10 @@ export default function TagInput({
                 key={suggestion._id}
                 type="button"
                 onClick={() => addTag(suggestion.name)}
-                className={`w-full text-left px-4 py-3 transition-colors border-b-2 border-sija-border/30 last:border-b-0 ${
-                  index === selectedIndex 
-                    ? 'bg-blue-50 dark:bg-blue-950/30 border-l-4 border-l-sija-primary' 
+                className={`w-full text-left px-4 py-3 transition-colors border-b-2 border-sija-border/30 last:border-b-0 ${index === selectedIndex
+                    ? 'bg-blue-50 dark:bg-blue-950/30 border-l-4 border-l-sija-primary'
                     : 'hover:bg-sija-light dark:hover:bg-sija-dark/50'
-                } duration-300`}
+                  } duration-300`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -229,18 +230,18 @@ export default function TagInput({
       <div className="mt-2 flex justify-between items-center text-xs">
         <div className="flex items-center gap-2 text-sija-text/60 dark:text-sija-text/50 transition-colors duration-300">
           <span className="flex items-center gap-1">
-            Press 
+            Press
             <kbd className="inline-flex items-center gap-1 px-2 py-0.5 bg-sija-light dark:bg-sija-dark/50 border border-sija-border font-bold transition-colors duration-300">
               <CornerDownLeft className="w-3 h-3" />
               Enter
-            </kbd> 
+            </kbd>
             to add
           </span>
           <span className="flex items-center gap-1">
             <kbd className="inline-flex items-center gap-1 px-2 py-0.5 bg-sija-light dark:bg-sija-dark/50 border border-sija-border font-bold transition-colors duration-300">
               <ArrowUp className="w-3 h-3" />
               <ArrowDown className="w-3 h-3" />
-            </kbd> 
+            </kbd>
             to navigate
           </span>
         </div>

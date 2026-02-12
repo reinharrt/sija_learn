@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { Quiz, StudentAnswer, QuizResult } from '@/types';
 import { getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { useRouter } from 'next/navigation';
 import QuestionDisplay from './QuestionDisplay';
 import QuizResults from './QuizResults';
@@ -18,6 +19,7 @@ interface QuizTakerProps {
 }
 
 export default function QuizTaker({ quizId }: QuizTakerProps) {
+    const { showConfirm } = useNotification();
     const [quiz, setQuiz] = useState<any>(null);
     const [userProgress, setUserProgress] = useState<any>(null);
     const [answers, setAnswers] = useState<StudentAnswer[]>([]);
@@ -114,15 +116,20 @@ export default function QuizTaker({ quizId }: QuizTakerProps) {
     const handleSubmit = async () => {
         if (submitting) return;
 
-        // Check if all questions are answered
         const unanswered = quiz.questions.filter(
             (q: any) => !answers.find(a => a.questionId === q.id)
         );
 
         if (unanswered.length > 0 && timeRemaining !== 0) {
-            if (!confirm(`You have ${unanswered.length} unanswered question(s). Submit anyway?`)) {
-                return;
-            }
+            const confirmed = await showConfirm({
+                title: 'Unanswered Questions',
+                message: `You have ${unanswered.length} unanswered question(s). Submit anyway?`,
+                confirmText: 'Submit',
+                cancelText: 'Cancel',
+                type: 'warning',
+            });
+
+            if (!confirmed) return;
         }
 
         setSubmitting(true);

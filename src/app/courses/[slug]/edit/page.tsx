@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { UserRole, Article, Course } from '@/types';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
@@ -43,6 +44,7 @@ export default function EditCoursePage() {
   const params = useParams();
   const slug = params.slug as string;
   const { user, loading: authLoading } = useAuth();
+  const { showConfirm } = useNotification();
 
   const [course, setCourse] = useState<Course | null>(null);
   const [formData, setFormData] = useState({
@@ -171,9 +173,15 @@ export default function EditCoursePage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Yakin ingin menghapus course ini? Tindakan ini tidak dapat dibatalkan!')) {
-      return;
-    }
+    const confirmed = await showConfirm({
+      title: 'Hapus Course',
+      message: 'Yakin ingin menghapus course ini? Tindakan ini tidak dapat dibatalkan!',
+      confirmText: 'Hapus',
+      cancelText: 'Batal',
+      type: 'danger',
+    });
+
+    if (!confirmed) return;
 
     setDeleting(true);
     try {

@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import ArticleDetail from '@/components/article/ArticleDetail';
 import { Article } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { BookOpen, Check, Lock, ArrowLeft, ArrowRight, ChevronDown, ArrowDown, CheckCircle2, Trophy, GraduationCap } from 'lucide-react';
 
 interface CourseArticleReaderProps {
@@ -32,6 +33,7 @@ export default function CourseArticleReader({
 }: CourseArticleReaderProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { showToast } = useNotification();
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
@@ -74,7 +76,7 @@ export default function CourseArticleReader({
 
       // User has scrolled to 90% of the page
       const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
-      
+
       if (scrollPercentage >= 0.9) {
         setHasScrolledToBottom(true);
       }
@@ -98,27 +100,25 @@ export default function CourseArticleReader({
       });
 
       if (res.ok) {
-        onArticleComplete(); // Refresh parent data
-        setHasScrolledToBottom(true); // Ensure button stays enabled
+        onArticleComplete();
+        setHasScrolledToBottom(true);
       } else {
         const data = await res.json();
-        alert(data.error || 'Gagal menandai selesai');
+        showToast('error', data.error || 'Gagal menandai selesai');
       }
     } catch (error) {
       console.error('Mark complete error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     } finally {
       setIsCompleting(false);
     }
   };
 
   const handleNavigation = (targetArticle: Article) => {
-    // Check if target is locked
     const targetIndex = allArticles.findIndex(
       (a) => a._id?.toString() === targetArticle._id?.toString()
     );
 
-    // Check if all previous articles are completed
     if (targetIndex > 0) {
       const allPreviousCompleted = allArticles
         .slice(0, targetIndex)
@@ -127,7 +127,7 @@ export default function CourseArticleReader({
         );
 
       if (!allPreviousCompleted) {
-        alert('Anda harus menyelesaikan artikel sebelumnya terlebih dahulu!');
+        showToast('warning', 'Anda harus menyelesaikan artikel sebelumnya terlebih dahulu!');
         return;
       }
     }
@@ -196,22 +196,20 @@ export default function CourseArticleReader({
       )}
 
       {/* Completion Card - Always visible with different states */}
-      <div className={`mt-12 border-4 shadow-hard p-8 transition-all duration-500 ${
-        isCurrentCompleted 
-          ? 'bg-green-300 border-sija-text' 
-          : hasScrolledToBottom 
-          ? 'bg-yellow-300 border-sija-text'
-          : 'bg-gray-100 border-gray-300 opacity-50'
-      }`}>
+      <div className={`mt-12 border-4 shadow-hard p-8 transition-all duration-500 ${isCurrentCompleted
+          ? 'bg-green-300 border-sija-text'
+          : hasScrolledToBottom
+            ? 'bg-yellow-300 border-sija-text'
+            : 'bg-gray-100 border-gray-300 opacity-50'
+        }`}>
         <div className="text-center">
           {/* Icon - Changes based on state */}
-          <div className={`inline-flex items-center justify-center w-20 h-20 border-4 shadow-hard-sm mb-4 transition-all duration-500 ${
-            isCurrentCompleted 
-              ? 'bg-green-400 border-sija-text' 
-              : hasScrolledToBottom 
-              ? 'bg-yellow-400 border-sija-text'
-              : 'bg-gray-200 border-gray-400'
-          }`}>
+          <div className={`inline-flex items-center justify-center w-20 h-20 border-4 shadow-hard-sm mb-4 transition-all duration-500 ${isCurrentCompleted
+              ? 'bg-green-400 border-sija-text'
+              : hasScrolledToBottom
+                ? 'bg-yellow-400 border-sija-text'
+                : 'bg-gray-200 border-gray-400'
+            }`}>
             {isCurrentCompleted ? (
               <Trophy className="w-12 h-12 text-sija-text" />
             ) : hasScrolledToBottom ? (
@@ -222,25 +220,23 @@ export default function CourseArticleReader({
           </div>
 
           {/* Title - Changes based on state */}
-          <h3 className={`font-display text-3xl font-black mb-3 uppercase transition-all duration-500 ${
-            isCurrentCompleted || hasScrolledToBottom ? 'text-sija-text' : 'text-gray-400'
-          }`}>
-            {isCurrentCompleted 
-              ? 'Artikel Selesai!' 
-              : hasScrolledToBottom 
-              ? 'Sudah selesai membaca?'
-              : 'Baca Sampai Selesai'}
+          <h3 className={`font-display text-3xl font-black mb-3 uppercase transition-all duration-500 ${isCurrentCompleted || hasScrolledToBottom ? 'text-sija-text' : 'text-gray-400'
+            }`}>
+            {isCurrentCompleted
+              ? 'Artikel Selesai!'
+              : hasScrolledToBottom
+                ? 'Sudah selesai membaca?'
+                : 'Baca Sampai Selesai'}
           </h3>
 
           {/* Description - Changes based on state */}
-          <p className={`font-bold text-lg mb-6 transition-all duration-500 ${
-            isCurrentCompleted || hasScrolledToBottom ? 'text-sija-text' : 'text-gray-500'
-          }`}>
-            {isCurrentCompleted 
-              ? 'Anda telah menyelesaikan artikel ini' 
-              : hasScrolledToBottom 
-              ? 'Tandai artikel ini sebagai selesai untuk melanjutkan ke artikel berikutnya'
-              : 'Scroll ke bawah untuk membaca seluruh artikel'}
+          <p className={`font-bold text-lg mb-6 transition-all duration-500 ${isCurrentCompleted || hasScrolledToBottom ? 'text-sija-text' : 'text-gray-500'
+            }`}>
+            {isCurrentCompleted
+              ? 'Anda telah menyelesaikan artikel ini'
+              : hasScrolledToBottom
+                ? 'Tandai artikel ini sebagai selesai untuk melanjutkan ke artikel berikutnya'
+                : 'Scroll ke bawah untuk membaca seluruh artikel'}
           </p>
 
           {/* Action - Changes based on state */}

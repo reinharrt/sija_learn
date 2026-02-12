@@ -1,11 +1,14 @@
 
 
+// src/app/my-articles/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { UserRole, Article } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { FileText, Eye, Edit, Trash2, Plus, CheckCircle, Circle, Globe, Lock } from 'lucide-react';
@@ -13,6 +16,7 @@ import { FileText, Eye, Edit, Trash2, Plus, CheckCircle, Circle, Globe, Lock } f
 export default function MyArticlesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showToast, showConfirm } = useNotification();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +47,15 @@ export default function MyArticlesPage() {
   };
 
   const handleDelete = async (articleId: string, articleSlug: string) => {
-    if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+    const confirmed = await showConfirm({
+      title: 'Hapus Artikel',
+      message: 'Yakin ingin menghapus artikel ini?',
+      confirmText: 'Hapus',
+      cancelText: 'Batal',
+      type: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await fetch(`/api/articles/${articleId}`, {
@@ -53,12 +65,13 @@ export default function MyArticlesPage() {
 
       if (response.ok) {
         loadMyArticles();
+        showToast('success', 'Artikel berhasil dihapus');
       } else {
-        alert('Gagal menghapus artikel');
+        showToast('error', 'Gagal menghapus artikel');
       }
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     }
   };
 
@@ -72,12 +85,13 @@ export default function MyArticlesPage() {
 
       if (response.ok) {
         loadMyArticles();
+        showToast('success', `Artikel berhasil ${!currentStatus ? 'dipublikasi' : 'dijadikan draft'}`);
       } else {
-        alert('Gagal mengubah status publikasi');
+        showToast('error', 'Gagal mengubah status publikasi');
       }
     } catch (error) {
       console.error('Update error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     }
   };
 

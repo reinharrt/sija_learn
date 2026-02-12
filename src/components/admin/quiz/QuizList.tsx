@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Quiz, QuizType } from '@/types';
 import { getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { Edit, Trash2, BarChart3, FileText, Award, Clock, Target, Link2 } from 'lucide-react';
 import QuizAssignment from './QuizAssignment';
 
@@ -24,6 +25,7 @@ interface QuizListProps {
 }
 
 export default function QuizList({ courseId }: QuizListProps) {
+    const { showToast, showConfirm } = useNotification();
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
@@ -76,9 +78,15 @@ export default function QuizList({ courseId }: QuizListProps) {
     };
 
     const handleDelete = async (quizId: string) => {
-        if (!confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
-            return;
-        }
+        const confirmed = await showConfirm({
+            title: 'Delete Quiz',
+            message: 'Are you sure you want to delete this quiz? This action cannot be undone.',
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            type: 'danger',
+        });
+
+        if (!confirmed) return;
 
         try {
             const response = await fetch(`/api/admin/quizzes/${quizId}`, {
@@ -93,7 +101,7 @@ export default function QuizList({ courseId }: QuizListProps) {
 
             setQuizzes(quizzes.filter(q => q._id?.toString() !== quizId));
         } catch (err: any) {
-            alert(err.message);
+            showToast('error', err.message);
         }
     };
 

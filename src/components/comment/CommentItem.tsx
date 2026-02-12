@@ -20,19 +20,30 @@ import {
   Calendar,
   Clock
 } from 'lucide-react';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 interface CommentItemProps {
   comment: Comment;
   onUpdate: () => void;
   onDelete: () => void;
+  editingCommentId: string | null;
+  onEditStart: (commentId: string | null) => void;
 }
 
-export default function CommentItem({ comment, onUpdate, onDelete }: CommentItemProps) {
+export default function CommentItem({
+  comment,
+  onUpdate,
+  onDelete,
+  editingCommentId,
+  onEditStart
+}: CommentItemProps) {
   const { user } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const isEditing = editingCommentId === comment._id?.toString();
 
   // Check if user can edit/delete
   const isOwner = user && comment.userId.toString() === user.id;
@@ -62,8 +73,10 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
         throw new Error(data.error || 'Gagal mengubah komentar');
       }
 
-      setIsEditing(false);
-      onUpdate();
+      onEditStart(null);
+      // Small delay to ensure database update completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await onUpdate();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -71,11 +84,11 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Yakin ingin menghapus komentar ini?')) {
-      return;
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
 
+  const handleDeleteConfirm = async () => {
     setSubmitting(true);
     try {
       const response = await fetch(`/api/comments/${comment._id}`, {
@@ -88,18 +101,26 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
         throw new Error(data.error || 'Gagal menghapus komentar');
       }
 
-      onDelete();
+      setShowDeleteModal(false);
+      // Small delay to ensure database update completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await onDelete();
     } catch (err: any) {
-      alert(err.message);
+      setError(err.message);
+      setShowDeleteModal(false);
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
+    onEditStart(null);
     setEditContent(comment.content);
     setError('');
+  };
+
+  const handleEditClick = () => {
+    onEditStart(comment._id?.toString() || null);
   };
 
   return (
@@ -194,7 +215,7 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
               <div className="flex gap-2">
                 {canEdit && (
                   <button
-                    onClick={() => setIsEditing(true)}
+                    onClick={handleEditClick}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border-2 border-blue-600 font-bold text-xs hover:bg-blue-100 transition-colors uppercase tracking-wider"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -203,7 +224,7 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
                 )}
                 {canDelete && (
                   <button
-                    onClick={handleDelete}
+                    onClick={handleDeleteClick}
                     disabled={submitting}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 border-2 border-red-600 font-bold text-xs hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wider"
                   >
@@ -220,6 +241,18 @@ export default function CommentItem({ comment, onUpdate, onDelete }: CommentItem
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Hapus Komentar"
+        message="Apakah Anda yakin ingin menghapus komentar ini? Tindakan ini tidak dapat dibatalkan."
+        confirmText="Hapus"
+        cancelText="Batal"
+        type="danger"
+        isLoading={submitting}
+      />
     </div>
   );
 }

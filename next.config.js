@@ -8,9 +8,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-    // Explicit quality settings untuk Next.js 16 compatibility
     qualities: [75, 90, 100],
-    // Local patterns untuk query strings pada local images
     localPatterns: [
       {
         pathname: '/**',
@@ -18,8 +16,6 @@ const nextConfig = {
       },
     ],
   },
-  // Typed routes untuk type safety (sekarang stable!)
-  // typedRoutes: true, // Uncomment jika ingin menggunakan typed routes
 }
 
 module.exports = nextConfig

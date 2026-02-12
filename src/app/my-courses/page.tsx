@@ -1,4 +1,4 @@
-
+// src/app/my-courses/page.tsx
 
 'use client';
 
@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { Course } from '@/types';
 import { formatDate } from '@/lib/utils';
 import ConfirmModal from '@/components/common/ConfirmModal';
@@ -39,6 +40,7 @@ interface EnrollmentWithCourse {
 export default function MyCoursesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useNotification();
   const [enrollments, setEnrollments] = useState<EnrollmentWithCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [unenrollModal, setUnenrollModal] = useState<{
@@ -129,14 +131,15 @@ export default function MyCoursesPage() {
           closeUnenrollModal();
           loadMyEnrollments();
           setIsUnenrolling(false);
+          showToast('success', 'Berhasil keluar dari course');
         }, 500);
       } else {
-        alert('Gagal keluar dari course');
+        showToast('error', 'Gagal keluar dari course');
         setIsUnenrolling(false);
       }
     } catch (error) {
       console.error('Unenroll error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
       setIsUnenrolling(false);
     }
   };
@@ -262,10 +265,10 @@ export default function MyCoursesPage() {
               <div
                 key={enrollment._id}
                 className={`bg-sija-surface border-4 shadow-hard overflow-hidden transition-all hover:shadow-hard-lg ${isCompleted
-                    ? 'border-green-500'
-                    : isInProgress
-                      ? 'border-blue-500'
-                      : 'border-sija-primary'
+                  ? 'border-green-500'
+                  : isInProgress
+                    ? 'border-blue-500'
+                    : 'border-sija-primary'
                   }`}
               >
                 {/* Thumbnail */}

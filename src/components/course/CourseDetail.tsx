@@ -10,6 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Course, Article } from '@/types';
 import { useAuth, getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { formatDate } from '@/lib/utils';
 import { getImageUrl } from '@/lib/image-utils';
 import { getDifficultyDisplay, getDifficultyColor, calculateCourseXP } from '@/lib/xp-calculator';
@@ -45,6 +46,7 @@ interface CourseDetailProps {
 
 export default function CourseDetail({ course, initialIsEnrolled = false }: CourseDetailProps) {
   const { user } = useAuth();
+  const { showToast, showConfirm } = useNotification();
   const [isEnrolled, setIsEnrolled] = useState(initialIsEnrolled);
   const [enrolling, setEnrolling] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
@@ -178,13 +180,12 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
 
   const handleEnroll = async () => {
     if (!user) {
-      alert('Silakan login terlebih dahulu!');
+      showToast('warning', 'Silakan login terlebih dahulu!');
       return;
     }
 
-    // ✅ PREVENT CREATOR FROM ENROLLING
     if (isCreator) {
-      alert('Anda tidak dapat mendaftar di course yang Anda buat sendiri');
+      showToast('warning', 'Anda tidak dapat mendaftar di course yang Anda buat sendiri');
       return;
     }
 
@@ -200,20 +201,28 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
 
       if (response.ok) {
         setIsEnrolled(true);
-        alert('Berhasil mendaftar course!');
+        showToast('success', 'Berhasil mendaftar course!');
       } else {
-        alert(data.error || 'Gagal mendaftar course');
+        showToast('error', data.error || 'Gagal mendaftar course');
       }
     } catch (error) {
       console.error('Enroll error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     } finally {
       setEnrolling(false);
     }
   };
 
   const handleUnenroll = async () => {
-    if (!confirm('Yakin ingin keluar dari course ini?')) return;
+    const confirmed = await showConfirm({
+      title: 'Keluar dari Course?',
+      message: 'Yakin ingin keluar dari course ini?',
+      confirmText: 'Ya, Keluar',
+      cancelText: 'Batal',
+      type: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await fetch(`/api/enrollments/${course._id}`, {
@@ -225,13 +234,13 @@ export default function CourseDetail({ course, initialIsEnrolled = false }: Cour
         setIsEnrolled(false);
         setProgress({ completedArticles: [], percentage: 0 });
         setQuizStatus(null);
-        alert('Berhasil keluar dari course');
+        showToast('success', 'Berhasil keluar dari course');
       } else {
-        alert('Gagal keluar dari course');
+        showToast('error', 'Gagal keluar dari course');
       }
     } catch (error) {
       console.error('Unenroll error:', error);
-      alert('Terjadi kesalahan');
+      showToast('error', 'Terjadi kesalahan');
     }
   };
 

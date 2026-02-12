@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { Quiz, QuizType } from '@/types';
 import { getAuthHeaders } from '@/contexts/AuthContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 interface Article {
@@ -25,6 +26,7 @@ interface QuizAssignmentProps {
 }
 
 export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: QuizAssignmentProps) {
+    const { showConfirm } = useNotification();
     const [articles, setArticles] = useState<Article[]>([]);
     const [selectedArticleId, setSelectedArticleId] = useState<string>('');
     const [loading, setLoading] = useState(true);
@@ -101,9 +103,15 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
     };
 
     const handleUnassign = async () => {
-        if (!confirm('Are you sure you want to unassign this quiz?')) {
-            return;
-        }
+        const confirmed = await showConfirm({
+            title: 'Unassign Quiz',
+            message: 'Are you sure you want to unassign this quiz?',
+            confirmText: 'Unassign',
+            cancelText: 'Cancel',
+            type: 'warning',
+        });
+
+        if (!confirmed) return;
 
         setSubmitting(true);
         setError('');
@@ -181,8 +189,8 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                         <button
                             onClick={() => setMode('article')}
                             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${mode === 'article'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Assign to Article
@@ -190,8 +198,8 @@ export default function QuizAssignment({ quiz, courseId, onClose, onSuccess }: Q
                         <button
                             onClick={() => setMode('final')}
                             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${mode === 'final'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             Set as Final Quiz
