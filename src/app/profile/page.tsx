@@ -88,7 +88,6 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-sija-light py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
         <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-8 mb-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
@@ -102,7 +101,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* XP Progress */}
           <div className="mt-6">
             <XPProgressBar
               totalXP={progress.totalXP}
@@ -113,7 +111,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveTab('overview')}
@@ -153,12 +150,9 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {/* Content */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Stats Cards */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Main Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-sija-surface border-2 border-sija-primary p-4">
                   <Trophy className="w-6 h-6 text-sija-primary mb-2" />
@@ -201,7 +195,6 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Recent Badges */}
               <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display text-2xl font-black text-sija-text uppercase">
@@ -239,9 +232,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
-              {/* Quick Stats */}
               <div className="bg-sija-surface border-2 border-sija-primary shadow-hard p-6">
                 <h3 className="font-display text-xl font-black text-sija-text uppercase mb-4">
                   Quick Stats

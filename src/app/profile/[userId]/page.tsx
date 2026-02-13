@@ -9,7 +9,7 @@ import LevelBadge from '@/components/gamification/LevelBadge';
 import XPProgressBar from '@/components/gamification/XPProgressBar';
 import BadgeGrid from '@/components/gamification/BadgeGrid';
 
-// DEFINE TYPES LOCALLY - DON'T IMPORT FROM MODELS
+
 interface UserProgress {
   totalXP: number;
   currentLevel: number;
@@ -90,11 +90,9 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen py-8 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="bg-sija-surface border-4 border-sija-primary shadow-hard p-8 mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              {/* Avatar Placeholder */}
               <div className="w-24 h-24 bg-sija-primary/20 border-4 border-sija-primary flex items-center justify-center overflow-hidden">
                 {user?.image ? (
                   <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
@@ -118,8 +116,6 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-
-          {/* XP Progress */}
           <div className="mt-6">
             <XPProgressBar
               totalXP={progress.totalXP}
@@ -129,7 +125,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-sija-surface border-2 border-sija-primary p-6 text-center hover:shadow-hard transition-all">
             <div className="text-sija-primary mb-2 flex justify-center">
@@ -173,7 +168,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Badges Section */}
         {badges && (
           <BadgeGrid
             badges={[...badges.earned, ...badges.locked]}
